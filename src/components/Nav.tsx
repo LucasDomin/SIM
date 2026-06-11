@@ -33,7 +33,9 @@ export default function Nav({ onNavigate, current }: Props) {
           scrolled ? "pt-1 pb-3" : "pt-2 pb-6"
         }`}
       >
-        <div className="mx-auto max-w-[1400px] px-5 md:px-10 mb-2 transition-opacity duration-500">
+        {/* Faixa de proteção: garante legibilidade da logo sobre o hero */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-[150px] bg-gradient-to-b from-noir-950 via-noir-950/85 to-transparent" />
+        <div className="relative mx-auto max-w-[1400px] px-5 md:px-10 mb-2 transition-opacity duration-500">
           <div className="flex items-center justify-between font-mono text-[8px] md:text-[9px] uppercase tracking-[0.3em] text-noir-100/30">
             <div className="flex items-center gap-3">
               <span className="w-1 h-1 rounded-full bg-red-500 animate-glow" />
@@ -51,7 +53,7 @@ export default function Nav({ onNavigate, current }: Props) {
         </div>
 
         <div
-          className={`mx-auto max-w-[1400px] px-5 md:px-10 transition-all duration-700`}
+          className={`relative mx-auto max-w-[1400px] px-5 md:px-10 transition-all duration-700`}
         >
           <div
             className={`flex items-center justify-between gap-6 transition-all duration-700 ${
