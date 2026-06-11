@@ -64,12 +64,9 @@ export default function Hero({ onCTA }: Props) {
 
       {/* Content */}
       <div className="relative z-20 h-full flex flex-col">
-        <div className="flex-1 flex items-end pt-28 md:pt-32 pb-16 md:pb-24 overflow-hidden">
+        <div className="flex-1 flex items-end pb-16 md:pb-24">
           <div className="w-full max-w-[1400px] mx-auto px-5 md:px-10">
             <div className="max-w-4xl">
-              <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent mb-6 fade-up">
-                {t("hero.eyebrow", "Cinematic Photography · Audiovisual Studio")}
-              </p>
               <h1
                 className="font-display text-[14vw] md:text-[8.5vw] leading-[0.92] tracking-[-0.03em] text-noir-50 fade-up text-balance"
                 style={{ animationDelay: "120ms" }}

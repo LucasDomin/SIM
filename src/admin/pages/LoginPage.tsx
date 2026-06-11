@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function LoginPage() {
-  const { signIn, isDemo } = useAuth();
+  const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -28,7 +28,7 @@ export default function LoginPage() {
           <input value={password} onChange={(e) => setPassword(e.target.value)} className="mt-2 w-full bg-noir-800 rounded-xl px-4 py-3 outline-none" type="password" required />
         </label>
         {error && <p className="text-red-300 text-sm mb-4">{error}</p>}
-        {isDemo && <p className="text-noir-500 text-xs mb-4">Acesso: jay@admin.com.br / JayAdmin01</p>}
+
         <button className="w-full rounded-full bg-noir-50 text-noir-900 py-3 font-medium">Entrar</button>
       </form>
     </div>
