@@ -28,6 +28,18 @@ export default function App() {
     return () => clearTimeout(t);
   }, []);
 
+  // Atalho de teclado para admin: Ctrl/Cmd + Shift + A
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        window.location.href = '/admin';
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const navigate = (p: string) => {
     setPage(p as Page);
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });

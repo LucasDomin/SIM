@@ -68,8 +68,17 @@ export default function Footer({ onNavigate }: { onNavigate: (p: string) => void
               </button>
             ))}
           </div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-noir-500">
-            © 2026 Estúdio Still In Moviment · Todos os direitos reservados
+          <div className="flex items-center gap-4">
+            <a
+              href="/admin"
+              className="opacity-0 hover:opacity-100 transition-opacity duration-500"
+              title="Admin Access"
+            >
+              <span className="w-2 h-2 rounded-full bg-noir-600 hover:bg-accent transition-colors" />
+            </a>
+            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-noir-500">
+              © 2026 Estúdio Still In Moviment · Todos os direitos reservados
+            </div>
           </div>
         </div>
       </div>
