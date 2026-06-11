@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useCMS } from "../hooks/useCMS";
 
 type Service = "film" | "editorial" | "doc" | "brand";
 
@@ -36,6 +37,7 @@ const usages = [
 type Step = 0 | 1 | 2 | 3 | 4 | 5;
 
 export default function Estimate() {
+  const { t } = useCMS();
   const [step, setStep] = useState<Step>(0);
   const [service, setService] = useState<Service>("film");
   const [scope, setScope] = useState(scopes[1].id);
@@ -86,7 +88,7 @@ export default function Estimate() {
                 · 05 / Smart Estimate
               </p>
               <h2 className="font-display text-5xl md:text-6xl tracking-[-0.02em] text-noir-50 mb-6 text-balance">
-                Um orçamento em <em className="italic">90 segundos</em>.
+                {t("estimate.title", "Um orçamento em 90 segundos.")}
               </h2>
               <p className="text-noir-300 text-base leading-relaxed mb-10 max-w-sm">
                 Cinco passos. Sem formulários longos. Sem espera. Faixas de investimento calibradas

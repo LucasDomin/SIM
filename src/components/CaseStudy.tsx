@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import type { Project } from "../data/projects";
+import { useCMS } from "../hooks/useCMS";
 
 type Props = { project: Project | null; onClose: () => void };
 
 export default function CaseStudy({ project, onClose }: Props) {
+  const { m } = useCMS();
   const [show, setShow] = useState(false);
   useEffect(() => {
     if (project) {
@@ -28,6 +30,8 @@ export default function CaseStudy({ project, onClose }: Props) {
   };
 
   if (!project) return null;
+  const cover = m(`project.${project.slug}.cover`, project.cover);
+  const stills = project.stills.map((still, index) => m(`project.${project.slug}.still.${index + 1}`, still));
 
   return (
     <div className={`fixed inset-0 z-[80] transition-opacity duration-500 ${show ? "opacity-100" : "opacity-0"}`}>
@@ -61,7 +65,7 @@ export default function CaseStudy({ project, onClose }: Props) {
 
         {/* Hero */}
         <div className="relative h-[80svh] min-h-[520px] w-full overflow-hidden">
-          <img src={project.cover} alt={project.title} className="w-full h-full object-cover animate-slow-zoom" />
+          <img src={cover} alt={project.title} className="w-full h-full object-cover animate-slow-zoom" />
           <div className="absolute inset-0 bg-gradient-to-t from-noir-950 via-noir-950/40 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 p-6 md:p-12">
             <div className="max-w-[1400px] mx-auto">
@@ -116,7 +120,7 @@ export default function CaseStudy({ project, onClose }: Props) {
 
         {/* Stills gallery */}
         <div className="space-y-1 px-1 md:px-2">
-          {project.stills.map((s, i) => (
+          {stills.map((s, i) => (
             <div key={s} className={`relative ${i % 2 === 0 ? "md:pr-32" : "md:pl-32"}`}>
               <div className="aspect-[16/9] overflow-hidden">
                 <img src={s} alt="" className="w-full h-full object-cover" loading="lazy" />

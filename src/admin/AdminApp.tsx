@@ -1,50 +1,35 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import AdminLayout from './components/AdminLayout';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import ContentList from './pages/ContentList';
-import MediaLibrary from './pages/MediaLibrary';
-import Settings from './pages/Settings';
-
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-noir-950 flex items-center justify-center">
-        <div className="text-noir-400">Carregando...</div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/admin/login" replace />;
-  }
-
-  return <>{children}</>;
-}
+import { useEffect, useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import AdminLayout from "./components/AdminLayout";
+import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/DashboardPage";
+import ContentPage from "./pages/ContentPage";
+import MediaPage from "./pages/MediaPage";
+import SettingsPage from "./pages/SettingsPage";
+import { go } from "../lib/adminRoute";
 
 export default function AdminApp() {
-  return (
-    <BrowserRouter basename="/admin">
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Navigate to="/admin/dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="content" element={<ContentList />} />
-          <Route path="media" element={<MediaLibrary />} />
-          <Route path="settings" element={<Settings />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
+  return <AdminRouter />;
+}
+
+function AdminRouter() {
+  const { user, loading } = useAuth();
+  const [path, setPath] = useState(window.location.pathname);
+
+  useEffect(() => {
+    const onPop = () => setPath(window.location.pathname);
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  useEffect(() => {
+    if (!loading && !user && path !== "/admin/login") go("/admin/login");
+    if (!loading && user && (path === "/admin" || path === "/admin/login")) go("/admin/dashboard");
+  }, [loading, user, path]);
+
+  if (loading) return <div className="min-h-screen bg-noir-950 text-noir-100 grid place-items-center">Carregando...</div>;
+  if (!user) return <LoginPage />;
+
+  const page = path.includes("/content") ? <ContentPage /> : path.includes("/media") ? <MediaPage /> : path.includes("/settings") ? <SettingsPage /> : <DashboardPage />;
+  return <AdminLayout>{page}</AdminLayout>;
 }

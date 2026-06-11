@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useReveal } from "../hooks/useReveal";
+import { useCMS } from "../hooks/useCMS";
 
 type Msg = { role: "user" | "ai"; text: string };
 
@@ -30,6 +31,7 @@ function aiResponse(input: string): string {
 }
 
 export default function AIAgent() {
+  const { t } = useCMS();
   const ref = useReveal<HTMLDivElement>();
   const [msgs, setMsgs] = useState<Msg[]>(seed);
   const [input, setInput] = useState("");
@@ -60,7 +62,7 @@ export default function AIAgent() {
               · 04 / AI Concierge
             </p>
             <h2 className="font-display text-5xl md:text-6xl tracking-[-0.02em] text-noir-50 mb-6 text-balance">
-              Conheça <em className="italic">Vera</em>.
+              {t("ai.title", "Conheça Vera.")}
             </h2>
             <p className="text-noir-300 text-lg leading-relaxed mb-8 max-w-md">
               Concierge comercial treinada na linguagem do estúdio. Responde a briefings,

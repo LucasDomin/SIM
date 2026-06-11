@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Logo } from "./components/Logo";
+import SMarkLoader from "./components/SMarkLoader";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
 import Marquee from "./components/Marquee";
@@ -15,10 +15,16 @@ import Dashboard from "./components/Dashboard";
 import StudioPage from "./components/StudioPage";
 import PageTransition from "./components/PageTransition";
 import type { Project } from "./data/projects";
+import AdminApp from "./admin/AdminApp";
+import { isAdminPath } from "./lib/adminRoute";
+import EditMode from "./components/EditMode";
+import AdminAccessButton from "./components/AdminAccessButton";
 
 type Page = "home" | "work" | "studio" | "estimate" | "dashboard";
 
 export default function App() {
+  if (isAdminPath()) return <AdminApp />;
+
   const [page, setPage] = useState<Page>("home");
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   const [booted, setBooted] = useState(false);
@@ -26,18 +32,6 @@ export default function App() {
   useEffect(() => {
     const t = setTimeout(() => setBooted(true), 2200);
     return () => clearTimeout(t);
-  }, []);
-
-  // Atalho de teclado para admin: Ctrl/Cmd + Shift + A
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
-        e.preventDefault();
-        window.location.href = '/admin';
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const navigate = (p: string) => {
@@ -87,6 +81,8 @@ export default function App() {
       <Footer onNavigate={navigate} />
 
       <CaseStudy project={activeProject} onClose={() => setActiveProject(null)} />
+      <EditMode />
+      <AdminAccessButton />
       <WhatsAppFab />
     </div>
   );
@@ -113,7 +109,7 @@ function BootLoader() {
       className="fixed inset-0 z-[100] bg-noir-950 flex flex-col items-center justify-center transition-opacity duration-700"
       style={{ opacity: progress >= 2 ? 0 : 1, pointerEvents: progress >= 2 ? "none" : "auto" }}
     >
-      <Logo className="w-64 h-auto" animated />
+      <SMarkLoader className="w-28 md:w-36" progress={Math.min(progress, 1)} />
     </div>
   );
 }

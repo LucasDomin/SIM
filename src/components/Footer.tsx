@@ -1,4 +1,7 @@
+import { useCMS } from "../hooks/useCMS";
+
 export default function Footer({ onNavigate }: { onNavigate: (p: string) => void }) {
+  const { t } = useCMS();
   return (
     <footer className="bg-noir-950 border-t border-noir-100/5 pt-24 pb-10 relative overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-5 md:px-10">
@@ -8,10 +11,10 @@ export default function Footer({ onNavigate }: { onNavigate: (p: string) => void
             · Encerramento
           </p>
           <h2 className="font-display text-[12vw] md:text-[10vw] leading-[0.85] tracking-[-0.04em] text-noir-50 text-balance">
-            Still In Moviment<em className="italic text-noir-500">.</em>
+            {t("footer.brand", "Still In Moviment")}<em className="italic text-noir-500">.</em>
           </h2>
           <p className="mt-6 font-display italic text-2xl md:text-3xl text-noir-300 max-w-2xl">
-            Capturas que permanecem em movimento.
+            {t("footer.tagline", "Capturas que permanecem em movimento.")}
           </p>
         </div>
 
@@ -68,17 +71,8 @@ export default function Footer({ onNavigate }: { onNavigate: (p: string) => void
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-4">
-            <a
-              href="/admin"
-              className="opacity-0 hover:opacity-100 transition-opacity duration-500"
-              title="Admin Access"
-            >
-              <span className="w-2 h-2 rounded-full bg-noir-600 hover:bg-accent transition-colors" />
-            </a>
-            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-noir-500">
-              © 2026 Estúdio Still In Moviment · Todos os direitos reservados
-            </div>
+          <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-noir-500">
+            {t("footer.copyright", "© 2026 Estúdio Still In Moviment · Todos os direitos reservados")}
           </div>
         </div>
       </div>

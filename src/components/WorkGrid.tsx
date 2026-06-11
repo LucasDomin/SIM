@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { projects, type Project } from "../data/projects";
 import { useReveal } from "../hooks/useReveal";
+import { useCMS } from "../hooks/useCMS";
+import { go } from "../lib/adminRoute";
 
 type Props = {
   onOpen: (p: Project) => void;
@@ -10,6 +12,7 @@ type Props = {
 const filters = ["All", "Film", "Editorial", "Brand", "Documentary", "Fashion"] as const;
 
 export default function WorkGrid({ onOpen, variant = "home" }: Props) {
+  const { t } = useCMS();
   const [active, setActive] = useState<(typeof filters)[number]>("All");
   const list = active === "All" ? projects : projects.filter((p) => p.category === active);
   const headRef = useReveal<HTMLDivElement>();
@@ -20,12 +23,12 @@ export default function WorkGrid({ onOpen, variant = "home" }: Props) {
         <div ref={headRef} className="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-14 md:mb-20">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent mb-4">
-              · 01 / Selected Work
+              {t("work.eyebrow", "· 01 / Selected Work")}
             </p>
             <h2 className="font-display text-5xl md:text-7xl tracking-[-0.02em] text-noir-50 text-balance">
-              Casos selecionados
+              {t("work.title.1", "Casos selecionados")}
               <br />
-              <em className="italic text-noir-400">do nosso arquivo.</em>
+              <em className="italic text-noir-400">{t("work.title.2", "do nosso arquivo.")}</em>
             </h2>
           </div>
           {variant === "full" && (
@@ -61,6 +64,21 @@ export default function WorkGrid({ onOpen, variant = "home" }: Props) {
             return <Card key={p.id} project={p} className={layouts[i % layouts.length]} aspect={aspect} index={i} onOpen={onOpen} />;
           })}
         </div>
+
+        <div className="mt-10 flex justify-end">
+          <button
+            onClick={() => go("/admin/login")}
+            className="group inline-flex items-center gap-2 rounded-full border border-noir-100/8 bg-noir-900/20 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.22em] text-noir-100/25 transition-all duration-500 hover:border-noir-100/20 hover:bg-noir-900/70 hover:text-noir-100/70"
+            aria-label="Acessar admin"
+          >
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M4.5 7V5.2C4.5 3.25 5.9 2 8 2s3.5 1.25 3.5 3.2V7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+              <rect x="3" y="7" width="10" height="7" rx="1.8" stroke="currentColor" strokeWidth="1.3" />
+              <path d="M8 10v1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+            </svg>
+            Admin
+          </button>
+        </div>
       </div>
     </section>
   );
@@ -79,8 +97,10 @@ function Card({
   index: number;
   onOpen: (p: Project) => void;
 }) {
+  const { m } = useCMS();
   const ref = useReveal<HTMLDivElement>();
   const [hover, setHover] = useState(false);
+  const cover = m(`project.${project.slug}.cover`, project.cover);
   return (
     <div
       ref={ref}
@@ -92,7 +112,7 @@ function Card({
     >
       <div className="absolute inset-0 bg-noir-800 overflow-hidden rounded-sm">
         <img
-          src={project.cover}
+          src={cover}
           alt={project.title}
           className={`w-full h-full object-cover transition-all duration-[1400ms] ease-out ${
             hover ? "scale-[1.06] brightness-95" : "scale-100 brightness-75"

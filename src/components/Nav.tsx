@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
+import { useCMS } from "../hooks/useCMS";
 
 type Props = {
   onNavigate: (page: string) => void;
@@ -14,6 +15,7 @@ const links = [
 ];
 
 export default function Nav({ onNavigate, current }: Props) {
+  const { t } = useCMS();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -27,12 +29,10 @@ export default function Nav({ onNavigate, current }: Props) {
   return (
     <>
       <header
-        className={`fixed top-0 inset-x-0 z-50 transition-all duration-700 ${
+        className={`fixed top-0 inset-x-0 z-[60] transition-all duration-700 ${
           scrolled ? "pt-1 pb-3" : "pt-2 pb-6"
         }`}
       >
-        {/* Degradê: topo preto sólido fundindo-se com a imagem */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[160px] -z-10 bg-gradient-to-b from-noir-950 via-noir-950/80 to-transparent" />
         <div className="mx-auto max-w-[1400px] px-5 md:px-10 mb-2 transition-opacity duration-500">
           <div className="flex items-center justify-between font-mono text-[8px] md:text-[9px] uppercase tracking-[0.3em] text-noir-100/30">
             <div className="flex items-center gap-3">
@@ -80,7 +80,7 @@ export default function Nav({ onNavigate, current }: Props) {
                       : "text-noir-300 hover:text-noir-50"
                   }`}
                 >
-                  {l.label}
+                  {t(`nav.${l.id}`, l.label)}
                   {current === l.id && (
                     <span className="absolute left-1/2 -translate-x-1/2 bottom-1 w-1 h-1 rounded-full bg-accent" />
                   )}
@@ -133,7 +133,7 @@ export default function Nav({ onNavigate, current }: Props) {
                 open ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6"
               }`}
             >
-              {l.label}
+              {t(`nav.${l.id}`, l.label)}
             </button>
           ))}
         </div>

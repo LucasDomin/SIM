@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useCMS } from "../hooks/useCMS";
 
 type Props = {
   onCTA: (page: string) => void;
@@ -11,6 +12,7 @@ const heroImages = [
 ];
 
 export default function Hero({ onCTA }: Props) {
+  const { t, m } = useCMS();
   const [idx, setIdx] = useState(0);
   const [progress, setProgress] = useState(0);
   const startRef = useRef<number>(Date.now());
@@ -29,10 +31,12 @@ export default function Hero({ onCTA }: Props) {
     return () => clearInterval(tick);
   }, [idx]);
 
+  const images = [m("hero.image.1", heroImages[0]), m("hero.image.2", heroImages[1]), m("hero.image.3", heroImages[2])];
+
   return (
     <section className="relative h-[100svh] min-h-[680px] w-full overflow-hidden bg-noir-950">
       {/* Image stack */}
-      {heroImages.map((src, i) => (
+      {images.map((src, i) => (
         <div
           key={src}
           className={`absolute inset-0 transition-opacity duration-[1800ms] ease-out ${
@@ -53,7 +57,7 @@ export default function Hero({ onCTA }: Props) {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(0,0,0,0.7)_100%)]" />
 
       {/* Letterbox: topo em degradê suave, base sólida */}
-      <div className="absolute inset-x-0 top-0 h-[22vh] z-10 bg-gradient-to-b from-noir-950 via-noir-950/70 to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-[18vh] z-[5] bg-gradient-to-b from-noir-950 via-noir-950/50 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 h-[6vh] bg-noir-950 z-10" />
 
 
@@ -64,22 +68,21 @@ export default function Hero({ onCTA }: Props) {
           <div className="w-full max-w-[1400px] mx-auto px-5 md:px-10">
             <div className="max-w-4xl">
               <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent mb-6 fade-up">
-                Cinematic Photography · Audiovisual Studio
+                {t("hero.eyebrow", "Cinematic Photography · Audiovisual Studio")}
               </p>
               <h1
                 className="font-display text-[14vw] md:text-[8.5vw] leading-[0.92] tracking-[-0.03em] text-noir-50 fade-up text-balance"
                 style={{ animationDelay: "120ms" }}
               >
-                Capturas que <em className="italic text-accent">permanecem</em>
+                {t("hero.title.1", "Capturas que")} <em className="italic text-accent">{t("hero.title.em", "permanecem")}</em>
                 <br />
-                em movimento.
+                {t("hero.title.2", "em movimento.")}
               </h1>
               <p
                 className="mt-8 max-w-xl text-base md:text-lg text-noir-200/80 leading-relaxed fade-up text-pretty"
                 style={{ animationDelay: "240ms" }}
               >
-                Estúdio independente dedicado à fotografia editorial e ao cinema de marca para
-                clientes que entendem o valor do detalhe.
+                {t("hero.subtitle", "Estúdio independente dedicado à fotografia editorial e ao cinema de marca para clientes que entendem o valor do detalhe.")}
               </p>
 
               <div
@@ -90,7 +93,7 @@ export default function Hero({ onCTA }: Props) {
                   onClick={() => onCTA("work")}
                   className="group flex items-center gap-3 bg-noir-50 text-noir-900 rounded-full pl-6 pr-2 py-2 hover:bg-accent transition-colors duration-500"
                 >
-                  <span className="text-[13px] tracking-wide font-medium">Assistir reel</span>
+                  <span className="text-[13px] tracking-wide font-medium">{t("hero.cta.primary", "Assistir reel")}</span>
                   <span className="w-9 h-9 rounded-full bg-noir-900 flex items-center justify-center group-hover:bg-noir-950 transition">
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                       <path d="M2 1l6 4-6 4V1z" fill="#f5f5f6" />
@@ -101,7 +104,7 @@ export default function Hero({ onCTA }: Props) {
                   onClick={() => onCTA("estimate")}
                   className="text-[13px] tracking-wide text-noir-100 border-b border-noir-100/30 hover:border-accent hover:text-accent transition-colors pb-1"
                 >
-                  Solicitar orçamento inteligente →
+                  {t("hero.cta.secondary", "Solicitar orçamento inteligente →")}
                 </button>
               </div>
             </div>
@@ -112,7 +115,7 @@ export default function Hero({ onCTA }: Props) {
         <div className="relative z-10 px-5 md:px-10 pb-8">
           <div className="max-w-[1400px] mx-auto">
             <div className="flex items-center gap-4">
-              {heroImages.map((_, i) => (
+              {images.map((_, i) => (
                 <div key={i} className="flex-1 h-px bg-noir-100/15 relative overflow-hidden">
                   <div
                     className="absolute inset-y-0 left-0 bg-noir-50"

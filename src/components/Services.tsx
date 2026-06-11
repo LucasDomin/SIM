@@ -1,4 +1,5 @@
 import { useReveal } from "../hooks/useReveal";
+import { useCMS } from "../hooks/useCMS";
 
 const services = [
   {
@@ -28,18 +29,19 @@ const services = [
 ];
 
 export default function Services() {
+  const { t } = useCMS();
   const ref = useReveal<HTMLDivElement>();
   return (
     <section id="studio" className="bg-noir-900 py-24 md:py-36 border-t border-noir-100/5">
       <div className="max-w-[1400px] mx-auto px-5 md:px-10">
         <div ref={ref} className="reveal max-w-3xl mb-16 md:mb-24">
           <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent mb-4">
-            · 03 / Studio
+            {t("services.eyebrow", "· 03 / Studio")}
           </p>
           <h2 className="font-display text-5xl md:text-7xl tracking-[-0.02em] text-noir-50 text-balance">
-            Quatro disciplinas.
+            {t("services.title.1", "Quatro disciplinas.")}
             <br />
-            <em className="italic text-noir-400">Uma só linguagem.</em>
+            <em className="italic text-noir-400">{t("services.title.2", "Uma só linguagem.")}</em>
           </h2>
         </div>
 
