@@ -52,30 +52,16 @@ export default function Hero({ onCTA }: Props) {
       <div className="absolute inset-0 bg-gradient-to-b from-noir-950/70 via-noir-950/20 to-noir-950" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(0,0,0,0.7)_100%)]" />
 
-      {/* Letterbox bars */}
-      <div className="absolute inset-x-0 top-0 h-[6vh] bg-noir-950 z-10" />
+      {/* Letterbox: topo em degradê suave, base sólida */}
+      <div className="absolute inset-x-0 top-0 h-[22vh] z-10 bg-gradient-to-b from-noir-950 via-noir-950/70 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 h-[6vh] bg-noir-950 z-10" />
+
+
 
       {/* Content */}
       <div className="relative z-20 h-full flex flex-col">
         <div className="flex-1 flex items-end pb-16 md:pb-24">
           <div className="w-full max-w-[1400px] mx-auto px-5 md:px-10">
-            {/* Top markers */}
-            <div className="flex items-center justify-between mb-10 md:mb-14 font-mono text-[10px] uppercase tracking-[0.25em] text-noir-200/70 fade-in">
-              <div className="flex items-center gap-3">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-glow" />
-                <span>Rec · Reel 2026</span>
-              </div>
-              <div className="hidden md:flex items-center gap-6">
-                <span>ISO 800</span>
-                <span>35mm · ƒ1.4</span>
-                <span>24fps</span>
-              </div>
-              <div>
-                {String(idx + 1).padStart(2, "0")} / {String(heroImages.length).padStart(2, "0")}
-              </div>
-            </div>
-
             <div className="max-w-4xl">
               <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent mb-6 fade-up">
                 Cinematic Photography · Audiovisual Studio
@@ -84,9 +70,9 @@ export default function Hero({ onCTA }: Props) {
                 className="font-display text-[14vw] md:text-[8.5vw] leading-[0.92] tracking-[-0.03em] text-noir-50 fade-up text-balance"
                 style={{ animationDelay: "120ms" }}
               >
-                Imagens que <em className="italic text-accent">permanecem</em>
+                Capturas que <em className="italic text-accent">permanecem</em>
                 <br />
-                em silêncio.
+                em movimento.
               </h1>
               <p
                 className="mt-8 max-w-xl text-base md:text-lg text-noir-200/80 leading-relaxed fade-up text-pretty"

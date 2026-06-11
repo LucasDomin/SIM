@@ -18,7 +18,7 @@ export default function Manifesto() {
         </p>
         <div className="mt-12 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.25em] text-noir-400">
           <span className="h-px w-10 bg-noir-400" />
-          <span>Estúdio MOMENTUM · Est. 2017 · Lisboa / São Paulo</span>
+          <span>Estúdio Still In Moviment · Est. 2017 · Lisboa / São Paulo</span>
           <span className="h-px w-10 bg-noir-400" />
         </div>
       </div>

@@ -4,7 +4,7 @@ import { useReveal } from "../hooks/useReveal";
 type Msg = { role: "user" | "ai"; text: string };
 
 const seed: Msg[] = [
-  { role: "ai", text: "Sou a Vera, assistente comercial do Estúdio MOMENTUM. Em que posso ajudar?" },
+  { role: "ai", text: "Sou a Vera, assistente comercial do Estúdio Still In Moviment. Em que posso ajudar?" },
 ];
 
 const quick = [
@@ -17,7 +17,7 @@ const quick = [
 function aiResponse(input: string): string {
   const i = input.toLowerCase();
   if (i.includes("filme") || i.includes("brand") || i.includes("marca"))
-    return "Belíssimo. Filmes de marca no MOMENTUM partem de €18.000 e incluem direção, captação 6K, color e finish. Posso encaminhar um briefing curto e o nosso diretor entra em contacto em 24h.";
+    return "Belíssimo. Filmes de marca na SIM partem de €18.000 e incluem direção, captação 6K, color e finish. Posso encaminhar um briefing curto e o nosso diretor entra em contacto em 24h.";
   if (i.includes("edit") || i.includes("revista") || i.includes("foto"))
     return "Editoriais começam em €6.500 (até 8 páginas). Inclui pre-production, captação, retoque premium e licenças. Quer indicar a publicação ou marca?";
   if (i.includes("doc") || i.includes("documentário"))

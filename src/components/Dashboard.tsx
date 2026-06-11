@@ -36,7 +36,7 @@ export default function Dashboard() {
               · Internal · v3.2 · Studio control
             </p>
             <h1 className="font-display text-5xl md:text-6xl tracking-[-0.02em] text-noir-50">
-              Dashboard <em className="italic text-noir-400">MOMENTUM.</em>
+              Dashboard <em className="italic text-noir-400">SIM.</em>
             </h1>
             <p className="text-noir-300 mt-3">Quinta-feira, 30 jan · Bom dia, Nuno.</p>
           </div>

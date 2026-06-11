@@ -7,11 +7,11 @@ export default function Footer({ onNavigate }: { onNavigate: (p: string) => void
           <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent mb-6">
             · Encerramento
           </p>
-          <h2 className="font-display text-[18vw] md:text-[14vw] leading-[0.85] tracking-[-0.04em] text-noir-50 text-balance">
-            Momentum<em className="italic text-noir-500">.</em>
+          <h2 className="font-display text-[12vw] md:text-[10vw] leading-[0.85] tracking-[-0.04em] text-noir-50 text-balance">
+            Still In Moviment<em className="italic text-noir-500">.</em>
           </h2>
           <p className="mt-6 font-display italic text-2xl md:text-3xl text-noir-300 max-w-2xl">
-            Imagens que permanecem em silêncio.
+            Capturas que permanecem em movimento.
           </p>
         </div>
 
@@ -58,11 +58,10 @@ export default function Footer({ onNavigate }: { onNavigate: (p: string) => void
         <div className="pt-8 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
           <div className="flex flex-wrap gap-x-6 gap-y-2">
             {[
-              ["home", "Index"],
-              ["work", "Work"],
-              ["studio", "Studio"],
-              ["estimate", "Estimate"],
-              ["dashboard", "Dashboard"],
+              ["home", "Início"],
+              ["work", "Trabalhos"],
+              ["studio", "Estrada"],
+              ["estimate", "Orçamento"],
             ].map(([id, l]) => (
               <button key={id} onClick={() => onNavigate(id)} className="text-[12px] text-noir-400 hover:text-noir-50 transition">
                 {l}
@@ -70,7 +69,7 @@ export default function Footer({ onNavigate }: { onNavigate: (p: string) => void
             ))}
           </div>
           <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-noir-500">
-            © 2026 Estúdio MOMENTUM · Todos os direitos reservados
+            © 2026 Estúdio Still In Moviment · Todos os direitos reservados
           </div>
         </div>
       </div>
