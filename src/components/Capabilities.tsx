@@ -6,7 +6,7 @@ export function Capabilities() {
   const list = t.capabilities.list;
 
   return (
-    <section id="studio" className="relative bg-noir-950 py-24 md:py-36">
+    <section id="studio" className="relative bg-noir-950 pt-16 pb-20 md:pt-20 md:pb-28">
       <div className="mx-auto max-w-[1500px] px-5 md:px-10">
         <Reveal className="grid gap-10 border-b border-noir-800 pb-10 md:grid-cols-12">
           <div className="md:col-span-7">

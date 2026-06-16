@@ -58,7 +58,7 @@ function Reel({ reverse = false }: { reverse?: boolean }) {
 export function FramesReel() {
   const { t } = useLang();
   return (
-    <section className="relative overflow-hidden border-y border-noir-850 bg-noir-900 py-20 md:py-28">
+    <section className="relative overflow-hidden border-y border-noir-850 bg-noir-900 pt-12 pb-16 md:pt-16 md:pb-20">
       <div className="mx-auto mb-12 max-w-[1500px] px-5 md:px-10">
         <Reveal className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>

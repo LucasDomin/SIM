@@ -7,7 +7,7 @@ export function Clients() {
   const loop = [...clients, ...clients];
 
   return (
-    <section className="relative overflow-hidden border-y border-noir-850 bg-noir-900 py-16 md:py-20">
+    <section className="relative overflow-hidden border-y border-noir-850 bg-noir-900 pt-10 pb-14 md:pt-14 md:pb-16">
       <div className="mx-auto mb-8 max-w-[1500px] px-5 md:px-10">
         <Reveal>
           <SectionLabel index="05">{t.clients.label}</SectionLabel>

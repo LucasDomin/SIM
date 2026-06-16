@@ -78,8 +78,8 @@ function ProjectRow({
       </button>
 
       {/* Text column */}
-      <div className={cn("lg:col-span-5", flip && "lg:order-1")}>
-        <p className="max-w-md text-pretty text-sm leading-relaxed text-noir-300 md:text-base">
+      <div className={cn("text-left lg:col-span-5", flip && "lg:order-1")}>
+        <p className="max-w-md text-sm leading-relaxed text-noir-300 md:text-base">
           {project.description}
         </p>
 
@@ -110,21 +110,21 @@ function ProjectRow({
 export function SelectedWorks({ onOpen }: { onOpen: (slug: string) => void }) {
   const { t } = useLang();
   return (
-    <section id="works" className="relative bg-noir-950 py-24 md:py-36">
+    <section id="works" className="relative bg-noir-950 pt-16 pb-20 md:pt-20 md:pb-28">
       <div className="mx-auto max-w-[1500px] px-5 md:px-10">
-        <Reveal className="flex flex-col gap-6 border-b border-noir-800 pb-10 md:flex-row md:items-end md:justify-between">
-          <div>
+        <Reveal className="flex flex-col gap-6 border-b border-noir-800 pb-10">
+          <div className="text-left">
             <SectionLabel index="02">{t.works.label}</SectionLabel>
             <h2 className="mt-5 font-display text-[10vw] font-light leading-[0.95] tracking-[-0.02em] text-cream md:text-[4.6vw]">
               {t.works.title}
             </h2>
           </div>
-          <p className="max-w-xs text-pretty text-sm text-noir-400 md:text-right">
+          <p className="max-w-xs text-left text-sm text-noir-400">
             {t.works.desc}
           </p>
         </Reveal>
 
-        <div className="mt-16 flex flex-col gap-20 md:gap-28">
+        <div className="mt-16 flex flex-col gap-10 md:gap-14">
           {projects.map((p, i) => (
             <ProjectRow key={p.id} project={p} index={i} onOpen={onOpen} />
           ))}

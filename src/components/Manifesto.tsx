@@ -12,7 +12,7 @@ export function Manifesto() {
   }, []);
 
   return (
-    <section id="manifesto" className="relative overflow-hidden bg-noir-950 py-28 md:py-40">
+    <section id="manifesto" className="relative overflow-hidden bg-noir-950 pt-20 pb-16 md:pt-28 md:pb-20">
       {/* vertical spectrum rail */}
       <div className="pointer-events-none absolute left-1/2 top-0 hidden h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-noir-700 to-transparent lg:block" />
 

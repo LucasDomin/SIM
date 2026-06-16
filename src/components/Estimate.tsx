@@ -39,7 +39,7 @@ export function Estimate() {
   const fmt = (n: number) => n.toLocaleString(lang === "pt" ? "pt-PT" : "en-US");
 
   return (
-    <section id="estimate" className="relative overflow-hidden bg-noir-950 py-24 md:py-36">
+    <section id="estimate" className="relative overflow-hidden bg-noir-950 pt-16 pb-20 md:pt-20 md:pb-28">
       {/* glow */}
       <div className="pointer-events-none absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
 

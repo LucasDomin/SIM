@@ -26,7 +26,7 @@ export const projects: Project[] = [
     category: "Film",
     client: "Maison Vétiver",
     year: "2025",
-    location: "Lisboa · Sintra",
+    location: "São Paulo - Brasil",
     duration: "3' 42\"",
     format: "Short film · 6K Anamorphic",
     cover:
@@ -55,7 +55,7 @@ export const projects: Project[] = [
     category: "Brand",
     client: "Ettore Automobili",
     year: "2025",
-    location: "Mojave · Califórnia",
+    location: "São Paulo - Brasil",
     duration: "60\" + stills",
     format: "Film + Print campaign",
     cover:
@@ -83,7 +83,7 @@ export const projects: Project[] = [
     category: "Editorial",
     client: "Vogue Portugal",
     year: "2024",
-    location: "Comporta",
+    location: "São Paulo - Brasil",
     format: "8 páginas · Print",
     cover:
       "https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=2400&q=80",
@@ -109,7 +109,7 @@ export const projects: Project[] = [
     category: "Documentary",
     client: "Fondation d'entreprise Hermès",
     year: "2024",
-    location: "Kyoto · Japão",
+    location: "São Paulo - Brasil",
     duration: "12' 08\"",
     format: "Short documentary · 4K",
     cover:
@@ -137,7 +137,7 @@ export const projects: Project[] = [
     category: "Brand",
     client: "Atelier Beira",
     year: "2025",
-    location: "Porto",
+    location: "São Paulo - Brasil",
     format: "Film + stills · Brand book",
     cover:
       "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=2400&q=80",
@@ -162,7 +162,7 @@ export const projects: Project[] = [
     category: "Fashion",
     client: "Saint Cyr",
     year: "2024",
-    location: "Islândia",
+    location: "São Paulo - Brasil",
     duration: "2' 14\"",
     format: "Fashion film · 35mm",
     cover:
@@ -179,6 +179,58 @@ export const projects: Project[] = [
       { role: "Modelo", name: "Ó. Lindqvist" },
     ],
     color: "#9fb8c7",
+  },
+  {
+    id: "07",
+    slug: "arcadia",
+    title: "Arcadia",
+    subtitle: "Editorial — Architecture Digest",
+    category: "Editorial",
+    client: "Architecture Digest",
+    year: "2024",
+    location: "São Paulo - Brasil",
+    format: "12 páginas · Print",
+    cover:
+      "https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&w=2400&q=80",
+    stills: [
+      "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=2000&q=80",
+      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=2000&q=80",
+      "https://images.unsplash.com/photo-1448630360428-65456885c650?auto=format&fit=crop&w=2000&q=80",
+    ],
+    description:
+      "Uma reportagem visual sobre a arquitetura brutalista paulistana, explorando massa, vazio e luz em seis edifícios icônicos dos anos 1960.",
+    credits: [
+      { role: "Fotografia", name: "N. Ferreira" },
+      { role: "Texto", name: "M. Oliveira" },
+    ],
+    color: "#c2b49a",
+  },
+  {
+    id: "08",
+    slug: "horizonte",
+    title: "Horizonte",
+    subtitle: "Brand Film — Osklen",
+    category: "Brand",
+    client: "Osklen",
+    year: "2025",
+    location: "São Paulo - Brasil",
+    duration: "1' 45\"",
+    format: "Brand film · 4K",
+    cover:
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2400&q=80",
+    stills: [
+      "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=2000&q=80",
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=2000&q=80",
+      "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=2000&q=80",
+    ],
+    description:
+      "Um filme de marca para a campanha de verão da Osklen. Corpos, tecidos naturais e a linha do horizonte carioca filmados em anamórfico.",
+    credits: [
+      { role: "Direção", name: "SIM Studio" },
+      { role: "Fotografia", name: "M. Caldeira" },
+      { role: "Color", name: "L. Vasconcelos" },
+    ],
+    color: "#7a9a7d",
   },
 ];
 

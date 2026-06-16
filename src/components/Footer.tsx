@@ -103,7 +103,7 @@ export function Footer({ onAdmin }: { onAdmin: () => void }) {
           <span>{t.footer.rights}</span>
           <span className="flex items-center gap-2">
             <span className="inline-block h-1.5 w-1.5 animate-blink rounded-full bg-spec-2" />
-            Lisboa · Porto
+            São Paulo - Brasil
           </span>
         </div>
       </div>
