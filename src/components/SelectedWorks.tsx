@@ -1,4 +1,5 @@
 import { useLang } from "../contexts/LanguageContext";
+import { useAdmin } from "../contexts/AdminContext";
 import { projects } from "../data/projects";
 import type { Project } from "../data/projects";
 import { Reveal, SectionLabel } from "./ui";
@@ -25,6 +26,8 @@ function ProjectRow({
   onOpen: (slug: string) => void;
 }) {
   const { t } = useLang();
+  const { getProject } = useAdmin();
+  const merged = getProject(project);
   const flip = index % 2 === 1;
 
   return (
@@ -37,11 +40,11 @@ function ProjectRow({
           flip && "lg:order-2"
         )}
         style={{ aspectRatio: "16 / 10" }}
-        aria-label={`${project.title} — ${t.works.view}`}
+        aria-label={`${merged.title} — ${t.works.view}`}
       >
         <img
-          src={project.cover}
-          alt={project.title}
+          src={merged.cover}
+          alt={merged.title}
           loading="lazy"
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1600ms] ease-out group-hover:scale-[1.07]"
         />
@@ -65,10 +68,10 @@ function ProjectRow({
         <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 md:p-7">
           <div>
             <div className="font-mono text-[10px] uppercase tracking-wide2 text-accent">
-              {project.category} · {project.client}
+              {merged.category} · {merged.client}
             </div>
             <div className="mt-1 font-display text-3xl text-cream md:text-5xl">
-              {project.title}
+              {merged.title}
             </div>
           </div>
           <span className="hidden shrink-0 font-mono text-[10px] uppercase tracking-wide2 text-noir-300 transition-colors group-hover:text-accent md:block">
@@ -80,19 +83,19 @@ function ProjectRow({
       {/* Text column */}
       <div className={cn("text-left lg:col-span-5", flip && "lg:order-1")}>
         <p className="max-w-md text-sm leading-relaxed text-noir-300 md:text-base">
-          {project.description}
+          {merged.description}
         </p>
 
         <div className="mt-7 grid grid-cols-2 gap-y-5 sm:grid-cols-2">
-          <MetaCell label="Client" value={project.client} />
-          <MetaCell label="Year" value={project.year} />
-          <MetaCell label="Location" value={project.location} />
-          <MetaCell label="Format" value={project.format} />
+          <MetaCell label="Client" value={merged.client} />
+          <MetaCell label="Year" value={merged.year} />
+          <MetaCell label="Location" value={merged.location} />
+          <MetaCell label="Format" value={merged.format} />
         </div>
 
-        {project.awards && (
+        {merged.awards && (
           <div className="mt-6 flex flex-wrap gap-2">
-            {project.awards.map((a) => (
+            {merged.awards.map((a) => (
               <span
                 key={a}
                 className="rounded-full border border-noir-600 px-3 py-1 font-mono text-[9px] uppercase tracking-wide2 text-noir-300"

@@ -14,6 +14,7 @@ import { Footer } from "./components/Footer";
 import { CaseStudy } from "./components/CaseStudy";
 import { AIAgent } from "./components/AIAgent";
 import { AdminAccessModal } from "./components/AdminAccessModal";
+import { AdminProvider } from "./contexts/AdminContext";
 import { projects } from "./data/projects";
 
 function ScrollProgress() {
@@ -52,31 +53,33 @@ export default function App() {
   }, [loading]);
 
   return (
-    <div className="grain relative min-h-screen bg-noir-950 text-noir-100">
-      {loading && <Loader onDone={() => setLoading(false)} />}
+    <AdminProvider>
+      <div className="grain relative min-h-screen bg-noir-950 text-noir-100">
+        {loading && <Loader onDone={() => setLoading(false)} />}
 
-      <ScrollProgress />
-      <Navbar onAdmin={() => setAdmin(true)} />
+        <ScrollProgress />
+        <Navbar onAdmin={() => setAdmin(true)} />
 
-      <main>
-        <Hero onEnter={() => scrollToId("works")} />
-        <ParallaxMarquee />
-        <Manifesto />
-        <SelectedWorks onOpen={setSlug} />
-        <FramesReel />
-        <Capabilities />
-        <Clients />
-        <Recognition />
-        <ParallaxMarquee text="Still In Movement" />
-        <Estimate />
-      </main>
+        <main>
+          <Hero onEnter={() => scrollToId("works")} />
+          <ParallaxMarquee />
+          <Manifesto />
+          <SelectedWorks onOpen={setSlug} />
+          <FramesReel />
+          <Capabilities />
+          <Clients />
+          <Recognition />
+          <ParallaxMarquee text="Still In Movement" />
+          <Estimate />
+        </main>
 
-      <Footer onAdmin={() => setAdmin(true)} />
+        <Footer onAdmin={() => setAdmin(true)} />
 
-      <CaseStudy project={active} onClose={() => setSlug(null)} />
-      <AIAgent />
-      <AdminAccessModal open={admin} onClose={() => setAdmin(false)} />
-    </div>
+        <CaseStudy project={active} onClose={() => setSlug(null)} />
+        <AIAgent />
+        <AdminAccessModal open={admin} onClose={() => setAdmin(false)} />
+      </div>
+    </AdminProvider>
   );
 }
 

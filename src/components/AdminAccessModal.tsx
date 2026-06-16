@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
+import { useAdmin } from "../contexts/AdminContext";
 import { Logo } from "./Logo";
 import { SpectrumBar } from "./ui";
+import { AdminDashboard } from "./AdminDashboard";
 
 export function AdminAccessModal({
   open,
@@ -11,7 +13,21 @@ export function AdminAccessModal({
   onClose: () => void;
 }) {
   const { t, lang } = useLang();
+  const { authenticated, login } = useAdmin();
   const [code, setCode] = useState("");
+  const [error, setError] = useState(false);
+  const [dashboardOpen, setDashboardOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      setCode("");
+      setError(false);
+      setDashboardOpen(false);
+    }
+    if (open && authenticated) {
+      setDashboardOpen(true);
+    }
+  }, [open, authenticated]);
 
   useEffect(() => {
     if (!open) return;
@@ -24,9 +40,18 @@ export function AdminAccessModal({
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Preserved admin-gate behaviour (demo): clear on submit.
-    setCode("");
+    const ok = login(code);
+    if (ok) {
+      setError(false);
+      setDashboardOpen(true);
+    } else {
+      setError(true);
+    }
   };
+
+  if (dashboardOpen || authenticated) {
+    return <AdminDashboard open onClose={onClose} />;
+  }
 
   return (
     <div className="fixed inset-0 z-[160] flex items-center justify-center bg-noir-950/85 p-5 backdrop-blur-md fade-in">
@@ -57,23 +82,35 @@ export function AdminAccessModal({
           <h3 className="font-display text-xl text-cream">{t.nav.admin}</h3>
         </div>
         <p className="mt-2 text-sm text-noir-400">
-          {lang === "pt" ? "Área restrita ao estúdio." : "Studio-only area."}
+          {lang === "pt"
+            ? "Área restrita ao estúdio — edite textos e imagens dos projetos."
+            : "Studio-only area — edit project text and images."}
         </p>
 
         <input
           type="password"
           value={code}
-          onChange={(e) => setCode(e.target.value)}
+          onChange={(e) => {
+            setCode(e.target.value);
+            setError(false);
+          }}
           placeholder="••••••••"
           autoFocus
-          className="mt-5 w-full rounded-sm border border-noir-700 bg-noir-950 px-4 py-3 font-mono text-sm tracking-[0.3em] text-cream placeholder:tracking-[0.3em] focus:border-accent focus:outline-none"
+          className={`mt-5 w-full rounded-sm border bg-noir-950 px-4 py-3 font-mono text-sm tracking-[0.3em] text-cream placeholder:tracking-[0.3em] focus:outline-none ${
+            error ? "border-spec-2" : "border-noir-700 focus:border-accent"
+          }`}
         />
+        {error && (
+          <p className="mt-2 text-xs text-spec-2">
+            {lang === "pt" ? "Código inválido." : "Invalid code."}
+          </p>
+        )}
 
         <button
           type="submit"
           className="mt-4 w-full rounded-sm bg-cream py-3 font-mono text-[11px] uppercase tracking-wide2 text-noir-950 transition-transform hover:scale-[1.02]"
         >
-          Entrar
+          {lang === "pt" ? "Entrar" : "Enter"}
         </button>
 
         <div className="mt-6">
