@@ -1,115 +1,85 @@
 import { useEffect, useState } from "react";
-import SMarkLoader from "./components/SMarkLoader";
-import Nav from "./components/Nav";
-import Hero from "./components/Hero";
-import Marquee from "./components/Marquee";
-import WorkGrid from "./components/WorkGrid";
-import Manifesto from "./components/Manifesto";
-import Services from "./components/Services";
-import AIAgent from "./components/AIAgent";
-import Estimate from "./components/Estimate";
-import Footer from "./components/Footer";
-import CaseStudy from "./components/CaseStudy";
-import WhatsAppFab from "./components/WhatsAppFab";
-import Dashboard from "./components/Dashboard";
-import StudioPage from "./components/StudioPage";
-import PageTransition from "./components/PageTransition";
-import type { Project } from "./data/projects";
-import AdminApp from "./admin/AdminApp";
-import { isAdminPath } from "./lib/adminRoute";
-import EditMode from "./components/EditMode";
-import AdminAccessButton from "./components/AdminAccessButton";
+import { Loader } from "./components/Loader";
+import { Navbar } from "./components/Navbar";
+import { Hero } from "./components/Hero";
+import { ParallaxMarquee } from "./components/ParallaxMarquee";
+import { Manifesto } from "./components/Manifesto";
+import { SelectedWorks } from "./components/SelectedWorks";
+import { FramesReel } from "./components/FramesReel";
+import { Capabilities } from "./components/Capabilities";
+import { Clients } from "./components/Clients";
+import { Recognition } from "./components/Recognition";
+import { Estimate } from "./components/Estimate";
+import { Footer } from "./components/Footer";
+import { CaseStudy } from "./components/CaseStudy";
+import { AIAgent } from "./components/AIAgent";
+import { AdminAccessModal } from "./components/AdminAccessModal";
+import { projects } from "./data/projects";
 
-type Page = "home" | "work" | "studio" | "estimate" | "dashboard";
-
-export default function App() {
-  if (isAdminPath()) return <AdminApp />;
-
-  const [page, setPage] = useState<Page>("home");
-  const [activeProject, setActiveProject] = useState<Project | null>(null);
-  const [booted, setBooted] = useState(false);
-
+function ScrollProgress() {
+  const [p, setP] = useState(0);
   useEffect(() => {
-    const t = setTimeout(() => setBooted(true), 2200);
-    return () => clearTimeout(t);
+    const onScroll = () => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      setP(max > 0 ? h.scrollTop / max : 0);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  const navigate = (p: string) => {
-    setPage(p as Page);
-    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
-  };
-
   return (
-    <div className="grain min-h-screen bg-noir-950 text-noir-100 selection:bg-accent selection:text-noir-900">
-      {/* Boot loader */}
-      {!booted && <BootLoader />}
-
-      <Nav onNavigate={navigate} current={page} />
-      <PageTransition pageKey={page} />
-
-      <main>
-        {page === "home" && (
-          <>
-            <Hero onCTA={navigate} />
-            <Marquee />
-            <WorkGrid onOpen={setActiveProject} variant="home" />
-            <Manifesto />
-            <Services />
-            <AIAgent />
-            <Estimate />
-          </>
-        )}
-
-        {page === "work" && (
-          <div className="pt-24">
-            <WorkGrid onOpen={setActiveProject} variant="full" />
-          </div>
-        )}
-
-        {page === "studio" && <StudioPage />}
-
-        {page === "estimate" && (
-          <div className="pt-20">
-            <Estimate />
-            <AIAgent />
-          </div>
-        )}
-
-        {page === "dashboard" && <Dashboard />}
-      </main>
-
-      <Footer onNavigate={navigate} />
-
-      <CaseStudy project={activeProject} onClose={() => setActiveProject(null)} />
-      <EditMode />
-      <AdminAccessButton />
-      <WhatsAppFab />
+    <div className="fixed inset-x-0 top-0 z-[110] h-[2px] bg-transparent">
+      <div
+        className="h-full bg-gradient-to-r from-spec-1 via-accent to-spec-6"
+        style={{ width: `${p * 100}%` }}
+      />
     </div>
   );
 }
 
-function BootLoader() {
-  const [progress, setProgress] = useState(0);
+export default function App() {
+  const [loading, setLoading] = useState(true);
+  const [slug, setSlug] = useState<string | null>(null);
+  const [admin, setAdmin] = useState(false);
+
+  const active = projects.find((p) => p.slug === slug) ?? null;
+
+  // lock scroll during loader
   useEffect(() => {
-    const start = Date.now();
-    const i = setInterval(() => {
-      const p = Math.min(1, (Date.now() - start) / 2200);
-      setProgress(p);
-      if (p >= 1) {
-        clearInterval(i);
-        // pequena pausa antes de ocultar
-        setTimeout(() => setProgress(2), 450);
-      }
-    }, 30);
-    return () => clearInterval(i);
-  }, []);
+    document.body.style.overflow = loading ? "hidden" : "";
+    if (!loading) window.scrollTo(0, 0);
+  }, [loading]);
 
   return (
-    <div
-      className="fixed inset-0 z-[100] bg-noir-950 flex flex-col items-center justify-center transition-opacity duration-700"
-      style={{ opacity: progress >= 2 ? 0 : 1, pointerEvents: progress >= 2 ? "none" : "auto" }}
-    >
-      <SMarkLoader className="w-28 md:w-36" progress={Math.min(progress, 1)} />
+    <div className="grain relative min-h-screen bg-noir-950 text-noir-100">
+      {loading && <Loader onDone={() => setLoading(false)} />}
+
+      <ScrollProgress />
+      <Navbar onAdmin={() => setAdmin(true)} />
+
+      <main>
+        <Hero onEnter={() => scrollToId("works")} />
+        <ParallaxMarquee />
+        <Manifesto />
+        <SelectedWorks onOpen={setSlug} />
+        <FramesReel />
+        <Capabilities />
+        <Clients />
+        <Recognition />
+        <ParallaxMarquee text="Still In Movement" />
+        <Estimate />
+      </main>
+
+      <Footer onAdmin={() => setAdmin(true)} />
+
+      <CaseStudy project={active} onClose={() => setSlug(null)} />
+      <AIAgent />
+      <AdminAccessModal open={admin} onClose={() => setAdmin(false)} />
     </div>
   );
+}
+
+function scrollToId(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 }

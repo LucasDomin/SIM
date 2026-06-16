@@ -14,10 +14,9 @@ export type Project = {
   description: string;
   credits: { role: string; name: string }[];
   awards?: string[];
-  color: string; // accent for case page
+  color: string;
 };
 
-// Unsplash — curated dark/cinematic/editorial imagery
 export const projects: Project[] = [
   {
     id: "01",
@@ -184,7 +183,16 @@ export const projects: Project[] = [
 ];
 
 export const clients = [
-  "Hermès", "Vogue", "Porsche", "Aesop", "Apple", "Leica",
-  "Bottega Veneta", "Loewe", "Saint Laurent", "Maison Margiela",
-  "Acne Studios", "COS",
+  "Hermès",
+  "Vogue",
+  "Porsche",
+  "Aesop",
+  "Apple",
+  "Leica",
+  "Bottega Veneta",
+  "Loewe",
+  "Saint Laurent",
+  "Maison Margiela",
+  "Acne Studios",
+  "COS",
 ];

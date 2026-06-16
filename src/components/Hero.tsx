@@ -1,134 +1,179 @@
-import { useEffect, useRef, useState } from "react";
-import { useCMS } from "../hooks/useCMS";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLang } from "../contexts/LanguageContext";
+import { projects } from "../data/projects";
 
-type Props = {
-  onCTA: (page: string) => void;
-};
+/* Film timecode formatter: 00:00:00:00 (HH:MM:SS:FF @ 24fps) */
+function tc(ms: number) {
+  const totalFrames = Math.floor((ms / 1000) * 24);
+  const f = totalFrames % 24;
+  const s = Math.floor(totalFrames / 24) % 60;
+  const m = Math.floor(totalFrames / (24 * 60)) % 60;
+  const h = Math.floor(totalFrames / (24 * 3600));
+  const p2 = (n: number) => String(n).padStart(2, "0");
+  return `${p2(h)}:${p2(m)}:${p2(s)}:${p2(f)}`;
+}
 
-const heroImages = [
-  "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=2800&q=85",
-  "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2800&q=85",
-  "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=2800&q=85",
-];
+export function Hero({ onEnter }: { onEnter: () => void }) {
+  const { t } = useLang();
+  const heroImages = useMemo(
+    () => [
+      projects[0].cover, // Atlas
+      projects[5].cover, // Noctilucent
+      projects[3].cover, // Kintsugi
+    ],
+    []
+  );
 
-export default function Hero({ onCTA }: Props) {
-  const { t, m } = useCMS();
-  const [idx, setIdx] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const startRef = useRef<number>(Date.now());
+  const [active, setActive] = useState(0);
+  const [prog, setProg] = useState(0); // 0..1 within current slide
+  const [timecode, setTimecode] = useState("00:00:00:00");
+  const startRef = useRef(performance.now());
 
+  const SCENE_MS = 4200;
+
+  // slide + scrubber cycling
   useEffect(() => {
-    startRef.current = Date.now();
-    const tick = setInterval(() => {
-      const elapsed = (Date.now() - startRef.current) / 6000;
-      setProgress(Math.min(elapsed, 1));
-      if (elapsed >= 1) {
-        setIdx((i) => (i + 1) % heroImages.length);
-        startRef.current = Date.now();
-        setProgress(0);
-      }
-    }, 50);
-    return () => clearInterval(tick);
-  }, [idx]);
+    let raf = 0;
+    const tick = (now: number) => {
+      const elapsed = now - startRef.current;
+      const idx = Math.floor(elapsed / SCENE_MS) % heroImages.length;
+      const within = (elapsed % SCENE_MS) / SCENE_MS;
+      setActive(idx);
+      setProg(within);
+      setTimecode(tc(elapsed));
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [heroImages.length]);
 
-  const images = [m("hero.image.1", heroImages[0]), m("hero.image.2", heroImages[1]), m("hero.image.3", heroImages[2])];
+  // Parallax on scroll — image sinks, title floats: cinematic depth.
+  const [sy, setSy] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => setSy(window.scrollY));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+  const fade = Math.max(0, 1 - sy / 620);
 
   return (
-    <section className="relative h-[100svh] min-h-[680px] w-full overflow-hidden bg-noir-950">
-      {/* Image stack */}
-      {images.map((src, i) => (
-        <div
-          key={src}
-          className={`absolute inset-0 transition-opacity duration-[1800ms] ease-out ${
-            i === idx ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <img
-            key={`${src}-${idx === i ? "active" : "idle"}`}
-            src={src}
-            alt=""
-            className={`w-full h-full object-cover ${i === idx ? "animate-slow-zoom" : ""}`}
-          />
+    <section
+      id="top"
+      className="relative h-[100svh] min-h-[640px] w-full overflow-hidden bg-noir-950"
+    >
+      {/* Cycling stills — slow zoom = movement inside the still frame */}
+      <div
+        className="absolute inset-0"
+        style={{ transform: `translateY(${sy * 0.32}px) scale(${1 + sy * 0.0002})`, willChange: "transform" }}
+      >
+        {heroImages.map((src, i) => (
+          <div
+            key={i}
+            className="absolute inset-0 transition-opacity duration-[1400ms] ease-out"
+            style={{ opacity: i === active ? 1 : 0 }}
+          >
+            <img
+              src={src}
+              alt=""
+              className="h-full w-full animate-slow-zoom-loop object-cover"
+              style={{ animationDelay: `${i * -6}s` }}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Cinematic grading overlays */}
+      <div className="absolute inset-0 bg-gradient-to-t from-noir-950 via-noir-950/35 to-noir-950/70" />
+      <div className="absolute inset-0 bg-gradient-to-r from-noir-950/80 via-transparent to-noir-950/40" />
+      {/* letterbox vibe */}
+      <div className="absolute inset-x-0 top-0 h-[6vh] bg-gradient-to-b from-noir-950/80 to-transparent" />
+
+      {/* Top film UI */}
+      <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-5 pt-24 font-mono text-[10px] uppercase tracking-wide2 text-noir-300 md:px-10 md:pt-28">
+        <div className="flex items-center gap-2">
+          <span className="inline-block h-2 w-2 animate-blink rounded-full bg-spec-2" />
+          <span>Rec</span>
+          <span className="text-noir-500">·</span>
+          <span>{timecode}</span>
         </div>
-      ))}
+        <div className="flex items-center gap-3">
+          <span className="hidden sm:inline text-noir-500">2.39 : 1</span>
+          <span className="text-cream">{t.hero.reel}</span>
+        </div>
+      </div>
 
-      {/* Vignette + gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-noir-950/70 via-noir-950/20 to-noir-950" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(0,0,0,0.7)_100%)]" />
+      {/* Title block */}
+      <div
+        className="relative z-20 flex h-full flex-col justify-end px-5 pb-28 md:px-10 md:pb-32"
+        style={{ transform: `translateY(${sy * -0.12}px)`, opacity: fade }}
+      >
+        <div className="mb-5 flex items-center gap-3 font-mono text-[11px] uppercase tracking-wide2 text-accent">
+          <span className="inline-block h-px w-8 bg-accent" />
+          {t.hero.kicker}
+        </div>
 
-      {/* Letterbox: topo em degradê suave, base sólida */}
-      <div className="absolute inset-x-0 top-0 h-[18vh] z-[5] bg-gradient-to-b from-noir-950 via-noir-950/50 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 h-[6vh] bg-noir-950 z-10" />
+        <h1 className="font-display font-light leading-[0.92] tracking-[-0.02em] text-cream text-balance">
+          <span className="block text-[12.5vw] sm:text-[11vw] md:text-[8.4vw] lg:text-[8vw]">
+            {t.hero.title1}
+          </span>
+          <span className="block italic text-[12.5vw] text-accent sm:text-[11vw] md:text-[8.4vw] lg:text-[8vw]">
+            {t.hero.titleEm}
+          </span>
+          <span className="block text-[12.5vw] sm:text-[11vw] md:text-[8.4vw] lg:text-[8vw]">
+            {t.hero.title2}
+          </span>
+        </h1>
 
+        <div className="mt-7 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <p className="max-w-md text-pretty text-sm leading-relaxed text-noir-200/85 md:text-base">
+            {t.hero.subtitle}
+          </p>
 
+          {/* Enter reel */}
+          <button
+            onClick={onEnter}
+            className="group inline-flex shrink-0 items-center gap-3 self-start rounded-full border border-noir-500/60 px-6 py-3 font-mono text-[11px] uppercase tracking-wide2 text-cream transition-colors hover:border-accent md:self-auto"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+            View Reel
+          </button>
+        </div>
+      </div>
 
-      {/* Content */}
-      <div className="relative z-20 h-full flex flex-col">
-        <div className="flex-1 flex items-end pb-16 md:pb-24">
-          <div className="w-full max-w-[1400px] mx-auto px-5 md:px-10">
-            <div className="max-w-4xl">
-              <h1
-                className="font-display text-[14vw] md:text-[8.5vw] leading-[0.92] tracking-[-0.03em] text-noir-50 fade-up text-balance"
-                style={{ animationDelay: "120ms" }}
-              >
-                {t("hero.title.1", "Capturas que")} <em className="italic text-accent">{t("hero.title.em", "permanecem")}</em>
-                <br />
-                {t("hero.title.2", "em movimento.")}
-              </h1>
-              <p
-                className="mt-8 max-w-xl text-base md:text-lg text-noir-200/80 leading-relaxed fade-up text-pretty"
-                style={{ animationDelay: "240ms" }}
-              >
-                {t("hero.subtitle", "Estúdio independente dedicado à fotografia editorial e ao cinema de marca para clientes que entendem o valor do detalhe.")}
-              </p>
-
+      {/* Bottom: film scrubber + ticker */}
+      <div className="absolute inset-x-0 bottom-0 z-20 px-5 pb-6 md:px-10 md:pb-8">
+        <div className="mb-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-wide2 text-noir-400">
+          <span>{t.hero.scenes[active]}</span>
+          <span className="hidden items-center gap-2 md:flex">
+            {t.hero.scroll}
+            <span className="relative flex h-9 w-px justify-center overflow-hidden">
+              <span className="absolute top-0 h-3 w-px animate-drift bg-accent" />
+            </span>
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          {heroImages.map((_, i) => (
+            <div
+              key={i}
+              className="relative h-px flex-1 overflow-hidden bg-cream/15"
+            >
               <div
-                className="mt-10 flex flex-wrap items-center gap-4 fade-up"
-                style={{ animationDelay: "360ms" }}
-              >
-                <button
-                  onClick={() => onCTA("work")}
-                  className="group flex items-center gap-3 bg-noir-50 text-noir-900 rounded-full pl-6 pr-2 py-2 hover:bg-accent transition-colors duration-500"
-                >
-                  <span className="text-[13px] tracking-wide font-medium">{t("hero.cta.primary", "Assistir reel")}</span>
-                  <span className="w-9 h-9 rounded-full bg-noir-900 flex items-center justify-center group-hover:bg-noir-950 transition">
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                      <path d="M2 1l6 4-6 4V1z" fill="#f5f5f6" />
-                    </svg>
-                  </span>
-                </button>
-                <button
-                  onClick={() => onCTA("estimate")}
-                  className="text-[13px] tracking-wide text-noir-100 border-b border-noir-100/30 hover:border-accent hover:text-accent transition-colors pb-1"
-                >
-                  {t("hero.cta.secondary", "Solicitar orçamento inteligente →")}
-                </button>
-              </div>
+                className="absolute inset-y-0 left-0 bg-accent"
+                style={{
+                  width: i < active ? "100%" : i === active ? `${prog * 100}%` : "0%",
+                }}
+              />
             </div>
-          </div>
-        </div>
-
-        {/* Bottom progress + ticker */}
-        <div className="relative z-10 px-5 md:px-10 pb-8">
-          <div className="max-w-[1400px] mx-auto">
-            <div className="flex items-center gap-4">
-              {images.map((_, i) => (
-                <div key={i} className="flex-1 h-px bg-noir-100/15 relative overflow-hidden">
-                  <div
-                    className="absolute inset-y-0 left-0 bg-noir-50"
-                    style={{
-                      width: i < idx ? "100%" : i === idx ? `${progress * 100}%` : "0%",
-                      transition: i === idx ? "width 50ms linear" : "width 600ms ease",
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
-            <div className="mt-4 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.25em] text-noir-300/70">
-              <span>{["Atlas · 2025", "Noctilucent · 2024", "Kintsugi · 2024"][idx]}</span>
-              <span className="hidden md:inline">Scroll to discover ↓</span>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>

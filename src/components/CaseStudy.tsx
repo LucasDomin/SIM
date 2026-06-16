@@ -1,184 +1,146 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { Project } from "../data/projects";
-import { useCMS } from "../hooks/useCMS";
+import { SpectrumBar } from "./ui";
 
-type Props = { project: Project | null; onClose: () => void };
-
-export default function CaseStudy({ project, onClose }: Props) {
-  const { m } = useCMS();
-  const [show, setShow] = useState(false);
+export function CaseStudy({
+  project,
+  onClose,
+}: {
+  project: Project | null;
+  onClose: () => void;
+}) {
   useEffect(() => {
-    if (project) {
-      setShow(true);
-      document.body.style.overflow = "hidden";
-    } else {
+    if (!project) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
-    }
-    return () => { document.body.style.overflow = ""; };
-  }, [project]);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && handleClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line
-  }, [project]);
-
-  const handleClose = () => {
-    setShow(false);
-    setTimeout(onClose, 400);
-  };
+    };
+  }, [project, onClose]);
 
   if (!project) return null;
-  const cover = m(`project.${project.slug}.cover`, project.cover);
-  const stills = project.stills.map((still, index) => m(`project.${project.slug}.still.${index + 1}`, still));
 
   return (
-    <div className={`fixed inset-0 z-[80] transition-opacity duration-500 ${show ? "opacity-100" : "opacity-0"}`}>
-      <div className="absolute inset-0 bg-noir-950" onClick={handleClose} />
-      <div className="relative h-full overflow-y-auto">
-        {/* Top bar */}
-        <div className="sticky top-0 z-20 glass border-b border-noir-100/5">
-          <div className="max-w-[1400px] mx-auto px-5 md:px-10 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-noir-400">
-                Case · {project.id}
-              </span>
-              <span className="h-3 w-px bg-noir-100/15" />
-              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-accent">
-                {project.category}
-              </span>
-            </div>
-            <button
-              onClick={handleClose}
-              className="flex items-center gap-2 text-[12px] tracking-wide text-noir-200 hover:text-noir-50 transition"
-            >
-              <span>Fechar</span>
-              <span className="w-7 h-7 rounded-full border border-noir-100/15 flex items-center justify-center">
-                <svg width="10" height="10" viewBox="0 0 10 10">
-                  <path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" strokeWidth="1.2" />
-                </svg>
-              </span>
-            </button>
-          </div>
-        </div>
+    <div className="fixed inset-0 z-[150] flex justify-center overflow-y-auto bg-noir-950/80 backdrop-blur-md fade-in">
+      <div
+        className="absolute inset-0"
+        onClick={onClose}
+        aria-hidden
+      />
+      <div className="relative z-10 my-0 w-full max-w-5xl bg-noir-900">
+        {/* Close */}
+        <button
+          onClick={onClose}
+          className="fixed right-5 top-5 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-noir-600 bg-noir-950/70 text-cream backdrop-blur transition-colors hover:border-accent hover:text-accent md:right-8 md:top-8"
+          aria-label="Close"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
 
-        {/* Hero */}
-        <div className="relative h-[80svh] min-h-[520px] w-full overflow-hidden">
-          <img src={cover} alt={project.title} className="w-full h-full object-cover animate-slow-zoom" />
-          <div className="absolute inset-0 bg-gradient-to-t from-noir-950 via-noir-950/40 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 p-6 md:p-12">
-            <div className="max-w-[1400px] mx-auto">
-              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent mb-4 fade-up">
-                {project.client} · {project.location} · {project.year}
-              </p>
-              <h1 className="font-display text-[14vw] md:text-[9vw] leading-[0.9] tracking-[-0.03em] text-noir-50 fade-up text-balance" style={{ animationDelay: "100ms" }}>
-                {project.title}
-              </h1>
-              <p className="mt-4 font-display italic text-2xl md:text-3xl text-noir-200 fade-up" style={{ animationDelay: "220ms" }}>
-                {project.subtitle}
-              </p>
+        {/* Cover */}
+        <div className="relative h-[42vh] min-h-[280px] w-full overflow-hidden md:h-[56vh]">
+          <img
+            src={project.cover}
+            alt={project.title}
+            className="h-full w-full animate-slow-zoom object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-noir-900 via-noir-900/20 to-transparent" />
+          <div className="absolute bottom-0 left-0 p-6 md:p-10">
+            <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-wide2 text-accent">
+              <span>{project.category}</span>
+              <span className="text-noir-500">·</span>
+              <span className="text-noir-300">{project.client}</span>
             </div>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="max-w-[1400px] mx-auto px-5 md:px-10 py-20 md:py-28">
-          <div className="grid md:grid-cols-12 gap-10 md:gap-16">
-            <div className="md:col-span-4 space-y-8">
-              {[
-                ["Cliente", project.client],
-                ["Ano", project.year],
-                ["Local", project.location],
-                ["Formato", project.format],
-                ...(project.duration ? [["Duração", project.duration]] : []),
-              ].map(([k, v]) => (
-                <div key={k} className="border-b border-noir-100/8 pb-3">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-noir-400 mb-1">{k}</div>
-                  <div className="text-noir-50 text-[15px]">{v}</div>
-                </div>
-              ))}
-            </div>
-            <div className="md:col-span-8">
-              <p className="font-display text-2xl md:text-4xl leading-[1.25] text-noir-100 text-balance">
-                {project.description}
-              </p>
-
-              {project.awards && (
-                <div className="mt-12">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent mb-4">Awards</div>
-                  <ul className="space-y-2">
-                    {project.awards.map((a) => (
-                      <li key={a} className="text-noir-200 text-lg">— {a}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Stills gallery */}
-        <div className="space-y-1 px-1 md:px-2">
-          {stills.map((s, i) => (
-            <div key={s} className={`relative ${i % 2 === 0 ? "md:pr-32" : "md:pl-32"}`}>
-              <div className="aspect-[16/9] overflow-hidden">
-                <img src={s} alt="" className="w-full h-full object-cover" loading="lazy" />
-              </div>
-              <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-noir-400 px-2 py-3 flex justify-between">
-                <span>Still · {String(i + 1).padStart(2, "0")}</span>
-                <span>{project.title} · {project.year}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Credits */}
-        <div className="max-w-[1400px] mx-auto px-5 md:px-10 py-20 md:py-28">
-          <div className="grid md:grid-cols-12 gap-10">
-            <div className="md:col-span-4">
-              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent mb-4">
-                · Credits
-              </p>
-              <h3 className="font-display text-4xl md:text-5xl text-noir-50 tracking-[-0.02em]">
-                Equipa
-              </h3>
-            </div>
-            <div className="md:col-span-8">
-              <div className="grid sm:grid-cols-2 gap-x-10 gap-y-4">
-                {project.credits.map((c) => (
-                  <div key={c.role} className="flex items-baseline justify-between border-b border-noir-100/8 pb-3">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-noir-400">
-                      {c.role}
-                    </span>
-                    <span className="text-noir-50 text-[15px]">{c.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="border-t border-noir-100/5 bg-noir-900 py-20">
-          <div className="max-w-[1400px] mx-auto px-5 md:px-10 text-center">
-            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent mb-4">
-              Próxima conversa
+            <h2 className="mt-2 font-display text-6xl font-light tracking-[-0.02em] text-cream md:text-8xl">
+              {project.title}
+            </h2>
+            <p className="mt-2 max-w-xl text-pretty text-sm text-noir-200 md:text-base">
+              {project.subtitle}
             </p>
-            <h3 className="font-display text-4xl md:text-6xl text-noir-50 tracking-[-0.02em] text-balance">
-              Vamos criar algo <em className="italic">memorável</em>.
-            </h3>
-            <button
-              onClick={handleClose}
-              className="mt-8 inline-flex items-center gap-3 bg-noir-50 text-noir-900 rounded-full pl-5 pr-2 py-2 hover:bg-accent transition"
-            >
-              <span className="text-[13px] tracking-wide font-medium">Iniciar projeto</span>
-              <span className="w-8 h-8 rounded-full bg-noir-900 flex items-center justify-center">
-                <svg width="10" height="10" viewBox="0 0 12 12">
-                  <path d="M1 6h10m-4-4 4 4-4 4" stroke="#f5f5f6" strokeWidth="1.2" />
-                </svg>
-              </span>
-            </button>
+          </div>
+        </div>
+
+        <div className="px-6 py-10 md:px-10 md:py-14">
+          {/* Meta strip */}
+          <div className="grid grid-cols-2 gap-5 border-y border-noir-800 py-6 sm:grid-cols-4">
+            {[
+              ["Year", project.year],
+              ["Location", project.location],
+              ["Duration", project.duration ?? "—"],
+              ["Format", project.format],
+            ].map(([k, v]) => (
+              <div key={k}>
+                <div className="font-mono text-[9px] uppercase tracking-wide2 text-noir-500">
+                  {k}
+                </div>
+                <div className="mt-1 text-[13px] text-noir-100">{v}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Description */}
+          <p className="mt-10 max-w-2xl text-pretty text-lg leading-relaxed text-noir-200 md:text-xl">
+            {project.description}
+          </p>
+
+          {/* Stills */}
+          <div className="mt-12 grid gap-4 sm:grid-cols-3">
+            {project.stills.map((s, i) => (
+              <div
+                key={i}
+                className="group relative overflow-hidden rounded-sm"
+                style={{ aspectRatio: "3 / 4" }}
+              >
+                <img
+                  src={s}
+                  alt={`${project.title} still ${i + 1}`}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-[1400ms] group-hover:scale-110"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Credits + Awards */}
+          <div className="mt-12 grid gap-10 md:grid-cols-2">
+            <div>
+              <h3 className="font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
+                Credits
+              </h3>
+              <ul className="mt-4 divide-y divide-noir-800">
+                {project.credits.map((c) => (
+                  <li key={c.role} className="flex justify-between py-2.5 text-sm">
+                    <span className="text-noir-400">{c.role}</span>
+                    <span className="text-noir-100">{c.name}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
+                Awards
+              </h3>
+              {project.awards ? (
+                <ul className="mt-4 space-y-3">
+                  {project.awards.map((a) => (
+                    <li
+                      key={a}
+                      className="flex items-center gap-3 rounded-sm border border-noir-800 px-4 py-3 text-sm text-noir-100"
+                    >
+                      <span className="inline-block h-1.5 w-1.5 rotate-45 bg-accent" />
+                      {a}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-4 text-sm text-noir-500">—</p>
+              )}
+              <SpectrumBar className="mt-8 max-w-[180px]" />
+            </div>
           </div>
         </div>
       </div>

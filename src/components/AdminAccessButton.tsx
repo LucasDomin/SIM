@@ -1,18 +1,40 @@
-import { go } from "../lib/adminRoute";
+import { useLang } from "../contexts/LanguageContext";
+import { cn } from "../lib/cn";
 
-export default function AdminAccessButton() {
+/**
+ * Admin access entry — preserved from the original SIM admin flow.
+ * Opens the studio-only access panel (handled by the parent).
+ */
+export function AdminAccessButton({
+  onClick,
+  className = "",
+}: {
+  onClick?: () => void;
+  className?: string;
+}) {
+  const { t } = useLang();
   return (
     <button
-      onClick={() => go("/admin/login")}
-      className="fixed left-3 bottom-3 z-[65] flex h-7 items-center gap-1.5 rounded-full border border-noir-100/8 bg-noir-950/25 px-2.5 font-mono text-[8px] uppercase tracking-[0.2em] text-noir-100/28 backdrop-blur-sm transition-all duration-500 hover:border-noir-100/20 hover:bg-noir-950/80 hover:text-noir-100/85"
-      aria-label="Acessar admin"
+      onClick={onClick}
+      aria-label={t.nav.admin}
+      className={cn(
+        "group flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wide2 text-noir-400 transition-colors hover:text-accent",
+        className
+      )}
     >
-      <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <path d="M4.5 7V5.2C4.5 3.25 5.9 2 8 2s3.5 1.25 3.5 3.2V7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-        <rect x="3" y="7" width="10" height="7" rx="1.8" stroke="currentColor" strokeWidth="1.3" />
-        <path d="M8 10v1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      <svg
+        width="11"
+        height="11"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        className="transition-transform group-hover:scale-110"
+      >
+        <rect x="4" y="11" width="16" height="9" rx="2" />
+        <path d="M8 11V8a4 4 0 0 1 8 0v3" />
       </svg>
-      <span>Admin</span>
+      <span className="hidden sm:inline">{t.nav.admin}</span>
     </button>
   );
 }

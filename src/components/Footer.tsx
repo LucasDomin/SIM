@@ -1,79 +1,110 @@
-import { useCMS } from "../hooks/useCMS";
+import { useLang } from "../contexts/LanguageContext";
+import { Logo } from "./Logo";
+import { SpectrumBar } from "./ui";
 
-export default function Footer({ onNavigate }: { onNavigate: (p: string) => void }) {
-  const { t } = useCMS();
+const SOCIALS = [
+  { label: "Instagram", href: "#" },
+  { label: "Vimeo", href: "#" },
+  { label: "LinkedIn", href: "#" },
+  { label: "Behance", href: "#" },
+];
+
+export function Footer({ onAdmin }: { onAdmin: () => void }) {
+  const { t } = useLang();
+  const year = new Date().getFullYear();
+
   return (
-    <footer className="bg-noir-950 border-t border-noir-100/5 pt-24 pb-10 relative overflow-hidden">
-      <div className="max-w-[1400px] mx-auto px-5 md:px-10">
-        {/* Massive type */}
-        <div className="mb-20">
-          <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent mb-6">
-            · Encerramento
-          </p>
-          <h2 className="font-display text-[12vw] md:text-[10vw] leading-[0.85] tracking-[-0.04em] text-noir-50 text-balance">
-            {t("footer.brand", "Still In Moviment")}<em className="italic text-noir-500">.</em>
-          </h2>
-          <p className="mt-6 font-display italic text-2xl md:text-3xl text-noir-300 max-w-2xl">
-            {t("footer.tagline", "Capturas que permanecem em movimento.")}
-          </p>
+    <footer id="contact" className="relative overflow-hidden bg-noir-950 pt-20">
+      <div className="mx-auto max-w-[1500px] px-5 md:px-10">
+        {/* CTA line */}
+        <div className="border-b border-noir-800 pb-16">
+          <div className="font-mono text-[10px] uppercase tracking-wide2 text-accent">
+            {t.footer.contact}
+          </div>
+          <a
+            href="mailto:hello@sim.studio"
+            className="group mt-4 block font-display text-[12vw] font-light leading-[0.95] tracking-[-0.03em] text-cream md:text-[7vw]"
+          >
+            <span className="transition-colors group-hover:text-accent">
+              {t.footer.email}
+            </span>
+            <span className="text-accent">.</span>
+          </a>
         </div>
 
-        <div className="grid md:grid-cols-12 gap-10 pb-12 border-b border-noir-100/8">
+        {/* Columns */}
+        <div className="grid gap-10 py-14 md:grid-cols-12">
           <div className="md:col-span-5">
-            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-noir-400 mb-3">
-              Estúdio
-            </div>
-            <p className="text-noir-200 leading-relaxed">
-              Rua das Janelas Verdes, 26<br />
-              1200-690 Lisboa · Portugal
-            </p>
-            <p className="text-noir-200 leading-relaxed mt-4">
-              Alameda Santos, 700<br />
-              01418-100 São Paulo · Brasil
+            <Logo className="scale-90" />
+            <p className="mt-6 max-w-xs text-pretty text-sm text-noir-400">
+              {t.footer.tagline}
             </p>
           </div>
+
           <div className="md:col-span-3">
-            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-noir-400 mb-3">
-              Contato
+            <div className="font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
+              {t.footer.studio}
             </div>
-            <a href="mailto:studio@momentum.film" className="block text-noir-100 hover:text-accent transition">studio@momentum.film</a>
-            <a href="https://wa.me/351900000000" className="block text-noir-100 hover:text-accent transition mt-1">+351 900 000 000</a>
-            <a href="#" className="block text-noir-100 hover:text-accent transition mt-1">@momentum.studio</a>
+            <ul className="mt-4 space-y-2 text-sm text-noir-200">
+              <li>{t.footer.locations}</li>
+              <li>
+                <a href="mailto:hello@sim.studio" className="transition-colors hover:text-accent">
+                  hello@sim.studio
+                </a>
+              </li>
+              <li>
+                <a href="tel:+351210000000" className="transition-colors hover:text-accent">
+                  +351 210 000 000
+                </a>
+              </li>
+            </ul>
           </div>
+
           <div className="md:col-span-4">
-            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-noir-400 mb-3">
-              Newsletter · 4×/ano
+            <div className="font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
+              Social
             </div>
-            <form onSubmit={(e) => e.preventDefault()} className="flex items-center gap-2 border-b border-noir-100/15 focus-within:border-accent transition pb-2">
-              <input
-                type="email"
-                placeholder="seu@email.com"
-                className="flex-1 bg-transparent outline-none text-noir-50 placeholder:text-noir-500 text-[14px]"
-              />
-              <button className="text-[12px] text-noir-300 hover:text-accent transition">Subscrever →</button>
-            </form>
-            <p className="text-noir-500 text-[12px] mt-3">
-              Editorial trimestral · sem ruído. Cancele com 1 clique.
-            </p>
+            <ul className="mt-4 grid grid-cols-2 gap-y-2 text-sm">
+              {SOCIALS.map((s) => (
+                <li key={s.label}>
+                  <a
+                    href={s.href}
+                    className="group inline-flex items-center gap-1.5 text-noir-200 transition-colors hover:text-accent"
+                  >
+                    <span className="inline-block h-1 w-1 rounded-full bg-noir-600 transition-colors group-hover:bg-accent" />
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={onAdmin}
+              className="mt-6 font-mono text-[10px] uppercase tracking-wide2 text-noir-500 transition-colors hover:text-accent"
+            >
+              {t.nav.admin} ↗
+            </button>
           </div>
         </div>
 
-        <div className="pt-8 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-          <div className="flex flex-wrap gap-x-6 gap-y-2">
-            {[
-              ["home", "Início"],
-              ["work", "Trabalhos"],
-              ["studio", "Estrada"],
-              ["estimate", "Orçamento"],
-            ].map(([id, l]) => (
-              <button key={id} onClick={() => onNavigate(id)} className="text-[12px] text-noir-400 hover:text-noir-50 transition">
-                {l}
-              </button>
-            ))}
+        <SpectrumBar className="mb-8" />
+
+        {/* Oversized wordmark */}
+        <div className="pointer-events-none select-none border-t border-noir-850 pt-6">
+          <div className="font-display text-[26vw] font-light leading-[0.8] tracking-[-0.04em] text-noir-100/[0.04]">
+            Still
           </div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-noir-500">
-            {t("footer.copyright", "© 2026 Estúdio Still In Moviment · Todos os direitos reservados")}
-          </div>
+        </div>
+      </div>
+
+      {/* bottom bar */}
+      <div className="border-t border-noir-850">
+        <div className="mx-auto flex max-w-[1500px] flex-col items-center justify-between gap-3 px-5 py-6 font-mono text-[10px] uppercase tracking-wide2 text-noir-500 md:flex-row md:px-10">
+          <span>© {year} SIM — Still In Movement</span>
+          <span>{t.footer.rights}</span>
+          <span className="flex items-center gap-2">
+            <span className="inline-block h-1.5 w-1.5 animate-blink rounded-full bg-spec-2" />
+            Lisboa · Porto
+          </span>
         </div>
       </div>
     </footer>
