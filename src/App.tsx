@@ -60,7 +60,7 @@ export default function App() {
 
         <main>
           <Hero onEnter={() => scrollToId("works")} />
-          <ParallaxMarquee text="Still In Motion" />
+          <ParallaxMarquee text="Still In Movement" />
           <Manifesto />
           <SelectedWorks onOpen={setSlug} />
           <Capabilities />

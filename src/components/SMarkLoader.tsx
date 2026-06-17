@@ -72,7 +72,7 @@ export function SMarkLoader({
         ))}
       </div>
       <div className="mt-4 text-center font-mono text-[9px] uppercase tracking-[0.32em] text-noir-400">
-        Still In Moviment
+        Still In Movement
       </div>
     </div>
   );

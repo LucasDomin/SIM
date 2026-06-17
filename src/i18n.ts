@@ -1,4 +1,4 @@
-// SIM — Still In Motion
+// SIM — Still In Movement
 // Narrativa baseada em perguntas. A resposta é sempre SIM.
 
 export type Lang = "pt" | "en";
@@ -17,14 +17,14 @@ export const translations = {
       title1: "Pensou em audiovisual",
       title2: "e bateu a dúvida?",
       titleEm: "A resposta é SIM.",
-      kicker: "Still In Motion",
+      kicker: "Still In Movement",
       subtitle: "",
       scroll: "Rolar para descobrir",
       scenes: ["Atlas · 2025", "Noctilucent · 2024", "Kintsugi · 2024"],
     },
     manifesto: {
       label: "QUEM?",
-      lead: "Still In Motion",
+      lead: "Still In Movement",
       body: "Acreditamos numa contradição bonita: a imagem parada que contém o movimento. Entre o instante congelado da fotografia e o tempo contínuo do cinema, existe um espaço onde vivem as marcas que respeitam o silêncio.",
       body2:
         "Filmamos a luz como matéria. Construímos ritmo no corte. Deixamos a respiração entrar em cada quadro.",
@@ -134,14 +134,14 @@ export const translations = {
       title1: "Thought about audiovisual",
       title2: "and started wondering?",
       titleEm: "The answer is SIM.",
-      kicker: "Still In Motion",
+      kicker: "Still In Movement",
       subtitle: "",
       scroll: "Scroll to discover",
       scenes: ["Atlas · 2025", "Noctilucent · 2024", "Kintsugi · 2024"],
     },
     manifesto: {
       label: "WHO?",
-      lead: "Still In Motion",
+      lead: "Still In Movement",
       body: "We believe in a beautiful contradiction: the still image that holds movement within. Between the frozen instant of a photograph and the continuous time of cinema, there is a space where brands that respect silence live.",
       body2:
         "We film light as matter. We build rhythm in the cut. We let breath enter every frame.",
