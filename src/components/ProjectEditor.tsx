@@ -131,14 +131,14 @@ export function ProjectEditor({
               }}
             >
               <div className="absolute inset-0 bg-gradient-to-t from-noir-950/90 via-noir-950/10 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-5">
+              <div className="absolute inset-x-0 bottom-0 p-5 text-left">
                 <div className="font-mono text-[10px] uppercase tracking-wide2 text-accent">
                   {form.category} · {form.client}
                 </div>
                 <div className="mt-1 font-display text-3xl text-cream">{form.title || "—"}</div>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3 p-4 text-sm text-noir-300">
+            <div className="grid grid-cols-2 gap-3 p-4 text-left text-sm text-noir-300">
               <div>
                 <div className="font-mono text-[9px] uppercase tracking-wide2 text-noir-500">
                   {label("Ano", "Year")}

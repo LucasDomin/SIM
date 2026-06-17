@@ -5,11 +5,10 @@ import { AdminAccessButton } from "./AdminAccessButton";
 import { cn } from "../lib/cn";
 
 const LINKS = [
+  { key: "manifesto", href: "#manifesto" },
   { key: "works", href: "#works" },
   { key: "studio", href: "#studio" },
-  { key: "manifesto", href: "#manifesto" },
-  { key: "contact", href: "#contact",
-  },
+  { key: "contact", href: "#contact" },
 ] as const;
 
 export function Navbar({ onAdmin }: { onAdmin: () => void }) {

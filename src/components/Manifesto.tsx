@@ -7,13 +7,18 @@ export function Manifesto() {
   const [phase, setPhase] = useState<"still" | "move">("still");
 
   useEffect(() => {
-    const id = setInterval(() => setPhase((p) => (p === "still" ? "move" : "still")), 2600);
+    const id = setInterval(
+      () => setPhase((p) => (p === "still" ? "move" : "still")),
+      2600
+    );
     return () => clearInterval(id);
   }, []);
 
   return (
-    <section id="manifesto" className="relative overflow-hidden bg-noir-950 pt-20 pb-16 md:pt-28 md:pb-20">
-      {/* vertical spectrum rail */}
+    <section
+      id="manifesto"
+      className="relative overflow-hidden bg-noir-950 pt-20 pb-16 md:pt-28 md:pb-20"
+    >
       <div className="pointer-events-none absolute left-1/2 top-0 hidden h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-noir-700 to-transparent lg:block" />
 
       <div className="mx-auto max-w-[1500px] px-5 md:px-10">
@@ -30,7 +35,6 @@ export function Manifesto() {
               </span>
             </h2>
 
-            {/* Kinetic toggle — the word itself oscillates still ↔ movement */}
             <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-noir-700 p-1 font-mono text-[10px] uppercase tracking-wide2">
               <span
                 className={`rounded-full px-4 py-2 transition-all duration-500 ${
@@ -51,16 +55,17 @@ export function Manifesto() {
 
           <div className="flex flex-col justify-end gap-7 lg:col-span-5">
             <Reveal>
-              <p className="max-w-xl text-pretty text-base leading-relaxed text-noir-200 md:text-lg">
+              <p className="max-w-xl text-pretty text-left text-base leading-relaxed text-noir-200 md:text-lg">
                 {t.manifesto.body}
               </p>
             </Reveal>
             <Reveal delay={120}>
-              <p className="max-w-xl text-pretty text-sm leading-relaxed text-noir-300 md:text-base">
+              <p className="max-w-xl text-pretty text-left text-sm leading-relaxed text-noir-300 md:text-base">
                 {t.manifesto.body2}
               </p>
             </Reveal>
-            <Reveal delay={200}>
+
+            <Reveal delay={300}>
               <SpectrumBar animate className="mt-2 max-w-xs" />
             </Reveal>
           </div>

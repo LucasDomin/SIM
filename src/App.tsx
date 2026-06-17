@@ -5,12 +5,10 @@ import { Hero } from "./components/Hero";
 import { ParallaxMarquee } from "./components/ParallaxMarquee";
 import { Manifesto } from "./components/Manifesto";
 import { SelectedWorks } from "./components/SelectedWorks";
-import { FramesReel } from "./components/FramesReel";
 import { Capabilities } from "./components/Capabilities";
-import { Clients } from "./components/Clients";
 import { Recognition } from "./components/Recognition";
-import { Estimate } from "./components/Estimate";
-import { Footer } from "./components/Footer";
+import { Why } from "./components/Why";
+import { Contact } from "./components/Contact";
 import { CaseStudy } from "./components/CaseStudy";
 import { AIAgent } from "./components/AIAgent";
 import { AdminAccessModal } from "./components/AdminAccessModal";
@@ -62,18 +60,15 @@ export default function App() {
 
         <main>
           <Hero onEnter={() => scrollToId("works")} />
-          <ParallaxMarquee />
+          <ParallaxMarquee text="Still In Motion" />
           <Manifesto />
           <SelectedWorks onOpen={setSlug} />
-          <FramesReel />
           <Capabilities />
-          <Clients />
+          <Why />
           <Recognition />
-          <ParallaxMarquee text="Still In Movement" />
-          <Estimate />
+          <ParallaxMarquee text="A resposta continua sendo SIM" />
+          <Contact onAdmin={() => setAdmin(true)} />
         </main>
-
-        <Footer onAdmin={() => setAdmin(true)} />
 
         <CaseStudy project={active} onClose={() => setSlug(null)} />
         <AIAgent />

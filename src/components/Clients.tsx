@@ -1,16 +1,18 @@
 import { useLang } from "../contexts/LanguageContext";
 import { clients } from "../data/projects";
-import { Reveal, SectionLabel } from "./ui";
+import { Reveal } from "./ui";
 
 export function Clients() {
   const { t } = useLang();
   const loop = [...clients, ...clients];
 
   return (
-    <section className="relative overflow-hidden border-y border-noir-850 bg-noir-900 pt-10 pb-14 md:pt-14 md:pb-16">
-      <div className="mx-auto mb-8 max-w-[1500px] px-5 md:px-10">
+    <div className="relative overflow-hidden border-y border-noir-850 bg-noir-900 py-10 md:py-12">
+      <div className="mx-auto mb-7 max-w-[1500px] px-5 md:px-10">
         <Reveal>
-          <SectionLabel index="05">{t.clients.label}</SectionLabel>
+          <div className="font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
+            {t.clients.label}
+          </div>
         </Reveal>
       </div>
 
@@ -26,6 +28,6 @@ export function Clients() {
           ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

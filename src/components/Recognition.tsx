@@ -15,7 +15,7 @@ export function Recognition() {
       <div className="mx-auto max-w-[1500px] px-5 md:px-10">
         <Reveal className="grid gap-8 border-b border-noir-800 pb-10 md:grid-cols-12">
           <div className="md:col-span-6">
-            <SectionLabel index="06">{t.recognition.label}</SectionLabel>
+            <SectionLabel index="04">{t.recognition.label}</SectionLabel>
             <h2 className="mt-5 font-display text-[10vw] font-light leading-[0.95] tracking-[-0.02em] text-cream md:text-[4.6vw]">
               {t.recognition.title}
             </h2>

@@ -3,6 +3,8 @@ import { useAdmin } from "../contexts/AdminContext";
 import { projects } from "../data/projects";
 import type { Project } from "../data/projects";
 import { Reveal, SectionLabel } from "./ui";
+import { FramesStrip } from "./FramesReel";
+import { Clients } from "./Clients";
 import { cn } from "../lib/cn";
 
 function MetaCell({ label, value }: { label: string; value: string }) {
@@ -50,8 +52,8 @@ function ProjectRow({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-noir-950/85 via-noir-950/10 to-transparent opacity-90" />
 
-        {/* big index */}
-        <span className="pointer-events-none absolute right-4 top-3 font-display text-[5rem] leading-none text-cream/15 md:text-[7rem]">
+        {/* big index — aligned left to match text layout */}
+        <span className="pointer-events-none absolute left-4 top-3 font-display text-[5rem] leading-none text-cream/15 md:text-[7rem]">
           {project.id}
         </span>
 
@@ -64,9 +66,9 @@ function ProjectRow({
           </span>
         </span>
 
-        {/* bottom title overlay (mobile-first legibility) */}
-        <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 md:p-7">
-          <div>
+        {/* bottom title overlay — all text aligned left */}
+        <div className="absolute inset-x-0 bottom-0 flex items-end justify-start gap-4 p-5 md:p-7">
+          <div className="text-left">
             <div className="font-mono text-[10px] uppercase tracking-wide2 text-accent">
               {merged.category} · {merged.client}
             </div>
@@ -74,7 +76,7 @@ function ProjectRow({
               {merged.title}
             </div>
           </div>
-          <span className="hidden shrink-0 font-mono text-[10px] uppercase tracking-wide2 text-noir-300 transition-colors group-hover:text-accent md:block">
+          <span className="ml-auto hidden shrink-0 font-mono text-[10px] uppercase tracking-wide2 text-noir-300 transition-colors group-hover:text-accent md:block">
             {t.works.view} →
           </span>
         </div>
@@ -132,6 +134,15 @@ export function SelectedWorks({ onOpen }: { onOpen: (slug: string) => void }) {
             <ProjectRow key={p.id} project={p} index={i} onOpen={onOpen} />
           ))}
         </div>
+      </div>
+
+      {/* Filmstrip embutido (antes seção 03 Galeria) — agora parte do bloco 02 */}
+      <div className="mt-16 md:mt-20">
+        <FramesStrip />
+      </div>
+
+      <div className="mt-12 md:mt-16">
+        <Clients />
       </div>
     </section>
   );

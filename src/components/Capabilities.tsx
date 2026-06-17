@@ -10,13 +10,13 @@ export function Capabilities() {
       <div className="mx-auto max-w-[1500px] px-5 md:px-10">
         <Reveal className="grid gap-10 border-b border-noir-800 pb-10 md:grid-cols-12">
           <div className="md:col-span-7">
-            <SectionLabel index="04">{t.capabilities.label}</SectionLabel>
+            <SectionLabel index="03">{t.capabilities.label}</SectionLabel>
             <h2 className="mt-5 font-display text-[10vw] font-light leading-[0.95] tracking-[-0.02em] text-cream md:text-[4.6vw]">
               {t.capabilities.title}
             </h2>
           </div>
-          <p className="max-w-sm self-end text-pretty text-sm leading-relaxed text-noir-400 md:col-span-5 md:text-right">
-            {t.footer.locations} — {t.footer.studio} SIM.
+          <p className="max-w-sm self-end text-pretty text-left text-sm leading-relaxed text-noir-400 md:col-span-5">
+            {t.capabilities.intro}
           </p>
         </Reveal>
 
@@ -30,7 +30,7 @@ export function Capabilities() {
                 <h3 className="font-display text-3xl font-light tracking-[-0.01em] text-noir-200 transition-colors group-hover:text-cream md:col-span-4 md:text-4xl">
                   {item.t}
                 </h3>
-                <p className="text-pretty text-sm leading-relaxed text-noir-400 md:col-span-6 md:text-base">
+                <p className="text-pretty text-left text-sm leading-relaxed text-noir-400 md:col-span-6 md:text-base">
                   {item.d}
                 </p>
                 <div className="hidden justify-end md:col-span-1 md:flex">
@@ -48,7 +48,10 @@ export function Capabilities() {
                 </div>
               </div>
               <div className="overflow-hidden">
-                <SpectrumBar className="h-px max-w-0 opacity-0 transition-all duration-500 group-hover:max-w-full group-hover:opacity-100" height="h-px" />
+                <SpectrumBar
+                  className="h-px max-w-0 opacity-0 transition-all duration-500 group-hover:max-w-full group-hover:opacity-100"
+                  height="h-px"
+                />
               </div>
             </Reveal>
           ))}

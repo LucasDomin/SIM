@@ -123,20 +123,16 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
           <span className="block text-[12.5vw] sm:text-[11vw] md:text-[8.4vw] lg:text-[8vw]">
             {t.hero.title1}
           </span>
-          <span className="block italic text-[12.5vw] text-accent sm:text-[11vw] md:text-[8.4vw] lg:text-[8vw]">
-            {t.hero.titleEm}
-          </span>
           <span className="block text-[12.5vw] sm:text-[11vw] md:text-[8.4vw] lg:text-[8vw]">
             {t.hero.title2}
+          </span>
+          <span className="block italic text-[12.5vw] text-accent sm:text-[11vw] md:text-[8.4vw] lg:text-[8vw]">
+            {t.hero.titleEm}
           </span>
         </h1>
 
         <div className="mt-7 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-          <p className="max-w-md text-pretty text-sm leading-relaxed text-noir-200/85 md:text-base">
-            {t.hero.subtitle}
-          </p>
-
-          {/* Enter reel */}
+            {/* Enter reel */}
           <button
             onClick={onEnter}
             className="group inline-flex shrink-0 items-center gap-3 self-start rounded-full border border-noir-500/60 px-6 py-3 font-mono text-[11px] uppercase tracking-wide2 text-cream transition-colors hover:border-accent md:self-auto"

@@ -1,41 +1,42 @@
-// SIM — bilingual content (PT default · EN toggle)
-// The brand is Portuguese; copy stays editorial and precise.
+// SIM — Still In Motion
+// Narrativa baseada em perguntas. A resposta é sempre SIM.
 
 export type Lang = "pt" | "en";
 
 export const translations = {
   pt: {
     nav: {
-      works: "Trabalhos",
-      studio: "Estúdio",
-      manifesto: "Manifesto",
-      contact: "Contato",
+      works: "O QUÊ?",
+      studio: "ONDE?",
+      manifesto: "QUEM?",
+      contact: "COMO?",
       admin: "Acesso",
     },
     hero: {
       reel: "REEL 2025",
-      title1: "Capturas que",
-      titleEm: "permanecem",
-      title2: "em movimento.",
-      kicker: "Still In Movement",
-      subtitle:
-        "Estúdio independente dedicado à fotografia editorial e ao cinema de marca — para quem entende o valor do detalhe.",
+      title1: "Pensou em audiovisual",
+      title2: "e bateu a dúvida?",
+      titleEm: "A resposta é SIM.",
+      kicker: "Still In Motion",
+      subtitle: "",
       scroll: "Rolar para descobrir",
       scenes: ["Atlas · 2025", "Noctilucent · 2024", "Kintsugi · 2024"],
     },
     manifesto: {
-      label: "Manifesto",
-      lead: "Still In Movement",
+      label: "QUEM?",
+      lead: "Still In Motion",
       body: "Acreditamos numa contradição bonita: a imagem parada que contém o movimento. Entre o instante congelado da fotografia e o tempo contínuo do cinema, existe um espaço onde vivem as marcas que respeitam o silêncio.",
       body2:
         "Filmamos a luz como matéria. Construímos ritmo no corte. Deixamos a respiração entrar em cada quadro.",
+      closing: "Pensou em audiovisual e bateu a dúvida?",
+      answer: "A resposta é SIM.",
       toggleStill: "Still",
-      toggleMove: "Movement",
+      toggleMove: "Motion",
     },
     works: {
-      label: "Trabalhos Selecionados",
-      title: "Quadros em sequência",
-      desc: "Uma curadoria de cinema de marca, documentário e editorial.",
+      label: "O QUÊ?",
+      title: "Algumas respostas em forma de imagem.",
+      desc: "Projetos que respondem por nós.",
       view: "Ver case",
       play: "Reproduzir",
     },
@@ -45,8 +46,10 @@ export const translations = {
       desc: "Stills extraídos das produções — a sequência que se torna filme.",
     },
     capabilities: {
-      label: "O que fazemos",
-      title: "Disciplinas",
+      label: "ONDE?",
+      title: "Entre a ideia e a tela.",
+      intro:
+        "É aí que estamos. Produzimos onde a história acontece. No estúdio. Na rua. No palco. Na indústria. No silêncio. O espaço muda. O olhar permanece.",
       list: [
         {
           k: "01",
@@ -70,6 +73,11 @@ export const translations = {
         },
       ],
     },
+    why: {
+      label: "POR QUÊ?",
+      title: "Porque vídeos são vistos. Histórias são lembradas.",
+      body: "Não criamos apenas conteúdo. Criamos presença. Criamos memória. Criamos movimento.",
+    },
     clients: { label: "Confiam no SIM", title: "Clientes" },
     recognition: {
       label: "Reconhecimento",
@@ -90,52 +98,62 @@ export const translations = {
       currency: "R$",
     },
     footer: {
-      tagline: "Capturas que permanecem em movimento.",
-      contact: "Contato",
+      tagline: "Pensou em audiovisual? A resposta é SIM.",
+      contact: "COMO?",
       studio: "Estúdio",
       locations: "São Paulo - Brasil",
       rights: "Todos os direitos reservados.",
       email: "Olá, vamos conversar",
+      headline1: "Vamos criar",
+      headline2: "algo juntos",
+      questions: [
+        { q: "Como tirar uma ideia do papel?", a: "SIM." },
+        { q: "Como produzir algo diferente?", a: "SIM." },
+        { q: "Como contar uma história melhor?", a: "SIM." },
+        { q: "Como começar?", a: "SIM." },
+        { q: "Como entrar em contato?", a: "SIM." },
+      ],
     },
     ai: {
       title: "Assistente SIM",
       greeting:
-        "Olá. Sou o assistente do SIM. Posso ajudar a pensar o seu próximo filme.",
+        "Olá. Sou o assistente do SIM. Qual a sua pergunta? A resposta provavelmente é SIM.",
       placeholder: "Escreva sua mensagem…",
     },
   },
   en: {
     nav: {
-      works: "Works",
-      studio: "Studio",
-      manifesto: "Manifesto",
-      contact: "Contact",
+      works: "WHAT?",
+      studio: "WHERE?",
+      manifesto: "WHO?",
+      contact: "HOW?",
       admin: "Access",
     },
     hero: {
       reel: "REEL 2025",
-      title1: "Captures that",
-      titleEm: "remain",
-      title2: "in motion.",
-      kicker: "Still In Movement",
-      subtitle:
-        "An independent studio devoted to editorial photography and brand cinema — for those who understand the value of detail.",
+      title1: "Thought about audiovisual",
+      title2: "and started wondering?",
+      titleEm: "The answer is SIM.",
+      kicker: "Still In Motion",
+      subtitle: "",
       scroll: "Scroll to discover",
       scenes: ["Atlas · 2025", "Noctilucent · 2024", "Kintsugi · 2024"],
     },
     manifesto: {
-      label: "Manifesto",
-      lead: "Still In Movement",
+      label: "WHO?",
+      lead: "Still In Motion",
       body: "We believe in a beautiful contradiction: the still image that holds movement within. Between the frozen instant of a photograph and the continuous time of cinema, there is a space where brands that respect silence live.",
       body2:
         "We film light as matter. We build rhythm in the cut. We let breath enter every frame.",
+      closing: "Thought about audiovisual and started wondering?",
+      answer: "The answer is SIM.",
       toggleStill: "Still",
-      toggleMove: "Movement",
+      toggleMove: "Motion",
     },
     works: {
-      label: "Selected Works",
-      title: "Frames in sequence",
-      desc: "A curated selection of brand cinema, documentary and editorial.",
+      label: "WHAT?",
+      title: "Some answers made of images.",
+      desc: "Projects that answer for us.",
       view: "View case",
       play: "Play",
     },
@@ -145,8 +163,10 @@ export const translations = {
       desc: "Stills pulled from our productions — the sequence that becomes film.",
     },
     capabilities: {
-      label: "What we do",
-      title: "Disciplines",
+      label: "WHERE?",
+      title: "Between the idea and the screen.",
+      intro:
+        "That's where we are. We produce wherever the story happens. In the studio. On the street. On stage. In the industry. In silence. The space changes. The eye remains.",
       list: [
         {
           k: "01",
@@ -170,6 +190,11 @@ export const translations = {
         },
       ],
     },
+    why: {
+      label: "WHY?",
+      title: "Because videos are watched. Stories are remembered.",
+      body: "We don't just create content. We create presence. We create memory. We create motion.",
+    },
     clients: { label: "They trust SIM", title: "Clients" },
     recognition: {
       label: "Recognition",
@@ -190,17 +215,26 @@ export const translations = {
       currency: "R$",
     },
     footer: {
-      tagline: "Captures that remain in motion.",
-      contact: "Contact",
+      tagline: "Thought about audiovisual? The answer is SIM.",
+      contact: "HOW?",
       studio: "Studio",
       locations: "São Paulo - Brasil",
       rights: "All rights reserved.",
       email: "Say hello, let's talk",
+      headline1: "Let's create",
+      headline2: "something together",
+      questions: [
+        { q: "How to turn an idea into reality?", a: "SIM." },
+        { q: "How to produce something different?", a: "SIM." },
+        { q: "How to tell a better story?", a: "SIM." },
+        { q: "How to begin?", a: "SIM." },
+        { q: "How to get in touch?", a: "SIM." },
+      ],
     },
     ai: {
       title: "SIM Assistant",
       greeting:
-        "Hi. I'm the SIM assistant. I can help shape your next film.",
+        "Hi. I'm the SIM assistant. What's your question? The answer is probably SIM.",
       placeholder: "Type your message…",
     },
   },
