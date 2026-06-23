@@ -83,7 +83,7 @@ export default function App() {
           {/* divisor antes do Contato */}
           <StillMovementDivider />
 
-          <Contact onAdmin={() => setAdmin(true)} />
+          <Contact />
         </main>
 
         <CaseStudy project={active} onClose={() => setSlug(null)} />

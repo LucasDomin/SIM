@@ -15,7 +15,7 @@ const NAV_LINKS = [
   { key: "studio", href: "#studio" },
 ] as const;
 
-export function Contact({ onAdmin }: { onAdmin: () => void }) {
+export function Contact() {
   const { t } = useLang();
   const year = new Date().getFullYear();
   const questions = t.footer.questions;
@@ -166,14 +166,15 @@ export function Contact({ onAdmin }: { onAdmin: () => void }) {
             <span className="hidden text-noir-700 md:inline">|</span>
             <span>© {year} — Still In Movement</span>
           </div>
-          <span className="text-center">{t.footer.rights}</span>
-          <button
-            onClick={onAdmin}
-            className="flex items-center gap-2 transition-colors hover:text-accent"
+          <a
+            href="https://www.instagram.com/domi.n.arte/"
+            target="_blank"
+            rel="noreferrer"
+            className="group relative text-center normal-case tracking-[0.22em] transition-all duration-300 hover:text-cream"
           >
-            <span className="inline-block h-1.5 w-1.5 animate-blink rounded-full bg-spec-2" />
-            {t.nav.admin}
-          </button>
+            produzido por @domi.n.arte
+            <span className="pointer-events-none absolute -inset-x-1 -inset-y-0.5 rounded opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100 bg-gradient-to-r from-accent/30 via-accent/60 to-accent/30" />
+          </a>
         </div>
       </div>
     </section>
