@@ -33,6 +33,8 @@ export function ProjectEditor({
     location: string;
     format: string;
     cover: string;
+    video: string;
+    poster: string;
   }>({
     title: "",
     client: "",
@@ -42,6 +44,8 @@ export function ProjectEditor({
     location: "",
     format: "",
     cover: "",
+    video: "",
+    poster: "",
   });
 
   useEffect(() => {
@@ -56,6 +60,8 @@ export function ProjectEditor({
       location: merged.location,
       format: merged.format,
       cover: merged.cover,
+      video: merged.video || "",
+      poster: merged.poster || "",
     });
   }, [open, project, getProject]);
 
@@ -73,6 +79,8 @@ export function ProjectEditor({
       location: form.location,
       format: form.format,
       category: form.category,
+      video: form.video,
+      poster: form.poster,
     });
     commitDraft(project.slug);
     onClose();
@@ -211,6 +219,43 @@ export function ProjectEditor({
             value={form.description}
             onChange={(v) => setForm((f) => ({ ...f, description: v }))}
           />
+
+          {/* Video fields */}
+          <div className="mt-2 border-t border-noir-800 pt-4">
+            <div className="mb-2 font-mono text-[10px] uppercase tracking-wide2 text-accent">
+              {label("Vídeo (opcional)", "Video (optional)")}
+            </div>
+            <Field
+              label={label("URL do vídeo", "Video URL")}
+              value={form.video || ""}
+              onChange={(v) => setForm((f) => ({ ...f, video: v }))}
+            />
+            <div className="mt-2">
+              <Field
+                label={label("URL da capa (poster)", "Poster URL")}
+                value={form.poster || ""}
+                onChange={(v) => setForm((f) => ({ ...f, poster: v }))}
+              />
+            </div>
+            {form.video && form.poster && (
+              <div className="mt-3 overflow-hidden rounded-sm border border-noir-700">
+                <video
+                  src={form.video}
+                  poster={form.poster}
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  className="aspect-[16/10] w-full object-cover"
+                  onMouseEnter={(e) => e.currentTarget.play()}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.pause();
+                    e.currentTarget.currentTime = 0;
+                  }}
+                />
+              </div>
+            )}
+          </div>
 
           <div className="mt-auto flex flex-col gap-2 border-t border-noir-800 pt-4">
             <button

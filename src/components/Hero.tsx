@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
 import { projects } from "../data/projects";
+import { useHeroImages, useHeroVideo } from "./HeroEditor";
 
 /* Film timecode formatter: 00:00:00:00 (HH:MM:SS:FF @ 24fps) */
 function tc(ms: number) {
@@ -15,7 +16,7 @@ function tc(ms: number) {
 
 export function Hero({ onEnter }: { onEnter: () => void }) {
   const { t } = useLang();
-  const heroImages = useMemo(
+  const defaultImages = useMemo(
     () => [
       projects[0].cover, // Atlas
       projects[5].cover, // Noctilucent
@@ -23,6 +24,9 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
     ],
     []
   );
+  const savedImages = useHeroImages(defaultImages);
+  const heroVideo = useHeroVideo();
+  const heroImages = savedImages.length > 0 ? savedImages : defaultImages;
 
   const [active, setActive] = useState(0);
   const [prog, setProg] = useState(0); // 0..1 within current slide
@@ -68,25 +72,38 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
       id="top"
       className="relative h-[100svh] min-h-[640px] w-full overflow-hidden bg-noir-950"
     >
-      {/* Cycling stills — slow zoom = movement inside the still frame */}
+      {/* Background: video (priority) or cycling stills */}
       <div
         className="absolute inset-0"
         style={{ transform: `translateY(${sy * 0.32}px) scale(${1 + sy * 0.0002})`, willChange: "transform" }}
       >
-        {heroImages.map((src, i) => (
-          <div
-            key={i}
-            className="absolute inset-0 transition-opacity duration-[1400ms] ease-out"
-            style={{ opacity: i === active ? 1 : 0 }}
-          >
-            <img
-              src={src}
-              alt=""
-              className="h-full w-full animate-slow-zoom-loop object-cover"
-              style={{ animationDelay: `${i * -6}s` }}
-            />
-          </div>
-        ))}
+        {heroVideo?.url ? (
+          <video
+            src={heroVideo.url}
+            poster={heroVideo.poster}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          heroImages.map((src, i) => (
+            <div
+              key={i}
+              className="absolute inset-0 transition-opacity duration-[1400ms] ease-out"
+              style={{ opacity: i === active ? 1 : 0 }}
+            >
+              <img
+                src={src}
+                alt=""
+                className="h-full w-full animate-slow-zoom-loop object-cover"
+                style={{ animationDelay: `${i * -6}s` }}
+              />
+            </div>
+          ))
+        )}
       </div>
 
       {/* Cinematic grading overlays */}

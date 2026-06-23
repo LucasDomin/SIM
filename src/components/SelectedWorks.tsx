@@ -5,6 +5,7 @@ import type { Project } from "../data/projects";
 import { Reveal, SectionLabel } from "./ui";
 import { FramesStrip } from "./FramesReel";
 import { Clients } from "./Clients";
+import { HoverVideoPlayer } from "./HoverVideoPlayer";
 import { cn } from "../lib/cn";
 
 function MetaCell({ label, value }: { label: string; value: string }) {
@@ -44,12 +45,20 @@ function ProjectRow({
         style={{ aspectRatio: "16 / 10" }}
         aria-label={`${merged.title} — ${t.works.view}`}
       >
-        <img
-          src={merged.cover}
-          alt={merged.title}
-          loading="lazy"
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1600ms] ease-out group-hover:scale-[1.07]"
-        />
+        {merged.video && merged.poster ? (
+          <HoverVideoPlayer
+            videoUrl={merged.video}
+            posterUrl={merged.poster}
+            className="absolute inset-0 h-full w-full"
+          />
+        ) : (
+          <img
+            src={merged.cover}
+            alt={merged.title}
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1600ms] ease-out group-hover:scale-[1.07]"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-noir-950/85 via-noir-950/10 to-transparent opacity-90" />
 
         {/* big index — aligned left to match text layout */}

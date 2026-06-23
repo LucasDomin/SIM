@@ -11,6 +11,8 @@ type Draft = {
   year: string;
   location: string;
   format: string;
+  video: string;
+  poster: string;
 };
 
 type AdminState = {
@@ -119,6 +121,8 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         year: d.year ?? p.year,
         location: d.location ?? p.location,
         format: d.format ?? p.format,
+        video: d.video ?? p.video,
+        poster: d.poster ?? p.poster,
       };
     },
     [drafts]

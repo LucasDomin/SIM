@@ -15,6 +15,8 @@ export type Project = {
   credits: { role: string; name: string }[];
   awards?: string[];
   color: string;
+  video?: string;
+  poster?: string;
 };
 
 export const projects: Project[] = [

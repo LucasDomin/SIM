@@ -4,6 +4,7 @@ import { useAdmin } from "../contexts/AdminContext";
 import { projects } from "../data/projects";
 import type { Project } from "../data/projects";
 import { ProjectEditor } from "./ProjectEditor";
+import { HeroEditor } from "./HeroEditor";
 import { Logo } from "./Logo";
 import { SpectrumBar } from "./ui";
 
@@ -16,6 +17,7 @@ export function AdminDashboard({ open, onClose }: { open: boolean; onClose: () =
   const { lang } = useLang();
   const { logout, drafts, setEditing, authenticated } = useAdmin();
   const [active, setActive] = useState<Project | null>(null);
+  const [heroOpen, setHeroOpen] = useState(false);
 
   if (!open || !authenticated) return null;
 
@@ -33,6 +35,12 @@ export function AdminDashboard({ open, onClose }: { open: boolean; onClose: () =
               </span>
             </div>
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => setHeroOpen(true)}
+                className="rounded-full border border-accent px-4 py-2 font-mono text-[10px] uppercase tracking-wide2 text-accent transition-colors hover:bg-accent hover:text-noir-950"
+              >
+                {label("Editar Banner", "Edit Hero")}
+              </button>
               <button
                 onClick={() => setEditing(true)}
                 className="rounded-full bg-accent px-4 py-2 font-mono text-[10px] uppercase tracking-wide2 text-noir-950 transition-transform hover:scale-[1.02]"
@@ -114,6 +122,7 @@ export function AdminDashboard({ open, onClose }: { open: boolean; onClose: () =
       </div>
 
       <ProjectEditor open={Boolean(active)} project={active} onClose={() => setActive(null)} />
+      <HeroEditor open={heroOpen} onClose={() => setHeroOpen(false)} />
     </>
   );
 }
