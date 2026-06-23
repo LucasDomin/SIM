@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
 import { useConsent, makeSafeStorage } from "../contexts/ConsentContext";
-import { projects } from "../data/projects";
+import { SITE_CONFIG } from "../data/siteConfig";
 import { ImageCropper } from "./ImageCropper";
 import { Reveal } from "./ui";
 import {
@@ -17,9 +17,11 @@ import { compressImageFile } from "../lib/imageProcessing";
 const HERO_KEY = "sim-hero-images";
 const HERO_VIDEO_KEY = "sim-hero-video";
 const HERO_SCENES_KEY = "sim-hero-scenes";
+const HERO_REELS_KEY = "sim-hero-reels";
 const MAX_HERO_ITEMS = 3;
-const DEFAULT_HERO_IMAGES = [projects[0].cover, projects[5].cover, projects[3].cover];
-const DEFAULT_HERO_SCENES = ["Atlas · 2025", "Noctilucent · 2024", "Kintsugi · 2024"];
+const DEFAULT_HERO_IMAGES = [...SITE_CONFIG.hero.images];
+const DEFAULT_HERO_SCENES = [...SITE_CONFIG.hero.scenes];
+const DEFAULT_HERO_REELS = [...SITE_CONFIG.hero.reels];
 
 function emitHeroUpdate() {
   window.dispatchEvent(new Event("sim-hero-updated"));
@@ -37,9 +39,11 @@ export function HeroEditor({
   const storage = useMemo(() => makeSafeStorage(canPersist), [canPersist]);
   const [images, setImages] = useState<string[]>([]);
   const [scenes, setScenes] = useState<string[]>(DEFAULT_HERO_SCENES);
+  const [reels, setReels] = useState<string[]>(DEFAULT_HERO_REELS);
   const [videoUrl, setVideoUrl] = useState("");
   const [videoPoster, setVideoPoster] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   const [cropperOpen, setCropperOpen] = useState(false);
   const [cropperTarget, setCropperTarget] = useState<{
     idx: number;
@@ -66,6 +70,13 @@ export function HeroEditor({
         Array.isArray(parsedScenes)
           ? parsedScenes.map((s: unknown) => sanitizeText(s, 80)).slice(0, MAX_HERO_ITEMS)
           : DEFAULT_HERO_SCENES
+      );
+      const savedReels = storage.get(HERO_REELS_KEY);
+      const parsedReels = savedReels ? JSON.parse(savedReels) : DEFAULT_HERO_REELS;
+      setReels(
+        Array.isArray(parsedReels)
+          ? parsedReels.map((u: unknown) => sanitizeMediaUrl(u)).slice(0, MAX_HERO_ITEMS)
+          : DEFAULT_HERO_REELS
       );
       const vid = storage.get(HERO_VIDEO_KEY);
       if (vid) {
@@ -107,6 +118,14 @@ export function HeroEditor({
     emitHeroUpdate();
   };
 
+  const saveReels = (next: string[]) => {
+    const capped = next.map((u) => sanitizeMediaUrl(u)).slice(0, MAX_HERO_ITEMS);
+    setReels(capped);
+    const ok = storage.set(HERO_REELS_KEY, JSON.stringify(capped));
+    if (!ok) persistWarn();
+    emitHeroUpdate();
+  };
+
   const saveVideo = (rawUrl: string, rawPoster: string) => {
     const url = sanitizeMediaUrl(rawUrl);
     const poster = sanitizeImageUrl(rawPoster);
@@ -140,6 +159,7 @@ export function HeroEditor({
       if (images.length >= MAX_HERO_ITEMS) return;
       saveImages([...images, url]);
       saveScenes([...scenes, `Cena ${String(images.length + 1).padStart(2, "0")}`]);
+      saveReels([...reels, ""]);
     } catch {
       setError(
         lang === "pt"
@@ -161,6 +181,32 @@ export function HeroEditor({
   };
 
   const label = (pt: string, en: string) => (lang === "pt" ? pt : en);
+
+  const addImageUrl = () => {
+    if (images.length >= MAX_HERO_ITEMS) return;
+    setImages([...images, ""]);
+    saveScenes([...scenes, `Cena ${String(images.length + 1).padStart(2, "0")}`]);
+    saveReels([...reels, ""]);
+  };
+
+  const exportConfig = async () => {
+    const config = {
+      hero: {
+        images,
+        scenes,
+        reels,
+        backgroundVideo: { url: videoUrl, poster: videoPoster },
+      },
+    };
+    const text = JSON.stringify(config, null, 2);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setError(text);
+    }
+  };
 
   if (!open) return null;
 
@@ -207,14 +253,22 @@ export function HeroEditor({
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
             {images.map((url, i) => (
               <div key={i} className="group relative overflow-hidden rounded-sm border border-noir-700 bg-noir-950">
-                <img src={url} alt="" className="aspect-[16/10] w-full object-cover" />
+                {url ? (
+                  <img src={url} alt="" className="aspect-[16/10] w-full object-cover" />
+                ) : (
+                  <div className="flex aspect-[16/10] items-center justify-center bg-noir-950 text-center font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
+                    {label("Cole uma URL", "Paste URL")}
+                  </div>
+                )}
                 <div className="absolute inset-0 flex items-center justify-center gap-2 bg-noir-950/60 opacity-0 transition-opacity group-hover:opacity-100">
                   <button
                     onClick={() => {
+                      if (!url) return;
                       setCropperTarget({ idx: i, url });
                       setCropperOpen(true);
                     }}
-                    className="rounded-full bg-cream px-3 py-1.5 font-mono text-[9px] uppercase tracking-wide2 text-noir-950"
+                    className="rounded-full bg-cream px-3 py-1.5 font-mono text-[9px] uppercase tracking-wide2 text-noir-950 disabled:cursor-not-allowed disabled:opacity-40"
+                    disabled={!url}
                   >
                     {label("Crop", "Crop")}
                   </button>
@@ -224,6 +278,7 @@ export function HeroEditor({
                       const next = images.filter((_, j) => j !== i);
                       saveImages(next);
                       saveScenes(scenes.filter((_, j) => j !== i));
+                      saveReels(reels.filter((_, j) => j !== i));
                     }}
                     className="rounded-full border border-spec-2 px-3 py-1.5 font-mono text-[9px] uppercase tracking-wide2 text-spec-2 disabled:cursor-not-allowed disabled:opacity-40"
                     disabled={images.length <= 1}
@@ -234,7 +289,23 @@ export function HeroEditor({
                 <span className="absolute left-2 top-2 rounded-full bg-noir-950/70 px-2 py-0.5 font-mono text-[9px] text-cream">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <div className="border-t border-noir-800 p-3">
+                <div className="space-y-3 border-t border-noir-800 p-3">
+                  <label className="block">
+                    <span className="font-mono text-[8px] uppercase tracking-wide2 text-noir-500">
+                      {label("URL da imagem", "Image URL")}
+                    </span>
+                    <input
+                      value={url}
+                      onChange={(e) => {
+                        const next = [...images];
+                        next[i] = e.target.value;
+                        setImages(next);
+                      }}
+                      onBlur={() => saveImages(images)}
+                      placeholder="https://.../imagem.jpg"
+                      className="mt-1 w-full rounded-sm border border-noir-700 bg-noir-950 px-2 py-2 text-[11px] text-cream placeholder:text-noir-600 focus:border-accent focus:outline-none"
+                    />
+                  </label>
                   <label className="block">
                     <span className="font-mono text-[8px] uppercase tracking-wide2 text-noir-500">
                       {label("Texto inferior", "Bottom text")}
@@ -248,6 +319,22 @@ export function HeroEditor({
                       }}
                       placeholder="Noctilucent · 2024"
                       className="mt-1 w-full rounded-sm border border-noir-700 bg-noir-950 px-2 py-2 font-mono text-[10px] uppercase tracking-wide2 text-cream placeholder:text-noir-600 focus:border-accent focus:outline-none"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="font-mono text-[8px] uppercase tracking-wide2 text-noir-500">
+                      {label("URL do reel para View Reel", "View Reel video URL")}
+                    </span>
+                    <input
+                      value={reels[i] ?? ""}
+                      onChange={(e) => {
+                        const next = [...reels];
+                        next[i] = e.target.value;
+                        setReels(next);
+                      }}
+                      onBlur={() => saveReels(reels)}
+                      placeholder="https://.../reel.mp4"
+                      className="mt-1 w-full rounded-sm border border-noir-700 bg-noir-950 px-2 py-2 text-[11px] text-cream placeholder:text-noir-600 focus:border-accent focus:outline-none"
                     />
                   </label>
                 </div>
@@ -275,6 +362,14 @@ export function HeroEditor({
             </label>
             )}
           </div>
+          {images.length < MAX_HERO_ITEMS && (
+            <button
+              onClick={addImageUrl}
+              className="mt-3 rounded-full border border-noir-700 px-4 py-2 font-mono text-[10px] uppercase tracking-wide2 text-noir-300 transition-colors hover:border-noir-500 hover:text-cream"
+            >
+              {label("Adicionar por URL", "Add by URL")}
+            </button>
+          )}
         </div>
 
         {/* Video section */}
@@ -297,7 +392,8 @@ export function HeroEditor({
                 </span>
                 <input
                   value={videoUrl}
-                  onChange={(e) => saveVideo(e.target.value, videoPoster)}
+                  onChange={(e) => setVideoUrl(e.target.value)}
+                  onBlur={() => saveVideo(videoUrl, videoPoster)}
                   placeholder="https://.../video.mp4"
                   className="mt-1 w-full rounded-sm border border-noir-700 bg-noir-950 px-3 py-2 text-sm text-cream placeholder:text-noir-600 focus:border-accent focus:outline-none"
                 />
@@ -310,7 +406,8 @@ export function HeroEditor({
                 </span>
                 <input
                   value={videoPoster}
-                  onChange={(e) => saveVideo(videoUrl, e.target.value)}
+                  onChange={(e) => setVideoPoster(e.target.value)}
+                  onBlur={() => saveVideo(videoUrl, videoPoster)}
                   placeholder="https://.../poster.jpg"
                   className="mt-1 w-full rounded-sm border border-noir-700 bg-noir-950 px-3 py-2 text-sm text-cream placeholder:text-noir-600 focus:border-accent focus:outline-none"
                 />
@@ -365,7 +462,15 @@ export function HeroEditor({
         )}
 
         {/* Actions */}
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-3 md:flex-row">
+          <button
+            onClick={exportConfig}
+            className="w-full rounded-full border border-noir-700 py-3 font-mono text-[11px] uppercase tracking-wide2 text-noir-300 transition-colors hover:border-noir-500 hover:text-cream"
+          >
+            {copied
+              ? label("Configuração copiada", "Config copied")
+              : label("Copiar configuração do banner", "Copy banner config")}
+          </button>
           <button
             onClick={onClose}
             className="w-full rounded-full bg-cream py-3 font-mono text-[11px] uppercase tracking-wide2 text-noir-950 transition-transform hover:scale-[1.01]"
@@ -452,6 +557,32 @@ export function useHeroScenes(defaultScenes: readonly string[]): string[] {
   }, [defaultScenes]);
 
   return scenes;
+}
+
+/** Hook para consumir URLs de reel por imagem do Hero. */
+export function useHeroReels(defaultReels: readonly string[] = DEFAULT_HERO_REELS): string[] {
+  const [reels, setReels] = useState<string[]>([...defaultReels]);
+
+  useEffect(() => {
+    const hydrate = () => {
+      try {
+        const saved = localStorage.getItem(HERO_REELS_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            setReels(parsed.map((u: unknown) => sanitizeMediaUrl(u)).slice(0, MAX_HERO_ITEMS));
+          }
+        }
+      } catch {
+        /* ignore */
+      }
+    };
+    hydrate();
+    window.addEventListener("sim-hero-updated", hydrate);
+    return () => window.removeEventListener("sim-hero-updated", hydrate);
+  }, [defaultReels]);
+
+  return reels;
 }
 
 /**

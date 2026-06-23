@@ -129,15 +129,15 @@ export function ImageCropper({
   };
 
   return (
-    <div className="fixed inset-0 z-[180] flex items-center justify-center bg-noir-950/90 p-4 backdrop-blur-md fade-in">
-      <div className="relative grid w-full max-w-6xl gap-5 rounded-sm border border-noir-700 bg-noir-900 p-5 md:grid-cols-[1fr_320px] md:p-8 fade-up">
+    <div className="fixed inset-0 z-[180] overflow-y-auto bg-noir-950/90 p-3 backdrop-blur-md fade-in md:p-4">
+      <div className="relative mx-auto my-3 grid max-h-[calc(100vh-1.5rem)] w-full max-w-5xl gap-4 overflow-y-auto rounded-sm border border-noir-700 bg-noir-900 p-4 md:my-4 md:max-h-[calc(100vh-2rem)] md:grid-cols-[minmax(0,1fr)_260px] md:p-5 fade-up">
         {/* Header */}
-        <div className="flex items-center justify-between md:col-span-2">
+        <div className="sticky top-0 z-20 -mx-4 -mt-4 flex items-center justify-between border-b border-noir-800 bg-noir-900/95 px-4 py-3 backdrop-blur md:col-span-2 md:-mx-5 md:-mt-5 md:px-5">
           <div>
             <h3 className="font-display text-2xl text-cream">
               {lang === "pt" ? "Cortar imagem" : "Crop image"}
             </h3>
-            <p className="mt-1 text-sm text-noir-400">
+            <p className="mt-1 max-w-2xl text-sm text-noir-400">
               {lang === "pt"
                 ? "Arraste para mover, use o slider para zoom. A pré-visualização ao lado mostra como ficará publicada."
                 : "Drag to reposition, use the slider to zoom. The live preview on the right shows the final result."}
@@ -155,7 +155,7 @@ export function ImageCropper({
         </div>
 
         {/* Stage */}
-        <div>
+        <div className="min-w-0">
           {error && (
             <p
               role="alert"
@@ -223,7 +223,7 @@ export function ImageCropper({
           </div>
 
           {/* Controls */}
-          <div className="mt-5 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+          <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-wrap items-center gap-2">
               {(["16:10", "21:9", "4:5", "1:1"] as const).map((r) => (
                 <button
@@ -252,7 +252,7 @@ export function ImageCropper({
                 step={0.01}
                 value={crop.scale}
                 onChange={(e) => setCrop((c) => ({ ...c, scale: Number(e.target.value) }))}
-                className="w-40 accent-[var(--color-accent)]"
+                className="w-32 accent-[var(--color-accent)] md:w-36"
               />
               <span className="w-10 text-right font-mono text-[10px] text-noir-400">
                 {crop.scale.toFixed(2)}x
@@ -288,12 +288,12 @@ export function ImageCropper({
         </div>
 
         {/* Preview panel */}
-        <div className="flex flex-col gap-4">
+        <div className="flex min-w-0 flex-col gap-3">
           <div>
             <div className="mb-2 font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
               {lang === "pt" ? "Pré-visualização" : "Live preview"}
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {/* Desktop */}
               <div className="rounded-sm border border-noir-700 bg-noir-950 p-2">
                 <div className="flex items-center justify-between px-1 pb-1 font-mono text-[9px] uppercase tracking-wide2 text-noir-500">
@@ -307,7 +307,7 @@ export function ImageCropper({
               </div>
 
               {/* Tablet */}
-              <div className="rounded-sm border border-noir-700 bg-noir-950 p-2">
+              <div className="hidden rounded-sm border border-noir-700 bg-noir-950 p-2 md:block">
                 <div className="flex items-center justify-between px-1 pb-1 font-mono text-[9px] uppercase tracking-wide2 text-noir-500">
                   <span>Tablet</span>
                   <span>4 : 5</span>
@@ -316,7 +316,7 @@ export function ImageCropper({
               </div>
 
               {/* Mobile */}
-              <div className="rounded-sm border border-noir-700 bg-noir-950 p-2">
+              <div className="hidden rounded-sm border border-noir-700 bg-noir-950 p-2 md:block">
                 <div className="flex items-center justify-between px-1 pb-1 font-mono text-[9px] uppercase tracking-wide2 text-noir-500">
                   <span>Mobile</span>
                   <span>1 : 1</span>
@@ -326,7 +326,7 @@ export function ImageCropper({
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 border-t border-noir-800 pt-4">
+          <div className="sticky bottom-0 z-20 -mx-4 flex flex-col gap-2 border-t border-noir-800 bg-noir-900/95 px-4 py-3 backdrop-blur md:mx-0 md:px-0">
             <button
               onClick={save}
               disabled={!url}

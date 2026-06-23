@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
-import { projects } from "../data/projects";
-import { useHeroImages, useHeroScenes, useHeroVideo } from "./HeroEditor";
+import { SITE_CONFIG } from "../data/siteConfig";
+import { useHeroImages, useHeroReels, useHeroScenes, useHeroVideo } from "./HeroEditor";
 import { Logo } from "./Logo";
 
 /* Film timecode formatter: 00:00:00:00 (HH:MM:SS:FF @ 24fps) */
@@ -18,17 +18,15 @@ function tc(ms: number) {
 export function Hero({ onEnter }: { onEnter: () => void }) {
   const { t } = useLang();
   const defaultImages = useMemo(
-    () => [
-      projects[0].cover, // Atlas
-      projects[5].cover, // Noctilucent
-      projects[3].cover, // Kintsugi
-    ],
+    () => [...SITE_CONFIG.hero.images],
     []
   );
   const savedImages = useHeroImages(defaultImages);
-  const heroScenes = useHeroScenes(t.hero.scenes);
+  const heroScenes = useHeroScenes(SITE_CONFIG.hero.scenes.length ? SITE_CONFIG.hero.scenes : t.hero.scenes);
+  const heroReels = useHeroReels(SITE_CONFIG.hero.reels);
   const heroVideo = useHeroVideo();
   const heroImages = savedImages.length > 0 ? savedImages : defaultImages;
+  const [reelOpen, setReelOpen] = useState(false);
 
   const [active, setActive] = useState(0);
   const [prog, setProg] = useState(0); // 0..1 within current slide
@@ -145,7 +143,10 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
         <div className="mt-7 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
             {/* Enter reel */}
           <button
-            onClick={onEnter}
+            onClick={() => {
+              if (heroReels[active]) setReelOpen(true);
+              else onEnter();
+            }}
             className="group inline-flex shrink-0 items-center gap-3 self-start rounded-full border border-noir-500/60 px-6 py-3 font-mono text-[11px] uppercase tracking-wide2 text-cream transition-colors hover:border-accent md:self-auto"
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
@@ -183,6 +184,29 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
           ))}
         </div>
       </div>
+      {reelOpen && heroReels[active] && (
+        <div className="fixed inset-0 z-[180] flex items-center justify-center bg-noir-950/90 p-4 backdrop-blur-md fade-in">
+          <div className="absolute inset-0" onClick={() => setReelOpen(false)} aria-hidden />
+          <div className="relative z-10 w-full max-w-5xl overflow-hidden rounded-sm border border-noir-700 bg-noir-900 fade-up">
+            <button
+              onClick={() => setReelOpen(false)}
+              className="absolute right-4 top-4 z-20 rounded-full border border-noir-600 bg-noir-950/70 p-2 text-cream backdrop-blur transition-colors hover:border-accent hover:text-accent"
+              aria-label="Close reel"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </button>
+            <video
+              src={heroReels[active]}
+              controls
+              autoPlay
+              playsInline
+              className="aspect-video w-full bg-noir-950 object-contain"
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 }
