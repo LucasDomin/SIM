@@ -103,10 +103,6 @@ export function Contact() {
               >
                 {getTel()}
               </a>
-              <div className="flex items-center gap-2 text-sm text-noir-400">
-                <span className="inline-block h-1.5 w-1.5 animate-blink rounded-full bg-spec-2" />
-                {t.footer.locations}
-              </div>
             </div>
           </Reveal>
 
