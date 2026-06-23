@@ -1,6 +1,8 @@
 import { useLang } from "../contexts/LanguageContext";
+import { useConsent } from "../contexts/ConsentContext";
 import { Logo } from "./Logo";
 import { Reveal } from "./ui";
+import { getEmail, getEmailHref, getTel, getTelHref } from "../lib/contact";
 
 const SOCIALS = [
   { label: "Instagram", href: "#" },
@@ -16,7 +18,8 @@ const NAV_LINKS = [
 ] as const;
 
 export function Contact() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const { reset: resetConsent } = useConsent();
   const year = new Date().getFullYear();
   const questions = t.footer.questions;
 
@@ -32,7 +35,8 @@ export function Contact() {
         {/* Cabeçalho — título principal (com efeito e link) */}
         <Reveal className="pb-12 md:pb-16">
           <a
-            href="mailto:hello@sim.studio"
+            href={getEmailHref()}
+            rel="noreferrer"
             className="group block text-left font-display text-[13vw] font-light leading-[0.92] tracking-[-0.03em] text-cream md:text-[7vw]"
           >
             <span className="block transition-colors group-hover:text-accent">
@@ -86,16 +90,18 @@ export function Contact() {
             </div>
             <div className="mt-4 space-y-3 text-left">
               <a
-                href="mailto:hello@sim.studio"
+                href={getEmailHref()}
+                rel="noreferrer"
                 className="block font-display text-2xl text-cream transition-colors hover:text-accent md:text-3xl"
               >
-                hello@sim.studio
+                {getEmail()}
               </a>
               <a
-                href="tel:+5511999999999"
+                href={getTelHref()}
+                rel="noreferrer"
                 className="block font-display text-xl text-noir-200 transition-colors hover:text-accent md:text-2xl"
               >
-                +55 11 9 9999-9999
+                {getTel()}
               </a>
               <div className="flex items-center gap-2 text-sm text-noir-400">
                 <span className="inline-block h-1.5 w-1.5 animate-blink rounded-full bg-spec-2" />
@@ -114,6 +120,8 @@ export function Contact() {
                 <li key={s.label}>
                   <a
                     href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="group inline-flex items-center gap-2 text-noir-200 transition-colors hover:text-accent"
                   >
                     <span className="inline-block h-1 w-1 rounded-full bg-noir-600 transition-colors group-hover:bg-accent" />
@@ -166,15 +174,28 @@ export function Contact() {
             <span className="hidden text-noir-700 md:inline">|</span>
             <span>© {year} — Still In Movement</span>
           </div>
-          <a
-            href="https://www.instagram.com/domi.n.arte/"
-            target="_blank"
-            rel="noreferrer"
-            className="group relative text-center normal-case tracking-[0.22em] transition-all duration-300 hover:text-cream"
-          >
-            produzido por @domi.n.arte
-            <span className="pointer-events-none absolute -inset-x-1 -inset-y-0.5 rounded opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100 bg-gradient-to-r from-accent/30 via-accent/60 to-accent/30" />
-          </a>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={resetConsent}
+              className="transition-colors hover:text-cream"
+              aria-label={
+                lang === "pt"
+                  ? "Gerenciar consentimento de privacidade"
+                  : "Manage privacy consent"
+              }
+            >
+              {lang === "pt" ? "Privacidade" : "Privacy"}
+            </button>
+            <a
+              href="https://www.instagram.com/domi.n.arte/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative text-center normal-case tracking-[0.22em] transition-all duration-300 hover:text-cream"
+            >
+              produzido por @domi.n.arte
+              <span className="pointer-events-none absolute -inset-x-1 -inset-y-0.5 rounded opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100 bg-gradient-to-r from-accent/30 via-accent/60 to-accent/30" />
+            </a>
+          </div>
         </div>
       </div>
     </section>

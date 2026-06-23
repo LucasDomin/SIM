@@ -139,21 +139,7 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
         </div>
 
         <h1 className="font-display font-light leading-[0.92] tracking-[-0.02em] text-cream text-balance">
-          <span className="block text-[12.5vw] sm:text-[11vw] md:text-[8.4vw] lg:text-[8vw]">
-            {t.hero.title1}
-          </span>
-          <span className="block text-[12.5vw] sm:text-[11vw] md:text-[8.4vw] lg:text-[8vw]">
-            {t.hero.title2}
-          </span>
-          <span className="mt-2 flex flex-wrap items-end gap-x-3 gap-y-2 sm:mt-3 md:mt-4">
-            <span className="text-[12.5vw] text-accent sm:text-[11vw] md:text-[8.4vw] lg:text-[8vw]">
-              {t.hero.titleEm.split("SIM")[0]}
-            </span>
-            <Logo noBar className="!h-auto w-[32vw] sm:w-[27vw] md:w-[20vw] lg:w-[17vw] text-accent" />
-            <span className="text-[12.5vw] text-accent sm:text-[11vw] md:text-[8.4vw] lg:text-[8vw]">
-              {t.hero.titleEm.split("SIM")[1]}
-            </span>
-          </span>
+          <Logo noBar className="!h-auto w-[60vw] sm:w-[50vw] md:w-[38vw] lg:w-[30vw] text-cream" />
         </h1>
 
         <div className="mt-7 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">

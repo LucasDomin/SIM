@@ -14,6 +14,7 @@ import { CaseStudy } from "./components/CaseStudy";
 import { AIAgent } from "./components/AIAgent";
 import { AdminAccessModal } from "./components/AdminAccessModal";
 import { AdminProvider } from "./contexts/AdminContext";
+import { LGPDNotice } from "./components/LGPDNotice";
 import { projects } from "./data/projects";
 
 function ScrollProgress() {
@@ -89,6 +90,7 @@ export default function App() {
         <CaseStudy project={active} onClose={() => setSlug(null)} />
         <AIAgent />
         <AdminAccessModal open={admin} onClose={() => setAdmin(false)} />
+        <LGPDNotice />
       </div>
     </AdminProvider>
   );

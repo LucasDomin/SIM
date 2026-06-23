@@ -1,16 +1,26 @@
 import { useEffect, useState } from "react";
 import { SMarkLoader } from "./SMarkLoader";
+import { useReducedMotion } from "../hooks/useReducedMotion";
 
 /**
- * SIM Tela de Carga Inicial — Exatamente igual no repositório LucasDomin/SIM.
- * Utiliza a marca SMarkLoader animada com progresso 0 a 2 e transição suave.
+ * SIM Tela de Carga Inicial.
+ * Respeita prefers-reduced-motion: usuários sensíveis vão direto ao site,
+ * sem animação prolongada.
  */
 export function Loader({ onDone }: { onDone: () => void }) {
   const [progress, setProgress] = useState(0);
+  const reduced = useReducedMotion();
 
   useEffect(() => {
+    // Acessibilidade: se o usuário pediu menos movimento, encerra rápido.
+    if (reduced) {
+      setProgress(2);
+      const t = setTimeout(onDone, 200);
+      return () => clearTimeout(t);
+    }
+
     const start = performance.now();
-    const duration = 2200; // Tempo até progress = 2
+    const duration = 2200;
     let raf = 0;
 
     const tick = (now: number) => {
@@ -22,13 +32,13 @@ export function Loader({ onDone }: { onDone: () => void }) {
         raf = requestAnimationFrame(tick);
       } else {
         setProgress(2);
-        setTimeout(onDone, 700); // Dá tempo para o fade-out do container (opacity 0)
+        setTimeout(onDone, 700);
       }
     };
 
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [onDone]);
+  }, [onDone, reduced]);
 
   return (
     <div

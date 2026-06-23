@@ -1,8 +1,16 @@
 import { useEffect, useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
+import { useConsent, makeSafeStorage } from "../contexts/ConsentContext";
 import { projects } from "../data/projects";
 import { ImageCropper } from "./ImageCropper";
 import { Reveal } from "./ui";
+import {
+  sanitizeImageUrl,
+  sanitizeMediaUrl,
+  sanitizeText,
+  approxByteSize,
+  MAX_IMAGE_BYTES,
+} from "../lib/sanitize";
 
 const HERO_KEY = "sim-hero-images";
 const HERO_VIDEO_KEY = "sim-hero-video";
@@ -23,74 +31,112 @@ export function HeroEditor({
   onClose: () => void;
 }) {
   const { lang } = useLang();
+  const { canPersist } = useConsent();
+  const storage = makeSafeStorage(canPersist);
   const [images, setImages] = useState<string[]>([]);
   const [scenes, setScenes] = useState<string[]>(DEFAULT_HERO_SCENES);
   const [videoUrl, setVideoUrl] = useState("");
   const [videoPoster, setVideoPoster] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [cropperOpen, setCropperOpen] = useState(false);
   const [cropperTarget, setCropperTarget] = useState<{
     idx: number;
     url: string;
   } | null>(null);
 
-  // Load from localStorage on open
+  // Load from localStorage on open — sempre sanitiza o que veio do storage.
   useEffect(() => {
     if (!open) return;
     try {
-      const saved = localStorage.getItem(HERO_KEY);
+      const saved = storage.get(HERO_KEY);
       const parsedImages = saved ? JSON.parse(saved) : DEFAULT_HERO_IMAGES;
-      setImages(Array.isArray(parsedImages) ? parsedImages.slice(0, MAX_HERO_ITEMS) : DEFAULT_HERO_IMAGES);
-      const savedScenes = localStorage.getItem(HERO_SCENES_KEY);
+      setImages(
+        Array.isArray(parsedImages)
+          ? parsedImages
+              .map((u: unknown) => sanitizeImageUrl(u))
+              .filter(Boolean)
+              .slice(0, MAX_HERO_ITEMS)
+          : DEFAULT_HERO_IMAGES
+      );
+      const savedScenes = storage.get(HERO_SCENES_KEY);
       const parsedScenes = savedScenes ? JSON.parse(savedScenes) : DEFAULT_HERO_SCENES;
-      setScenes(Array.isArray(parsedScenes) ? parsedScenes.slice(0, MAX_HERO_ITEMS) : DEFAULT_HERO_SCENES);
-      const vid = localStorage.getItem(HERO_VIDEO_KEY);
+      setScenes(
+        Array.isArray(parsedScenes)
+          ? parsedScenes.map((s: unknown) => sanitizeText(s, 80)).slice(0, MAX_HERO_ITEMS)
+          : DEFAULT_HERO_SCENES
+      );
+      const vid = storage.get(HERO_VIDEO_KEY);
       if (vid) {
         const parsed = JSON.parse(vid);
-        setVideoUrl(parsed.url || "");
-        setVideoPoster(parsed.poster || "");
+        setVideoUrl(sanitizeMediaUrl(parsed.url));
+        setVideoPoster(sanitizeImageUrl(parsed.poster));
       }
     } catch {
       /* ignore */
     }
-  }, [open]);
+  }, [open, storage]);
+
+  const persistWarn = () => {
+    if (!canPersist) {
+      setError(
+        lang === "pt"
+          ? "Aceite o aviso de privacidade para salvar alterações neste navegador."
+          : "Accept the privacy notice to save changes in this browser."
+      );
+    }
+  };
 
   const saveImages = (next: string[]) => {
-    const capped = next.slice(0, MAX_HERO_ITEMS);
+    const capped = next
+      .map((u) => sanitizeImageUrl(u))
+      .filter(Boolean)
+      .slice(0, MAX_HERO_ITEMS);
     setImages(capped);
-    try {
-      localStorage.setItem(HERO_KEY, JSON.stringify(capped));
-      emitHeroUpdate();
-    } catch {
-      /* ignore */
-    }
+    const ok = storage.set(HERO_KEY, JSON.stringify(capped));
+    if (!ok) persistWarn();
+    emitHeroUpdate();
   };
 
   const saveScenes = (next: string[]) => {
-    const capped = next.slice(0, MAX_HERO_ITEMS);
+    const capped = next.map((s) => sanitizeText(s, 80)).slice(0, MAX_HERO_ITEMS);
     setScenes(capped);
-    try {
-      localStorage.setItem(HERO_SCENES_KEY, JSON.stringify(capped));
-      emitHeroUpdate();
-    } catch {
-      /* ignore */
-    }
+    const ok = storage.set(HERO_SCENES_KEY, JSON.stringify(capped));
+    if (!ok) persistWarn();
+    emitHeroUpdate();
   };
 
-  const saveVideo = (url: string, poster: string) => {
+  const saveVideo = (rawUrl: string, rawPoster: string) => {
+    const url = sanitizeMediaUrl(rawUrl);
+    const poster = sanitizeImageUrl(rawPoster);
     setVideoUrl(url);
     setVideoPoster(poster);
-    try {
-      localStorage.setItem(HERO_VIDEO_KEY, JSON.stringify({ url, poster }));
-      emitHeroUpdate();
-    } catch {
-      /* ignore */
-    }
+    const ok = storage.set(HERO_VIDEO_KEY, JSON.stringify({ url, poster }));
+    if (!ok) persistWarn();
+    emitHeroUpdate();
   };
 
   const onFile = (f: File) => {
+    setError(null);
+    if (!f.type.startsWith("image/")) {
+      setError(lang === "pt" ? "Arquivo precisa ser uma imagem." : "File must be an image.");
+      return;
+    }
+    if (f.size > MAX_IMAGE_BYTES) {
+      setError(
+        lang === "pt"
+          ? "Imagem acima de 2MB. Use uma URL de CDN para arquivos maiores."
+          : "Image larger than 2MB. Use a CDN URL for bigger files."
+      );
+      return;
+    }
     const reader = new FileReader();
     reader.onload = () => {
-      const url = String(reader.result);
+      const url = sanitizeImageUrl(reader.result);
+      if (!url) return;
+      if (approxByteSize(url) > MAX_IMAGE_BYTES) {
+        setError(lang === "pt" ? "Imagem muito grande." : "Image too large.");
+        return;
+      }
       if (images.length >= MAX_HERO_ITEMS) return;
       saveImages([...images, url]);
       saveScenes([...scenes, `Cena ${String(images.length + 1).padStart(2, "0")}`]);
@@ -100,8 +146,10 @@ export function HeroEditor({
 
   const onCropSave = (payload: { url: string; crop: { x: number; y: number; scale: number } }) => {
     if (cropperTarget === null) return;
+    const safe = sanitizeImageUrl(payload.url);
+    if (!safe) return;
     const next = [...images];
-    next[cropperTarget.idx] = payload.url;
+    next[cropperTarget.idx] = safe;
     saveImages(next);
     setCropperOpen(false);
     setCropperTarget(null);
@@ -281,6 +329,27 @@ export function HeroEditor({
           )}
         </div>
 
+        {/* Mensagens de erro / aviso */}
+        {error && (
+          <p
+            role="alert"
+            className="mb-4 rounded-sm border border-spec-2/40 bg-spec-2/5 px-3 py-2 text-sm text-spec-2"
+          >
+            {error}
+          </p>
+        )}
+        {!canPersist && !error && (
+          <p
+            role="status"
+            className="mb-4 rounded-sm border border-noir-700 bg-noir-950 px-3 py-2 text-xs text-noir-400"
+          >
+            {label(
+              "Aceite o aviso de privacidade para salvar alterações neste navegador.",
+              "Accept the privacy notice to save changes in this browser."
+            )}
+          </p>
+        )}
+
         {/* Actions */}
         <div className="flex gap-3">
           <button
@@ -307,6 +376,8 @@ export function HeroEditor({
 
 /**
  * Hook para consumir imagens do Hero salvas no localStorage.
+ * Sanitiza tudo o que vem do storage — defesa em profundidade contra
+ * URLs perigosas que tenham sido injetadas em algum momento.
  */
 export function useHeroImages(defaultImages: string[]): string[] {
   const [images, setImages] = useState<string[]>(defaultImages);
@@ -318,7 +389,11 @@ export function useHeroImages(defaultImages: string[]): string[] {
         if (saved) {
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            setImages(parsed.slice(0, MAX_HERO_ITEMS));
+            const safe = parsed
+              .map((u: unknown) => sanitizeImageUrl(u))
+              .filter(Boolean)
+              .slice(0, MAX_HERO_ITEMS);
+            if (safe.length > 0) setImages(safe);
           }
         }
       } catch {
@@ -346,7 +421,11 @@ export function useHeroScenes(defaultScenes: readonly string[]): string[] {
         if (saved) {
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            setScenes(parsed.slice(0, MAX_HERO_ITEMS));
+            setScenes(
+              parsed
+                .map((s: unknown) => sanitizeText(s, 80))
+                .slice(0, MAX_HERO_ITEMS)
+            );
           }
         }
       } catch {
@@ -371,9 +450,16 @@ export function useHeroVideo(): { url: string; poster: string } | null {
     const hydrate = () => {
       try {
         const saved = localStorage.getItem(HERO_VIDEO_KEY);
-        if (saved) setVideo(JSON.parse(saved));
+        if (!saved) {
+          setVideo(null);
+          return;
+        }
+        const parsed = JSON.parse(saved);
+        const url = sanitizeMediaUrl(parsed?.url);
+        const poster = sanitizeImageUrl(parsed?.poster);
+        setVideo(url && poster ? { url, poster } : null);
       } catch {
-        /* ignore */
+        setVideo(null);
       }
     };
     hydrate();

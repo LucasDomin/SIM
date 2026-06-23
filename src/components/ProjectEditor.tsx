@@ -4,6 +4,11 @@ import { useLang } from "../contexts/LanguageContext";
 import { useAdmin } from "../contexts/AdminContext";
 import { ImageCropper } from "./ImageCropper";
 import { cn } from "../lib/cn";
+import {
+  sanitizeImageUrl,
+  sanitizeMediaUrl,
+  sanitizeText,
+} from "../lib/sanitize";
 
 /**
  * ProjectEditor — painel de edição por projeto.
@@ -70,17 +75,18 @@ export function ProjectEditor({
   const label = (pt: string, en: string) => (lang === "pt" ? pt : en);
 
   const save = () => {
+    // Sanitização final antes de persistir.
     updateDraft(project.slug, {
-      title: form.title,
-      client: form.client,
-      description: form.description,
-      cover: form.cover,
-      year: form.year,
-      location: form.location,
-      format: form.format,
-      category: form.category,
-      video: form.video,
-      poster: form.poster,
+      title: sanitizeText(form.title, 120),
+      client: sanitizeText(form.client, 120),
+      description: sanitizeText(form.description, 1200),
+      cover: sanitizeImageUrl(form.cover),
+      year: sanitizeText(form.year, 12),
+      location: sanitizeText(form.location, 120),
+      format: sanitizeText(form.format, 120),
+      category: sanitizeText(form.category, 60),
+      video: sanitizeMediaUrl(form.video),
+      poster: sanitizeImageUrl(form.poster),
     });
     commitDraft(project.slug);
     onClose();
@@ -92,8 +98,10 @@ export function ProjectEditor({
   };
 
   const onCropSave = (payload: { url: string; crop: { x: number; y: number; scale: number } }) => {
-    setForm((f) => ({ ...f, cover: payload.url }));
-    updateDraft(project.slug, { cover: payload.url, coverCrop: payload.crop });
+    const safe = sanitizeImageUrl(payload.url);
+    if (!safe) return;
+    setForm((f) => ({ ...f, cover: safe }));
+    updateDraft(project.slug, { cover: safe, coverCrop: payload.crop });
     setCropperOpen(false);
   };
 

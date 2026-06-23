@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { Project } from "../data/projects";
+import { sanitizeImageUrl, sanitizeMediaUrl, sanitizeText } from "../lib/sanitize";
 
 type Draft = {
   cover: string;
@@ -39,15 +40,20 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [editing, setEditing] = useState(false);
   const [drafts, setDrafts] = useState<Record<string, Partial<Draft>>>({});
 
-  // Hydrate from localStorage
+  // Hydrate from localStorage (tolerante a corrupção / JSON inválido).
   useEffect(() => {
     try {
       const auth = localStorage.getItem(STORAGE_KEY);
       if (auth === "1") setAuthenticated(true);
       const raw = localStorage.getItem(DRAFT_KEY);
-      if (raw) setDrafts(JSON.parse(raw));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+          setDrafts(parsed as Record<string, Partial<Draft>>);
+        }
+      }
     } catch {
-      /* ignore */
+      /* JSON corrompido — descartado de forma segura */
     }
   }, []);
 
@@ -55,7 +61,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(drafts));
     } catch {
-      /* ignore */
+      /* ignore: quota cheia ou modo privado */
     }
   }, [drafts]);
 
@@ -112,17 +118,21 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     (p: Project): Project => {
       const d = drafts[p.slug];
       if (!d) return p;
+      // Defesa em profundidade: mesmo que o storage tenha sido manipulado
+      // por extensão ou pelo console, qualquer string injetada é neutralizada.
+      const safeText = (v: string | undefined, fallback: string, max = 1200) =>
+        v != null ? sanitizeText(v, max) : fallback;
       return {
         ...p,
-        title: d.title ?? p.title,
-        client: d.client ?? p.client,
-        description: d.description ?? p.description,
-        cover: d.cover ?? p.cover,
-        year: d.year ?? p.year,
-        location: d.location ?? p.location,
-        format: d.format ?? p.format,
-        video: d.video ?? p.video,
-        poster: d.poster ?? p.poster,
+        title: safeText(d.title, p.title, 200),
+        client: safeText(d.client, p.client, 200),
+        description: safeText(d.description, p.description, 1200),
+        cover: d.cover ? sanitizeImageUrl(d.cover) || p.cover : p.cover,
+        year: safeText(d.year, p.year, 12),
+        location: safeText(d.location, p.location, 200),
+        format: safeText(d.format, p.format, 200),
+        video: d.video ? sanitizeMediaUrl(d.video) || p.video : p.video,
+        poster: d.poster ? sanitizeImageUrl(d.poster) || p.poster : p.poster,
       };
     },
     [drafts]
