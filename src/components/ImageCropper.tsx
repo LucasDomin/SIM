@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
 import { cn } from "../lib/cn";
+import { compressImageFile } from "../lib/imageProcessing";
+import { MAX_SOURCE_IMAGE_BYTES, sanitizeImageUrl } from "../lib/sanitize";
 
 /**
  * ImageCropper — tela de crop com pré-visualização antes de salvar.
@@ -31,12 +33,14 @@ export function ImageCropper({
   );
   const [aspect, setAspect] = useState<"16:10" | "4:5" | "1:1" | "21:9">("16:10");
   const [dragging, setDragging] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const dragStart = useRef<{ x: number; y: number; cx: number; cy: number } | null>(null);
 
   useEffect(() => {
     if (!open) return;
     setUrl(initialImage ?? "");
     setCrop(initialCrop ?? { x: 0, y: 0, scale: 1 });
+    setError(null);
   }, [open, initialImage, initialCrop]);
 
   useEffect(() => {
@@ -53,10 +57,30 @@ export function ImageCropper({
   const aspectRatio =
     aspect === "16:10" ? 16 / 10 : aspect === "4:5" ? 4 / 5 : aspect === "1:1" ? 1 : 21 / 9;
 
-  const onFile = (f: File) => {
-    const reader = new FileReader();
-    reader.onload = () => setUrl(String(reader.result));
-    reader.readAsDataURL(f);
+  const onFile = async (f: File) => {
+    setError(null);
+    if (!f.type.startsWith("image/")) {
+      setError(lang === "pt" ? "Arquivo precisa ser uma imagem." : "File must be an image.");
+      return;
+    }
+    if (f.size > MAX_SOURCE_IMAGE_BYTES) {
+      setError(
+        lang === "pt"
+          ? "Imagem acima de 15MB. Use uma imagem menor."
+          : "Image larger than 15MB. Use a smaller image."
+      );
+      return;
+    }
+    try {
+      const processed = await compressImageFile(f);
+      setUrl(processed);
+    } catch {
+      setError(
+        lang === "pt"
+          ? "Não foi possível processar esta imagem."
+          : "Could not process this image."
+      );
+    }
   };
 
   const onDrop = (e: React.DragEvent) => {
@@ -92,8 +116,9 @@ export function ImageCropper({
   const reset = () => setCrop({ x: 0, y: 0, scale: 1 });
 
   const save = () => {
-    if (!url) return;
-    onSave({ url, crop });
+    const safe = sanitizeImageUrl(url);
+    if (!safe) return;
+    onSave({ url: safe, crop });
   };
 
   const previewStyle = {
@@ -131,6 +156,14 @@ export function ImageCropper({
 
         {/* Stage */}
         <div>
+          {error && (
+            <p
+              role="alert"
+              className="mb-3 rounded-sm border border-spec-2/40 bg-spec-2/5 px-3 py-2 text-sm text-spec-2"
+            >
+              {error}
+            </p>
+          )}
           <div
             ref={stageRef}
             onDrop={onDrop}

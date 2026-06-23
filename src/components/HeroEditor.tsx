@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
 import { useConsent, makeSafeStorage } from "../contexts/ConsentContext";
 import { projects } from "../data/projects";
@@ -10,7 +10,9 @@ import {
   sanitizeText,
   approxByteSize,
   MAX_IMAGE_BYTES,
+  MAX_SOURCE_IMAGE_BYTES,
 } from "../lib/sanitize";
+import { compressImageFile } from "../lib/imageProcessing";
 
 const HERO_KEY = "sim-hero-images";
 const HERO_VIDEO_KEY = "sim-hero-video";
@@ -32,7 +34,7 @@ export function HeroEditor({
 }) {
   const { lang } = useLang();
   const { canPersist } = useConsent();
-  const storage = makeSafeStorage(canPersist);
+  const storage = useMemo(() => makeSafeStorage(canPersist), [canPersist]);
   const [images, setImages] = useState<string[]>([]);
   const [scenes, setScenes] = useState<string[]>(DEFAULT_HERO_SCENES);
   const [videoUrl, setVideoUrl] = useState("");
@@ -115,24 +117,22 @@ export function HeroEditor({
     emitHeroUpdate();
   };
 
-  const onFile = (f: File) => {
+  const onFile = async (f: File) => {
     setError(null);
     if (!f.type.startsWith("image/")) {
       setError(lang === "pt" ? "Arquivo precisa ser uma imagem." : "File must be an image.");
       return;
     }
-    if (f.size > MAX_IMAGE_BYTES) {
+    if (f.size > MAX_SOURCE_IMAGE_BYTES) {
       setError(
         lang === "pt"
-          ? "Imagem acima de 2MB. Use uma URL de CDN para arquivos maiores."
-          : "Image larger than 2MB. Use a CDN URL for bigger files."
+          ? "Imagem acima de 15MB. Use uma imagem menor."
+          : "Image larger than 15MB. Use a smaller image."
       );
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      const url = sanitizeImageUrl(reader.result);
-      if (!url) return;
+    try {
+      const url = await compressImageFile(f);
       if (approxByteSize(url) > MAX_IMAGE_BYTES) {
         setError(lang === "pt" ? "Imagem muito grande." : "Image too large.");
         return;
@@ -140,8 +140,13 @@ export function HeroEditor({
       if (images.length >= MAX_HERO_ITEMS) return;
       saveImages([...images, url]);
       saveScenes([...scenes, `Cena ${String(images.length + 1).padStart(2, "0")}`]);
-    };
-    reader.readAsDataURL(f);
+    } catch {
+      setError(
+        lang === "pt"
+          ? "Não foi possível processar esta imagem. Tente outro arquivo."
+          : "Could not process this image. Try another file."
+      );
+    }
   };
 
   const onCropSave = (payload: { url: string; crop: { x: number; y: number; scale: number } }) => {
@@ -184,6 +189,15 @@ export function HeroEditor({
             </svg>
           </button>
         </div>
+
+        {!canPersist && (
+          <div className="mb-6 rounded-sm border border-accent/30 bg-accent/5 px-4 py-3 text-sm text-accent">
+            {label(
+              "Para salvar imagens e textos no navegador, aceite o aviso de privacidade no rodapé da tela.",
+              "To save images and text in the browser, accept the privacy notice at the bottom of the screen."
+            )}
+          </div>
+        )}
 
         {/* Images grid */}
         <div className="mb-8">

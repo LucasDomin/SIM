@@ -66,4 +66,5 @@ export function approxByteSize(str: string): number {
   return str.length;
 }
 
-export const MAX_IMAGE_BYTES = 2 * 1024 * 1024; // 2 MB
+export const MAX_SOURCE_IMAGE_BYTES = 15 * 1024 * 1024; // arquivo original até 15 MB
+export const MAX_IMAGE_BYTES = 2 * 1024 * 1024; // data URL final até 2 MB
