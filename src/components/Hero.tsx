@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
 import { projects } from "../data/projects";
-import { useHeroImages, useHeroVideo } from "./HeroEditor";
+import { useHeroImages, useHeroScenes, useHeroVideo } from "./HeroEditor";
 
 /* Film timecode formatter: 00:00:00:00 (HH:MM:SS:FF @ 24fps) */
 function tc(ms: number) {
@@ -25,6 +25,7 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
     []
   );
   const savedImages = useHeroImages(defaultImages);
+  const heroScenes = useHeroScenes(t.hero.scenes);
   const heroVideo = useHeroVideo();
   const heroImages = savedImages.length > 0 ? savedImages : defaultImages;
 
@@ -165,7 +166,7 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
       {/* Bottom: film scrubber + ticker */}
       <div className="absolute inset-x-0 bottom-0 z-20 px-5 pb-6 md:px-10 md:pb-8">
         <div className="mb-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-wide2 text-noir-400">
-          <span>{t.hero.scenes[active]}</span>
+          <span>{heroScenes[active] ?? t.hero.scenes[active] ?? ""}</span>
           <span className="hidden items-center gap-2 md:flex">
             {t.hero.scroll}
             <span className="relative flex h-9 w-px justify-center overflow-hidden">

@@ -35,9 +35,9 @@
   --color-spec-7: #b1b7b1;
   --color-spec-8: #f4c78d;
 
-  --font-display: "Fraunces", "Times New Roman", serif;
+  --font-display: "Courier Prime", "Courier New", monospace;
   --font-sans: "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-mono: "Courier Prime", "Courier New", ui-monospace, monospace;
 }
 
 :root {
@@ -351,13 +351,13 @@ select:focus-visible {
 /* Display type ramp helpers */
 .font-display {
   font-family: var(--font-display);
-  font-feature-settings: "ss01";
+  font-feature-settings: normal;
 }
 .tracking-mega {
   letter-spacing: 0.38em;
 }
 .tracking-wide2 {
-  letter-spacing: 0.18em;
+  letter-spacing: 0.3em;
 }
 
 @media (prefers-reduced-motion: reduce) {

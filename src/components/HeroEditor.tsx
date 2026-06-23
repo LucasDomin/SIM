@@ -1,10 +1,19 @@
 import { useEffect, useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
+import { projects } from "../data/projects";
 import { ImageCropper } from "./ImageCropper";
 import { Reveal } from "./ui";
 
 const HERO_KEY = "sim-hero-images";
 const HERO_VIDEO_KEY = "sim-hero-video";
+const HERO_SCENES_KEY = "sim-hero-scenes";
+const MAX_HERO_ITEMS = 3;
+const DEFAULT_HERO_IMAGES = [projects[0].cover, projects[5].cover, projects[3].cover];
+const DEFAULT_HERO_SCENES = ["Atlas · 2025", "Noctilucent · 2024", "Kintsugi · 2024"];
+
+function emitHeroUpdate() {
+  window.dispatchEvent(new Event("sim-hero-updated"));
+}
 
 export function HeroEditor({
   open,
@@ -15,6 +24,7 @@ export function HeroEditor({
 }) {
   const { lang } = useLang();
   const [images, setImages] = useState<string[]>([]);
+  const [scenes, setScenes] = useState<string[]>(DEFAULT_HERO_SCENES);
   const [videoUrl, setVideoUrl] = useState("");
   const [videoPoster, setVideoPoster] = useState("");
   const [cropperOpen, setCropperOpen] = useState(false);
@@ -28,7 +38,11 @@ export function HeroEditor({
     if (!open) return;
     try {
       const saved = localStorage.getItem(HERO_KEY);
-      if (saved) setImages(JSON.parse(saved));
+      const parsedImages = saved ? JSON.parse(saved) : DEFAULT_HERO_IMAGES;
+      setImages(Array.isArray(parsedImages) ? parsedImages.slice(0, MAX_HERO_ITEMS) : DEFAULT_HERO_IMAGES);
+      const savedScenes = localStorage.getItem(HERO_SCENES_KEY);
+      const parsedScenes = savedScenes ? JSON.parse(savedScenes) : DEFAULT_HERO_SCENES;
+      setScenes(Array.isArray(parsedScenes) ? parsedScenes.slice(0, MAX_HERO_ITEMS) : DEFAULT_HERO_SCENES);
       const vid = localStorage.getItem(HERO_VIDEO_KEY);
       if (vid) {
         const parsed = JSON.parse(vid);
@@ -41,9 +55,22 @@ export function HeroEditor({
   }, [open]);
 
   const saveImages = (next: string[]) => {
-    setImages(next);
+    const capped = next.slice(0, MAX_HERO_ITEMS);
+    setImages(capped);
     try {
-      localStorage.setItem(HERO_KEY, JSON.stringify(next));
+      localStorage.setItem(HERO_KEY, JSON.stringify(capped));
+      emitHeroUpdate();
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const saveScenes = (next: string[]) => {
+    const capped = next.slice(0, MAX_HERO_ITEMS);
+    setScenes(capped);
+    try {
+      localStorage.setItem(HERO_SCENES_KEY, JSON.stringify(capped));
+      emitHeroUpdate();
     } catch {
       /* ignore */
     }
@@ -54,6 +81,7 @@ export function HeroEditor({
     setVideoPoster(poster);
     try {
       localStorage.setItem(HERO_VIDEO_KEY, JSON.stringify({ url, poster }));
+      emitHeroUpdate();
     } catch {
       /* ignore */
     }
@@ -63,7 +91,9 @@ export function HeroEditor({
     const reader = new FileReader();
     reader.onload = () => {
       const url = String(reader.result);
+      if (images.length >= MAX_HERO_ITEMS) return;
       saveImages([...images, url]);
+      saveScenes([...scenes, `Cena ${String(images.length + 1).padStart(2, "0")}`]);
     };
     reader.readAsDataURL(f);
   };
@@ -92,8 +122,8 @@ export function HeroEditor({
             </h3>
             <p className="mt-1 text-sm text-noir-400">
               {label(
-                "Troque as imagens de fundo do banner. Recomendamos usar URLs do Cloudinary para vídeos e imagens em alta resolução.",
-                "Replace the hero background images. We recommend using Cloudinary URLs for high-res videos and images."
+                "Troque até 3 imagens do banner e edite o texto que aparece na linha inferior.",
+                "Replace up to 3 banner images and edit the text shown in the bottom line."
               )}
             </p>
           </div>
@@ -110,7 +140,7 @@ export function HeroEditor({
         {/* Images grid */}
         <div className="mb-8">
           <div className="mb-3 font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
-            {label("Imagens do banner", "Banner images")} ({images.length})
+            {label("Imagens do banner", "Banner images")} ({images.length}/{MAX_HERO_ITEMS})
           </div>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
             {images.map((url, i) => (
@@ -128,10 +158,13 @@ export function HeroEditor({
                   </button>
                   <button
                     onClick={() => {
+                      if (images.length <= 1) return;
                       const next = images.filter((_, j) => j !== i);
                       saveImages(next);
+                      saveScenes(scenes.filter((_, j) => j !== i));
                     }}
-                    className="rounded-full border border-spec-2 px-3 py-1.5 font-mono text-[9px] uppercase tracking-wide2 text-spec-2"
+                    className="rounded-full border border-spec-2 px-3 py-1.5 font-mono text-[9px] uppercase tracking-wide2 text-spec-2 disabled:cursor-not-allowed disabled:opacity-40"
+                    disabled={images.length <= 1}
                   >
                     {label("Remover", "Remove")}
                   </button>
@@ -139,10 +172,28 @@ export function HeroEditor({
                 <span className="absolute left-2 top-2 rounded-full bg-noir-950/70 px-2 py-0.5 font-mono text-[9px] text-cream">
                   {String(i + 1).padStart(2, "0")}
                 </span>
+                <div className="border-t border-noir-800 p-3">
+                  <label className="block">
+                    <span className="font-mono text-[8px] uppercase tracking-wide2 text-noir-500">
+                      {label("Texto inferior", "Bottom text")}
+                    </span>
+                    <input
+                      value={scenes[i] ?? ""}
+                      onChange={(e) => {
+                        const next = [...scenes];
+                        next[i] = e.target.value;
+                        saveScenes(next);
+                      }}
+                      placeholder="Noctilucent · 2024"
+                      className="mt-1 w-full rounded-sm border border-noir-700 bg-noir-950 px-2 py-2 font-mono text-[10px] uppercase tracking-wide2 text-cream placeholder:text-noir-600 focus:border-accent focus:outline-none"
+                    />
+                  </label>
+                </div>
               </div>
             ))}
 
             {/* Add new */}
+            {images.length < MAX_HERO_ITEMS && (
             <label className="flex aspect-[16/10] cursor-pointer flex-col items-center justify-center gap-2 rounded-sm border border-dashed border-noir-700 bg-noir-950 transition-colors hover:border-noir-500">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" className="text-noir-500">
                 <path d="M12 5v14M5 12h14" />
@@ -160,6 +211,7 @@ export function HeroEditor({
                 }}
               />
             </label>
+            )}
           </div>
         </div>
 
@@ -170,8 +222,8 @@ export function HeroEditor({
           </div>
           <p className="mb-4 text-sm text-noir-400">
             {label(
-              "Cole uma URL de vídeo (Cloudinary, Vimeo, ou qualquer CDN). Adicione uma capa para o estado parado.",
-              "Paste a video URL (Cloudinary, Vimeo, or any CDN). Add a poster for the idle state."
+              "Cole uma URL direta de vídeo. Adicione uma capa para o estado parado.",
+              "Paste a direct video URL. Add a poster for the idle state."
             )}
           </p>
 
@@ -184,7 +236,7 @@ export function HeroEditor({
                 <input
                   value={videoUrl}
                   onChange={(e) => saveVideo(e.target.value, videoPoster)}
-                  placeholder="https://res.cloudinary.com/.../video.mp4"
+                  placeholder="https://.../video.mp4"
                   className="mt-1 w-full rounded-sm border border-noir-700 bg-noir-950 px-3 py-2 text-sm text-cream placeholder:text-noir-600 focus:border-accent focus:outline-none"
                 />
               </label>
@@ -197,7 +249,7 @@ export function HeroEditor({
                 <input
                   value={videoPoster}
                   onChange={(e) => saveVideo(videoUrl, e.target.value)}
-                  placeholder="https://res.cloudinary.com/.../poster.jpg"
+                  placeholder="https://.../poster.jpg"
                   className="mt-1 w-full rounded-sm border border-noir-700 bg-noir-950 px-3 py-2 text-sm text-cream placeholder:text-noir-600 focus:border-accent focus:outline-none"
                 />
               </label>
@@ -227,27 +279,6 @@ export function HeroEditor({
               </p>
             </Reveal>
           )}
-        </div>
-
-        {/* Cloudinary tip */}
-        <div className="mb-6 rounded-sm border border-noir-800 bg-noir-950 p-4">
-          <div className="flex items-start gap-3">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" className="mt-0.5 shrink-0 text-accent">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 16v-4M12 8h.01" />
-            </svg>
-            <div>
-              <div className="font-mono text-[10px] uppercase tracking-wide2 text-cream">
-                {label("Dica: use Cloudinary (gratuito)", "Tip: use Cloudinary (free)")}
-              </div>
-              <p className="mt-1 text-sm text-noir-400">
-                {label(
-                  "Crie uma conta em cloudinary.com. Arraste imagens e vídeos para lá. Eles geram URLs otimizadas com CDN global — muito mais rápido que hospedar no próprio site.",
-                  "Create an account at cloudinary.com. Drag images and videos there. They generate optimized URLs with a global CDN — much faster than self-hosting."
-                )}
-              </p>
-            </div>
-          </div>
         </div>
 
         {/* Actions */}
@@ -281,20 +312,53 @@ export function useHeroImages(defaultImages: string[]): string[] {
   const [images, setImages] = useState<string[]>(defaultImages);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(HERO_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setImages(parsed);
+    const hydrate = () => {
+      try {
+        const saved = localStorage.getItem(HERO_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setImages(parsed.slice(0, MAX_HERO_ITEMS));
+          }
         }
+      } catch {
+        /* ignore */
       }
-    } catch {
-      /* ignore */
-    }
+    };
+    hydrate();
+    window.addEventListener("sim-hero-updated", hydrate);
+    return () => window.removeEventListener("sim-hero-updated", hydrate);
   }, []);
 
   return images;
+}
+
+/**
+ * Hook para consumir os textos inferiores do Hero salvos no localStorage.
+ */
+export function useHeroScenes(defaultScenes: readonly string[]): string[] {
+  const [scenes, setScenes] = useState<string[]>([...defaultScenes]);
+
+  useEffect(() => {
+    const hydrate = () => {
+      try {
+        const saved = localStorage.getItem(HERO_SCENES_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setScenes(parsed.slice(0, MAX_HERO_ITEMS));
+          }
+        }
+      } catch {
+        /* ignore */
+      }
+    };
+    hydrate();
+    window.addEventListener("sim-hero-updated", hydrate);
+    return () => window.removeEventListener("sim-hero-updated", hydrate);
+  }, [defaultScenes]);
+
+  return scenes;
 }
 
 /**
@@ -304,12 +368,17 @@ export function useHeroVideo(): { url: string; poster: string } | null {
   const [video, setVideo] = useState<{ url: string; poster: string } | null>(null);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(HERO_VIDEO_KEY);
-      if (saved) setVideo(JSON.parse(saved));
-    } catch {
-      /* ignore */
-    }
+    const hydrate = () => {
+      try {
+        const saved = localStorage.getItem(HERO_VIDEO_KEY);
+        if (saved) setVideo(JSON.parse(saved));
+      } catch {
+        /* ignore */
+      }
+    };
+    hydrate();
+    window.addEventListener("sim-hero-updated", hydrate);
+    return () => window.removeEventListener("sim-hero-updated", hydrate);
   }, []);
 
   return video;
