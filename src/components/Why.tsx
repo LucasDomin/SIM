@@ -29,7 +29,7 @@ export function Why() {
               </p>
             </Reveal>
             <Reveal delay={160}>
-              <SpectrumBar animate className="max-w-[220px]" />
+              <SpectrumBar glow animate height="h-[4px]" className="max-w-[240px]" />
             </Reveal>
           </div>
         </Reveal>

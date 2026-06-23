@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Loader } from "./components/Loader";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
+import { StillMovementDivider } from "./components/StillMovementDivider";
 import { ParallaxMarquee } from "./components/ParallaxMarquee";
 import { Manifesto } from "./components/Manifesto";
 import { SelectedWorks } from "./components/SelectedWorks";
@@ -60,13 +61,28 @@ export default function App() {
 
         <main>
           <Hero onEnter={() => scrollToId("works")} />
-          <ParallaxMarquee text="Still In Movement" />
+
+          {/* divisor entre Hero e Bloco 01 */}
+          <StillMovementDivider />
+
           <Manifesto />
           <SelectedWorks onOpen={setSlug} />
+
+          {/* 03 ONDE? + 04 Reconhecimento quase juntos */}
           <Capabilities />
-          <Why />
           <Recognition />
+
+          {/* divisor antes do Por quê? */}
+          <StillMovementDivider />
+
+          <Why />
+
+          {/* parallax "a resposta continua sendo sim" após o Por quê? */}
           <ParallaxMarquee text="A resposta continua sendo SIM" />
+
+          {/* divisor antes do Contato */}
+          <StillMovementDivider />
+
           <Contact onAdmin={() => setAdmin(true)} />
         </main>
 

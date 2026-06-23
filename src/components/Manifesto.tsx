@@ -66,7 +66,7 @@ export function Manifesto() {
             </Reveal>
 
             <Reveal delay={300}>
-              <SpectrumBar animate className="mt-2 max-w-xs" />
+              <SpectrumBar glow animate height="h-[4px]" className="mt-4 max-w-xs" />
             </Reveal>
           </div>
         </div>

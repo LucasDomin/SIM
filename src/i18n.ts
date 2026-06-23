@@ -107,11 +107,10 @@ export const translations = {
       headline1: "Vamos criar",
       headline2: "algo juntos",
       questions: [
-        { q: "Como tirar uma ideia do papel?", a: "SIM." },
-        { q: "Como produzir algo diferente?", a: "SIM." },
-        { q: "Como contar uma história melhor?", a: "SIM." },
-        { q: "Como começar?", a: "SIM." },
-        { q: "Como entrar em contato?", a: "SIM." },
+        "Como traduzir sua marca em imagem?",
+        "Como criar presença visual?",
+        "Como transformar percepção em desejo?",
+        "Como gerar impacto real?",
       ],
     },
     ai: {
@@ -224,11 +223,10 @@ export const translations = {
       headline1: "Let's create",
       headline2: "something together",
       questions: [
-        { q: "How to turn an idea into reality?", a: "SIM." },
-        { q: "How to produce something different?", a: "SIM." },
-        { q: "How to tell a better story?", a: "SIM." },
-        { q: "How to begin?", a: "SIM." },
-        { q: "How to get in touch?", a: "SIM." },
+        "How to translate your brand into image?",
+        "How to create visual presence?",
+        "How to turn perception into desire?",
+        "How to make real impact?",
       ],
     },
     ai: {

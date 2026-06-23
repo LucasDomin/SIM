@@ -67,30 +67,44 @@ export function SectionLabel({
   );
 }
 
-/* The logo spectrum bar, reused as a hairline divider / energy accent */
+/* The logo spectrum bar — signature brand asset, reused as a divider / accent */
 export function SpectrumBar({
   className = "",
   height = "h-[3px]",
   animate = false,
+  glow = false,
 }: {
   className?: string;
   height?: string;
   animate?: boolean;
+  glow?: boolean;
 }) {
   return (
-    <div
-      className={cn(
-        "relative flex w-full overflow-hidden rounded-full",
-        height,
-        className
+    <div className={cn("relative", className)}>
+      {/* soft glow behind the bar */}
+      {glow && (
+        <div
+          className="pointer-events-none absolute -inset-x-2 -inset-y-3 rounded-full opacity-60 blur-xl"
+          style={{
+            background:
+              "linear-gradient(90deg, rgba(153,110,167,.5), rgba(228,90,88,.5), rgba(234,141,17,.5), rgba(250,196,33,.5), rgba(51,174,116,.5), rgba(40,148,209,.5))",
+          }}
+          aria-hidden
+        />
       )}
-    >
-      {SPECTRUM.map((c, i) => (
-        <div key={i} className="h-full flex-1" style={{ backgroundColor: c }} />
-      ))}
-      {animate && (
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 animate-spec-sweep bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-      )}
+      <div
+        className={cn(
+          "relative flex w-full overflow-hidden rounded-full",
+          height
+        )}
+      >
+        {SPECTRUM.map((c, i) => (
+          <div key={i} className="h-full flex-1" style={{ backgroundColor: c }} />
+        ))}
+        {animate && (
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 animate-spec-sweep bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+        )}
+      </div>
     </div>
   );
 }

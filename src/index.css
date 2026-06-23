@@ -218,7 +218,21 @@ body {
   }
 }
 .animate-spec-sweep {
-  animation: spec-sweep 2.4s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+  animation: spec-sweep 3.6s cubic-bezier(0.7, 0, 0.3, 1) infinite;
+}
+
+/* Breathe — movimento horizontal muito sutil (signature bar) */
+@keyframes breathe-x {
+  0%,
+  100% {
+    transform: translateX(-2%) scaleX(0.985);
+  }
+  50% {
+    transform: translateX(2%) scaleX(1);
+  }
+}
+.animate-breathe-x {
+  animation: breathe-x 7s ease-in-out infinite;
 }
 
 /* Blinking record dot */

@@ -30,10 +30,12 @@ export function Logo({
   className = "",
   animated = false,
   compact = false,
+  noBar = false,
 }: {
   className?: string;
   animated?: boolean;
   compact?: boolean;
+  noBar?: boolean;
 }) {
   const [p, setP] = useState(animated ? 0 : 1);
   const uid = useId();
@@ -66,24 +68,28 @@ export function Logo({
     >
       <path d={WORD_PATH} fill="currentColor" className="text-cream" />
 
-      <defs>
-        <clipPath id={clipId}>
-          <rect x={BAR.start} y={BAR.y} width={BAR.width * p} height={BAR.height} />
-        </clipPath>
-      </defs>
+      {!noBar && (
+        <>
+          <defs>
+            <clipPath id={clipId}>
+              <rect x={BAR.start} y={BAR.y} width={BAR.width * p} height={BAR.height} />
+            </clipPath>
+          </defs>
 
-      <g clipPath={`url(#${clipId})`}>
-        {SEGMENTS.map((c, i) => (
-          <rect
-            key={c}
-            x={BAR.start + i * SEG_W}
-            y={BAR.y}
-            width={SEG_W}
-            height={BAR.height}
-            fill={c}
-          />
-        ))}
-      </g>
+          <g clipPath={`url(#${clipId})`}>
+            {SEGMENTS.map((c, i) => (
+              <rect
+                key={c}
+                x={BAR.start + i * SEG_W}
+                y={BAR.y}
+                width={SEG_W}
+                height={BAR.height}
+                fill={c}
+              />
+            ))}
+          </g>
+        </>
+      )}
     </svg>
   );
 }

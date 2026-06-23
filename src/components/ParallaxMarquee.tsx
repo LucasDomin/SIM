@@ -1,16 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { SpectrumBar } from "./ui";
 
 /**
- * Letreiro PARALLAX — "Still In Movement".
- * Duas faixas gigantes de tipografia que se deslocam:
- *  - movimento contínuo (marquee CSS)
- *  - + parallax ligado ao scroll (a faixa "respira" conforme você rola)
- * Linha superior contornada (outline), linha inferior preenchida.
- * É a tradução literal do conceito: o letreiro parado que está em movimento.
+ * ParallaxMarquee — letreiro com texto em parallax.
+ * Usado para frases de impacto entre seções.
  */
 export function ParallaxMarquee({
-  text = "Still In Movement",
+  text = "A resposta continua sendo SIM",
 }: {
   text?: string;
 }) {
@@ -26,8 +21,8 @@ export function ParallaxMarquee({
         if (!el) return;
         const rect = el.getBoundingClientRect();
         const vh = window.innerHeight;
-        // -1 (abaixo da viewport) → 1 (acima). 0 quando centralizado.
-        const progress = (vh / 2 - (rect.top + rect.height / 2)) / (vh / 2 + rect.height / 2);
+        const progress =
+          (vh / 2 - (rect.top + rect.height / 2)) / (vh / 2 + rect.height / 2);
         setShift(progress);
       });
     };
@@ -78,16 +73,6 @@ export function ParallaxMarquee({
           <span className="font-display text-[15vw] font-light italic leading-[0.9] tracking-[-0.02em] text-cream md:text-[11vw]">
             {run}
           </span>
-        </div>
-      </div>
-
-      {/* assinatura central */}
-      <div className="pointer-events-none absolute inset-x-0 top-1/2 z-10 mx-auto flex max-w-[1500px] -translate-y-1/2 items-center justify-center px-5">
-        <div className="glass flex items-center gap-3 rounded-full px-5 py-2 font-mono text-[10px] uppercase tracking-wide2 text-noir-200">
-          <span className="inline-block h-1.5 w-1.5 animate-glow rounded-full bg-accent" />
-          Still
-          <SpectrumBar className="w-16" height="h-[3px]" />
-          Movement
         </div>
       </div>
     </section>
