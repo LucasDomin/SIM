@@ -252,43 +252,52 @@ export function HeroEditor({
           </div>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
             {images.map((url, i) => (
-              <div key={i} className="group relative overflow-hidden rounded-sm border border-noir-700 bg-noir-950">
-                {url ? (
-                  <img src={url} alt="" className="aspect-[16/10] w-full object-cover" />
-                ) : (
-                  <div className="flex aspect-[16/10] items-center justify-center bg-noir-950 text-center font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
-                    {label("Cole uma URL", "Paste URL")}
+              <div key={i} className="rounded-sm border border-noir-700 bg-noir-950">
+
+                {/* Área da imagem — hover só aqui, isolado dos inputs */}
+                <div className="group relative overflow-hidden">
+                  {url ? (
+                    <img src={url} alt="" className="aspect-[16/10] w-full object-cover" />
+                  ) : (
+                    <div className="flex aspect-[16/10] items-center justify-center bg-noir-800/30 text-center font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
+                      {label("Cole a URL abaixo", "Paste URL below")}
+                    </div>
+                  )}
+                  {/* Overlay de ações — só cobre a imagem */}
+                  <div className="absolute inset-0 flex items-center justify-center gap-2 bg-noir-950/70 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!url) return;
+                        setCropperTarget({ idx: i, url });
+                        setCropperOpen(true);
+                      }}
+                      disabled={!url}
+                      className="rounded-full bg-cream px-3 py-1.5 font-mono text-[9px] uppercase tracking-wide2 text-noir-950 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      {label("Crop", "Crop")}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={images.length <= 1}
+                      onClick={() => {
+                        if (images.length <= 1) return;
+                        saveImages(images.filter((_, j) => j !== i));
+                        saveScenes(scenes.filter((_, j) => j !== i));
+                        saveReels(reels.filter((_, j) => j !== i));
+                      }}
+                      className="rounded-full border border-spec-2 px-3 py-1.5 font-mono text-[9px] uppercase tracking-wide2 text-spec-2 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      {label("Remover", "Remove")}
+                    </button>
                   </div>
-                )}
-                <div className="absolute inset-0 flex items-center justify-center gap-2 bg-noir-950/60 opacity-0 transition-opacity group-hover:opacity-100">
-                  <button
-                    onClick={() => {
-                      if (!url) return;
-                      setCropperTarget({ idx: i, url });
-                      setCropperOpen(true);
-                    }}
-                    className="rounded-full bg-cream px-3 py-1.5 font-mono text-[9px] uppercase tracking-wide2 text-noir-950 disabled:cursor-not-allowed disabled:opacity-40"
-                    disabled={!url}
-                  >
-                    {label("Crop", "Crop")}
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (images.length <= 1) return;
-                      const next = images.filter((_, j) => j !== i);
-                      saveImages(next);
-                      saveScenes(scenes.filter((_, j) => j !== i));
-                      saveReels(reels.filter((_, j) => j !== i));
-                    }}
-                    className="rounded-full border border-spec-2 px-3 py-1.5 font-mono text-[9px] uppercase tracking-wide2 text-spec-2 disabled:cursor-not-allowed disabled:opacity-40"
-                    disabled={images.length <= 1}
-                  >
-                    {label("Remover", "Remove")}
-                  </button>
+                  {/* Número */}
+                  <span className="absolute left-2 top-2 rounded-full bg-noir-950/70 px-2 py-0.5 font-mono text-[9px] text-cream">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                 </div>
-                <span className="absolute left-2 top-2 rounded-full bg-noir-950/70 px-2 py-0.5 font-mono text-[9px] text-cream">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
+
+                {/* Campos de edição — fora do overflow-hidden, totalmente clicáveis */}
                 <div className="space-y-3 border-t border-noir-800 p-3">
                   <label className="block">
                     <span className="font-mono text-[8px] uppercase tracking-wide2 text-noir-500">
@@ -323,7 +332,7 @@ export function HeroEditor({
                   </label>
                   <label className="block">
                     <span className="font-mono text-[8px] uppercase tracking-wide2 text-noir-500">
-                      {label("URL do reel para View Reel", "View Reel video URL")}
+                      {label("URL do reel (View Reel)", "View Reel URL")}
                     </span>
                     <input
                       value={reels[i] ?? ""}
