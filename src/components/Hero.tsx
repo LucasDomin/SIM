@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
 import { projects } from "../data/projects";
 import { useHeroImages, useHeroScenes, useHeroVideo } from "./HeroEditor";
+import { Logo } from "./Logo";
 
 /* Film timecode formatter: 00:00:00:00 (HH:MM:SS:FF @ 24fps) */
 function tc(ms: number) {
@@ -28,6 +29,7 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
   const heroScenes = useHeroScenes(t.hero.scenes);
   const heroVideo = useHeroVideo();
   const heroImages = savedImages.length > 0 ? savedImages : defaultImages;
+  const [answerBefore, answerAfter = ""] = t.hero.titleEm.split("SIM");
 
   const [active, setActive] = useState(0);
   const [prog, setProg] = useState(0); // 0..1 within current slide
@@ -144,8 +146,13 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
           <span className="block text-[12.5vw] sm:text-[11vw] md:text-[8.4vw] lg:text-[8vw]">
             {t.hero.title2}
           </span>
-          <span className="block italic text-[12.5vw] text-accent sm:text-[11vw] md:text-[8.4vw] lg:text-[8vw]">
-            {t.hero.titleEm}
+          <span className="mt-2 flex flex-wrap items-baseline gap-[0.16em] text-[12.5vw] text-accent sm:mt-3 sm:text-[11vw] md:mt-4 md:text-[8.4vw] lg:text-[8vw]">
+            <span>{answerBefore.trim()}</span>
+            <Logo
+              noBar
+              className="inline-block !h-auto w-[27vw] translate-y-[0.08em] text-accent sm:w-[22vw] md:w-[16.5vw] lg:w-[14vw]"
+            />
+            <span>{answerAfter}</span>
           </span>
         </h1>
 

@@ -31,7 +31,7 @@ export const translations = {
       closing: "Pensou em audiovisual e bateu a dúvida?",
       answer: "A resposta é SIM.",
       toggleStill: "Still",
-      toggleMove: "Motion",
+      toggleMove: "Movement",
     },
     works: {
       label: "O QUÊ?",
@@ -147,7 +147,7 @@ export const translations = {
       closing: "Thought about audiovisual and started wondering?",
       answer: "The answer is SIM.",
       toggleStill: "Still",
-      toggleMove: "Motion",
+      toggleMove: "Movement",
     },
     works: {
       label: "WHAT?",

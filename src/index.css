@@ -35,9 +35,9 @@
   --color-spec-7: #b1b7b1;
   --color-spec-8: #f4c78d;
 
-  --font-display: "Courier Prime", "Courier New", monospace;
+  --font-display: "Inter", system-ui, sans-serif;
   --font-sans: "Inter", system-ui, sans-serif;
-  --font-mono: "Courier Prime", "Courier New", ui-monospace, monospace;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
 :root {

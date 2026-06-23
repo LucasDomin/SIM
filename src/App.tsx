@@ -77,8 +77,8 @@ export default function App() {
 
           <Why />
 
-          {/* parallax "a resposta continua sendo sim" após o Por quê? */}
-          <ParallaxMarquee text="A resposta continua sendo SIM" />
+          {/* parallax com logo SIM após o Por quê? */}
+          <ParallaxMarquee />
 
           {/* divisor antes do Contato */}
           <StillMovementDivider />
