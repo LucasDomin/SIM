@@ -29,7 +29,6 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
   const heroScenes = useHeroScenes(t.hero.scenes);
   const heroVideo = useHeroVideo();
   const heroImages = savedImages.length > 0 ? savedImages : defaultImages;
-  const [answerBefore, answerAfter = ""] = t.hero.titleEm.split("SIM");
 
   const [active, setActive] = useState(0);
   const [prog, setProg] = useState(0); // 0..1 within current slide
@@ -146,13 +145,14 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
           <span className="block text-[12.5vw] sm:text-[11vw] md:text-[8.4vw] lg:text-[8vw]">
             {t.hero.title2}
           </span>
-          <span className="mt-2 flex flex-wrap items-baseline gap-[0.16em] text-[12.5vw] text-accent sm:mt-3 sm:text-[11vw] md:mt-4 md:text-[8.4vw] lg:text-[8vw]">
-            <span>{answerBefore.trim()}</span>
-            <Logo
-              noBar
-              className="inline-block !h-auto w-[27vw] translate-y-[0.08em] text-accent sm:w-[22vw] md:w-[16.5vw] lg:w-[14vw]"
-            />
-            <span>{answerAfter}</span>
+          <span className="mt-2 flex flex-wrap items-end gap-x-3 gap-y-2 sm:mt-3 md:mt-4">
+            <span className="text-[12.5vw] text-accent sm:text-[11vw] md:text-[8.4vw] lg:text-[8vw]">
+              {t.hero.titleEm.split("SIM")[0]}
+            </span>
+            <Logo noBar className="!h-auto w-[32vw] sm:w-[27vw] md:w-[20vw] lg:w-[17vw] text-accent" />
+            <span className="text-[12.5vw] text-accent sm:text-[11vw] md:text-[8.4vw] lg:text-[8vw]">
+              {t.hero.titleEm.split("SIM")[1]}
+            </span>
           </span>
         </h1>
 

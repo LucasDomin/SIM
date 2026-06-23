@@ -31,13 +31,11 @@ export function Logo({
   animated = false,
   compact = false,
   noBar = false,
-  outline = false,
 }: {
   className?: string;
   animated?: boolean;
   compact?: boolean;
   noBar?: boolean;
-  outline?: boolean;
 }) {
   const [p, setP] = useState(animated ? 0 : 1);
   const uid = useId();
@@ -68,14 +66,7 @@ export function Logo({
       aria-label="SIM — Still In Movement"
       role="img"
     >
-      <path
-        d={WORD_PATH}
-        fill={outline ? "none" : "currentColor"}
-        stroke={outline ? "currentColor" : undefined}
-        strokeWidth={outline ? 8 : undefined}
-        strokeLinejoin={outline ? "round" : undefined}
-        className="text-cream"
-      />
+      <path d={WORD_PATH} fill="currentColor" className="text-cream" />
 
       {!noBar && (
         <>
