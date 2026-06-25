@@ -1,148 +1,135 @@
--- SIM Studio - Supabase Database Schema
--- Execute this in your Supabase SQL Editor
+-- =============================================================================
+-- SIM — schema.sql
+-- Cria o schema completo para o site da Still In Movement.
+-- Idempotente: pode ser executado mais de uma vez.
+-- =============================================================================
 
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+create extension if not exists "pgcrypto";
 
--- ============================================
--- CONTENT TABLE
--- ============================================
-CREATE TABLE IF NOT EXISTS content (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name TEXT UNIQUE NOT NULL,
-  friendly_name TEXT NOT NULL,
-  category TEXT NOT NULL,
-  type TEXT NOT NULL CHECK (type IN ('text', 'image', 'video', 'config')),
-  value TEXT NOT NULL,
-  value_en TEXT,
-  value_pt TEXT,
-  metadata JSONB DEFAULT '{}',
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_by UUID REFERENCES auth.users(id)
+-- -----------------------------------------------------------------------------
+-- Tabela: projects
+-- Cada row = um projeto do portfólio. is_draft = true => só admin vê.
+-- -----------------------------------------------------------------------------
+create table if not exists public.projects (
+  id          uuid primary key default gen_random_uuid(),
+  slug        text unique not null,
+  title       text not null,
+  subtitle    text,
+  category    text,
+  client      text,
+  description text,
+  year        text,
+  location    text,
+  duration    text,
+  format      text,
+  cover       text,
+  stills      jsonb default '[]'::jsonb,
+  credits     jsonb default '[]'::jsonb,
+  awards      jsonb default '[]'::jsonb,
+  color       text,
+  video       text,
+  poster      text,
+  is_draft    boolean default false,
+  created_at  timestamptz default now(),
+  updated_at  timestamptz default now()
 );
 
--- Index for faster lookups
-CREATE INDEX IF NOT EXISTS idx_content_name ON content(name);
-CREATE INDEX IF NOT EXISTS idx_content_category ON content(category);
+create index if not exists idx_projects_slug on public.projects (slug);
+create index if not exists idx_projects_draft on public.projects (is_draft);
 
--- ============================================
--- MEDIA TRACKING TABLE (Optional)
--- ============================================
-CREATE TABLE IF NOT EXISTS media_files (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name TEXT NOT NULL,
-  original_name TEXT NOT NULL,
-  format TEXT NOT NULL,
-  size BIGINT NOT NULL,
-  width INTEGER,
-  height INTEGER,
-  aspect_ratio TEXT,
-  duration INTEGER, -- in seconds (for videos)
-  url TEXT NOT NULL,
-  thumbnail_url TEXT,
-  bucket TEXT NOT NULL,
-  path TEXT NOT NULL,
-  crop_data JSONB,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  created_by UUID REFERENCES auth.users(id)
+-- -----------------------------------------------------------------------------
+-- Tabela: site_config
+-- Apenas uma linha (id = 'default') com a configuração do hero.
+-- Campo _draft guarda o rascunho antes de publicar.
+-- -----------------------------------------------------------------------------
+create table if not exists public.site_config (
+  id                 text primary key default 'default',
+  hero_images        jsonb default '[]'::jsonb,
+  hero_scenes        jsonb default '[]'::jsonb,
+  hero_reels         jsonb default '[]'::jsonb,
+  background_video   jsonb default '{"url":"","poster":""}'::jsonb,
+  _draft              jsonb,
+  updated_at         timestamptz default now()
 );
 
-CREATE INDEX IF NOT EXISTS idx_media_bucket ON media_files(bucket);
-CREATE INDEX IF NOT EXISTS idx_media_name ON media_files(name);
+-- -----------------------------------------------------------------------------
+-- Tabela: pricing_table
+-- Categorias, itens, custos-base e preços sugeridos.
+-- -----------------------------------------------------------------------------
+create table if not exists public.pricing_table (
+  id          uuid primary key default gen_random_uuid(),
+  category    text not null,
+  item_name   text not null,
+  base_cost   numeric(10, 2) default 0,
+  sale_price  numeric(10, 2) default 0,
+  updated_at  timestamptz default now()
+);
 
--- ============================================
--- ROW LEVEL SECURITY (RLS)
--- ============================================
+-- -----------------------------------------------------------------------------
+-- Row Level Security (RLS) — segurança real
+-- -----------------------------------------------------------------------------
+alter table public.projects       enable row level security;
+alter table public.site_config    enable row level security;
+alter table public.pricing_table  enable row level security;
 
--- Content RLS
-ALTER TABLE content ENABLE ROW LEVEL SECURITY;
+-- Limpa policies existentes para tornar o script idempotente
+drop policy if exists "projects: public read"     on public.projects;
+drop policy if exists "projects: admin write"    on public.projects;
+drop policy if exists "site_config: public read"  on public.site_config;
+drop policy if exists "site_config: admin write" on public.site_config;
+drop policy if exists "pricing: public read"       on public.pricing_table;
+drop policy if exists "pricing: admin write"      on public.pricing_table;
 
--- Allow authenticated users to read content
-CREATE POLICY "Allow authenticated read content"
-  ON content FOR SELECT
-  TO authenticated
-  USING (true);
+-- projects: visitantes leem apenas o publicado (is_draft = false)
+create policy "projects: public read"
+  on public.projects for select
+  using (is_draft = false);
 
--- Allow authenticated users to update content
-CREATE POLICY "Allow authenticated update content"
-  ON content FOR UPDATE
-  TO authenticated
-  USING (true);
+-- projects: somente admin logado escreve
+create policy "projects: admin write"
+  on public.projects for all
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');
 
--- Media RLS
-ALTER TABLE media_files ENABLE ROW LEVEL SECURITY;
+-- site_config: visitantes leem
+create policy "site_config: public read"
+  on public.site_config for select
+  using (true);
 
-CREATE POLICY "Allow authenticated read media"
-  ON media_files FOR SELECT
-  TO authenticated
-  USING (true);
+create policy "site_config: admin write"
+  on public.site_config for all
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');
 
-CREATE POLICY "Allow authenticated insert media"
-  ON media_files FOR INSERT
-  TO authenticated
-  WITH CHECK (true);
+-- pricing_table: visitantes leem
+create policy "pricing: public read"
+  on public.pricing_table for select
+  using (true);
 
-CREATE POLICY "Allow authenticated update media"
-  ON media_files FOR UPDATE
-  TO authenticated
-  USING (true);
+create policy "pricing: admin write"
+  on public.pricing_table for all
+  using (auth.role() = 'authenticated')
+  with check (auth.role() = 'authenticated');
 
--- ============================================
--- STORAGE BUCKETS
--- ============================================
--- These will be created via Supabase Dashboard or API
--- Bucket names: images, videos, documents
+-- -----------------------------------------------------------------------------
+-- Storage bucket para uploads (imagens, vídeos)
+-- -----------------------------------------------------------------------------
+insert into storage.buckets (id, name, public)
+  values ('sim-media', 'sim-media', true)
+  on conflict (id) do nothing;
 
--- ============================================
--- DEFAULT CONTENT SEED
--- ============================================
-INSERT INTO content (name, friendly_name, category, type, value) VALUES
-  -- Hero Section
-  ('hero_title', 'Hero Title', 'hero', 'text', 'Imagens que permanecem em silêncio.'),
-  ('hero_subtitle', 'Hero Subtitle', 'hero', 'text', 'Cinematic Photography · Audiovisual Studio'),
-  ('hero_description', 'Hero Description', 'hero', 'text', 'Estúdio independente dedicado à fotografia editorial e ao cinema de marca para clientes que entendem o valor do detalhe.'),
-  ('hero_cta_primary', 'Hero CTA Primary', 'hero', 'text', 'Assistir reel'),
-  ('hero_cta_secondary', 'Hero CTA Secondary', 'hero', 'text', 'Solicitar orçamento inteligente'),
-  
-  -- About/Manifesto
-  ('manifesto_title', 'Manifesto Title', 'about', 'text', 'Manifesto'),
-  ('manifesto_text', 'Manifesto Text', 'about', 'text', 'Acreditamos que a melhor imagem é aquela que continua a existir depois de fechar os olhos. Não fabricamos atenção — construímos memória.'),
-  
-  -- Footer
-  ('footer_brand', 'Footer Brand', 'footer', 'text', 'SIM.'),
-  ('footer_tagline', 'Footer Tagline', 'footer', 'text', 'Capturas que permanecem em movimento.'),
-  ('footer_email', 'Footer Email', 'footer', 'text', 'studio@sim.studio'),
-  ('footer_phone', 'Footer Phone', 'footer', 'text', '+351 900 000 000'),
-  ('footer_social', 'Footer Social', 'footer', 'text', '@sim.studio'),
-  
-  -- Config
-  ('site_name', 'Site Name', 'config', 'config', 'SIM - Still In Moviment'),
-  ('site_description', 'Site Description', 'config', 'config', 'Cinematic Photography & Audiovisual Studio')
-ON CONFLICT (name) DO NOTHING;
+drop policy if exists "sim-media: public read"   on storage.objects;
+drop policy if exists "sim-media: admin upload" on storage.objects;
+drop policy if exists "sim-media: admin delete" on storage.objects;
 
--- ============================================
--- FUNCTIONS
--- ============================================
+create policy "sim-media: public read"
+  on storage.objects for select
+  using (bucket_id = 'sim-media');
 
--- Function to update updated_at timestamp
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+create policy "sim-media: admin upload"
+  on storage.objects for insert
+  with check (bucket_id = 'sim-media' and auth.role() = 'authenticated');
 
--- Trigger for content table
-CREATE TRIGGER update_content_updated_at
-  BEFORE UPDATE ON content
-  FOR EACH ROW
-  EXECUTE FUNCTION update_updated_at_column();
-
--- Trigger for media_files table
-CREATE TRIGGER update_media_updated_at
-  BEFORE UPDATE ON media_files
-  FOR EACH ROW
-  EXECUTE FUNCTION update_updated_at_column();
+create policy "sim-media: admin delete"
+  on storage.objects for delete
+  using (bucket_id = 'sim-media' and auth.role() = 'authenticated');

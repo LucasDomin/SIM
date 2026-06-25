@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import type { Project } from "../data/projects";
+import type { Project } from "../data/defaults";
 import { SpectrumBar } from "./ui";
 
 export function CaseStudy({

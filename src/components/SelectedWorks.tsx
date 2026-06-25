@@ -1,7 +1,7 @@
 import { useLang } from "../contexts/LanguageContext";
 import { useAdmin } from "../contexts/AdminContext";
-import { projects } from "../data/projects";
-import type { Project } from "../data/projects";
+import { projects } from "../data/defaults";
+import type { Project } from "../data/defaults";
 import { Reveal, SectionLabel } from "./ui";
 import { FramesStrip } from "./FramesReel";
 import { Clients } from "./Clients";

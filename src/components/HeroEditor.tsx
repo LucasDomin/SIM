@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
 import { useConsent, makeSafeStorage } from "../contexts/ConsentContext";
-import { SITE_CONFIG } from "../data/siteConfig";
+import { SITE_CONFIG } from "../data/defaults";
 import { ImageCropper } from "./ImageCropper";
 import { Reveal } from "./ui";
 import {

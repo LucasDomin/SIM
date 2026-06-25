@@ -1,5 +1,5 @@
 import { useLang } from "../contexts/LanguageContext";
-import { clients } from "../data/projects";
+import { clients } from "../data/defaults";
 import { Reveal } from "./ui";
 
 export function Clients() {

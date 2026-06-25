@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
-import { SITE_CONFIG } from "../data/siteConfig";
+import { SITE_CONFIG } from "../data/defaults";
 import { useHeroImages, useHeroReels, useHeroScenes, useHeroVideo } from "./HeroEditor";
 import { Logo } from "./Logo";
 

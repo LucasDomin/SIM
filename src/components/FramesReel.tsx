@@ -1,4 +1,4 @@
-import { projects } from "../data/projects";
+import { projects } from "../data/defaults";
 import { SprocketStrip } from "./ui";
 
 const STILL_W = 320;

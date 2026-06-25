@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Project } from "../data/projects";
+import type { Project } from "../data/defaults";
 import { useLang } from "../contexts/LanguageContext";
 import { useAdmin } from "../contexts/AdminContext";
 import { ImageCropper } from "./ImageCropper";

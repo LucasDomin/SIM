@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
 import { useAdmin } from "../contexts/AdminContext";
-import { projects } from "../data/projects";
-import type { Project } from "../data/projects";
+import type { Project } from "../data/defaults";
 import { ProjectEditor } from "./ProjectEditor";
 import { HeroEditor } from "./HeroEditor";
 import { Logo } from "./Logo";
@@ -13,9 +12,17 @@ import { SpectrumBar } from "./ui";
  * Lista todos os projetos com thumbnails, indica os que têm rascunho
  * pendente, e abre o ProjectEditor com pré-visualização e crop.
  */
-export function AdminDashboard({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function AdminDashboard({
+  open,
+  onClose,
+  onLogout,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onLogout?: () => void;
+}) {
   const { lang } = useLang();
-  const { logout, drafts, setEditing, authenticated } = useAdmin();
+  const { logout, drafts, setEditing, authenticated, rows, rowsLoading, refreshRows, email } = useAdmin();
   const [active, setActive] = useState<Project | null>(null);
   const [heroOpen, setHeroOpen] = useState(false);
 
@@ -33,8 +40,19 @@ export function AdminDashboard({ open, onClose }: { open: boolean; onClose: () =
               <span className="font-mono text-[10px] uppercase tracking-wide2 text-noir-400">
                 / {label("Painel de edição", "Edit dashboard")}
               </span>
+              {email && (
+                <span className="hidden rounded-full border border-noir-700 px-3 py-1 font-mono text-[9px] uppercase tracking-wide2 text-noir-300 md:inline">
+                  {email}
+                </span>
+              )}
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => refreshRows()}
+                className="rounded-full border border-noir-700 px-3 py-2 font-mono text-[10px] uppercase tracking-wide2 text-noir-300 transition-colors hover:border-noir-500 hover:text-cream"
+              >
+                {label("Atualizar", "Refresh")}
+              </button>
               <button
                 onClick={() => setHeroOpen(true)}
                 className="rounded-full border border-accent px-4 py-2 font-mono text-[10px] uppercase tracking-wide2 text-accent transition-colors hover:bg-accent hover:text-noir-950"
@@ -48,7 +66,7 @@ export function AdminDashboard({ open, onClose }: { open: boolean; onClose: () =
                 {label("Ativar modo edição", "Turn edit mode on")}
               </button>
               <button
-                onClick={logout}
+                onClick={() => (onLogout ? onLogout() : logout())}
                 className="rounded-full border border-noir-700 px-4 py-2 font-mono text-[10px] uppercase tracking-wide2 text-noir-300 transition-colors hover:border-noir-500 hover:text-cream"
               >
                 {label("Sair", "Sign out")}
@@ -67,15 +85,20 @@ export function AdminDashboard({ open, onClose }: { open: boolean; onClose: () =
 
           <p className="mt-6 max-w-2xl text-sm leading-relaxed text-noir-400">
             {label(
-              "Clique em qualquer projeto para abrir o editor. Você poderá alterar textos e substituir/cortar imagens com pré-visualização antes de publicar. Rascunhos são guardados localmente.",
-              "Click any project to open the editor. You can change text and replace/crop images with a live preview before publishing. Drafts are stored locally."
+              "Clique em qualquer projeto para abrir o editor. Você poderá alterar textos, substituir/cortar imagens e publicar alterações no Supabase. As mudanças aparecem para todos os visitantes em tempo real.",
+              "Click any project to open the editor. You can change text, replace/crop images and publish to Supabase. Changes appear for every visitor in real time."
             )}
           </p>
 
           <SpectrumBar className="mt-8" />
 
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {projects.map((p) => {
+            {rowsLoading && (
+              <div className="col-span-full rounded-sm border border-noir-800 bg-noir-900 px-4 py-3 font-mono text-[10px] uppercase tracking-wide2 text-noir-400">
+                {label("Carregando do Supabase…", "Loading from Supabase…")}
+              </div>
+            )}
+            {rows.map((p) => {
               const hasDraft = Boolean(drafts[p.slug]);
               return (
                 <button

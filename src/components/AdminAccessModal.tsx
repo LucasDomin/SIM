@@ -13,15 +13,16 @@ export function AdminAccessModal({
   onClose: () => void;
 }) {
   const { t, lang } = useLang();
-  const { authenticated, login } = useAdmin();
+  const { authenticated, login, logout } = useAdmin();
   const [code, setCode] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [dashboardOpen, setDashboardOpen] = useState(false);
 
   useEffect(() => {
     if (!open) {
       setCode("");
-      setError(false);
+      setError(null);
       setDashboardOpen(false);
     }
     if (open && authenticated) {
@@ -38,19 +39,26 @@ export function AdminAccessModal({
 
   if (!open) return null;
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = login(code);
-    if (ok) {
-      setError(false);
+    setError(null);
+    setLoading(true);
+    const res = await login(code);
+    setLoading(false);
+    if (res.ok) {
       setDashboardOpen(true);
     } else {
-      setError(true);
+      setError(res.error ?? (lang === "pt" ? "Código inválido." : "Invalid code."));
     }
   };
 
+  const handleLogout = async () => {
+    await logout();
+    setDashboardOpen(false);
+  };
+
   if (dashboardOpen || authenticated) {
-    return <AdminDashboard open onClose={onClose} />;
+    return <AdminDashboard open onClose={onClose} onLogout={handleLogout} />;
   }
 
   return (
@@ -89,10 +97,11 @@ export function AdminAccessModal({
 
         <input
           type="password"
+          autoComplete="current-password"
           value={code}
           onChange={(e) => {
             setCode(e.target.value);
-            setError(false);
+            setError(null);
           }}
           placeholder="••••••••"
           autoFocus
@@ -100,17 +109,20 @@ export function AdminAccessModal({
             error ? "border-spec-2" : "border-noir-700 focus:border-accent"
           }`}
         />
-        {error && (
-          <p className="mt-2 text-xs text-spec-2">
-            {lang === "pt" ? "Código inválido." : "Invalid code."}
-          </p>
-        )}
+        {error && <p className="mt-2 text-xs text-spec-2">{error}</p>}
 
         <button
           type="submit"
-          className="mt-4 w-full rounded-sm bg-cream py-3 font-mono text-[11px] uppercase tracking-wide2 text-noir-950 transition-transform hover:scale-[1.02]"
+          disabled={loading}
+          className="mt-4 w-full rounded-sm bg-cream py-3 font-mono text-[11px] uppercase tracking-wide2 text-noir-950 transition-transform hover:scale-[1.02] disabled:opacity-60"
         >
-          {lang === "pt" ? "Entrar" : "Enter"}
+          {loading
+            ? lang === "pt"
+              ? "Entrando…"
+              : "Entering…"
+            : lang === "pt"
+            ? "Entrar"
+            : "Enter"}
         </button>
 
         <div className="mt-6">

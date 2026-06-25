@@ -14,8 +14,8 @@ import { CaseStudy } from "./components/CaseStudy";
 import { AIAgent } from "./components/AIAgent";
 import { AdminAccessModal } from "./components/AdminAccessModal";
 import { AdminProvider } from "./contexts/AdminContext";
+import { SiteDataProvider, useSiteData } from "./hooks/useSiteData";
 import { LGPDNotice } from "./components/LGPDNotice";
-import { projects } from "./data/projects";
 
 function ScrollProgress() {
   const [p, setP] = useState(0);
@@ -40,59 +40,67 @@ function ScrollProgress() {
 }
 
 export default function App() {
+  return (
+    <SiteDataProvider>
+      <AdminProvider>
+        <AppShell />
+      </AdminProvider>
+    </SiteDataProvider>
+  );
+}
+
+function AppShell() {
   const [loading, setLoading] = useState(true);
   const [slug, setSlug] = useState<string | null>(null);
   const [admin, setAdmin] = useState(false);
+  const { projects } = useSiteData();
 
   const active = projects.find((p) => p.slug === slug) ?? null;
 
-  // lock scroll during loader
   useEffect(() => {
     document.body.style.overflow = loading ? "hidden" : "";
     if (!loading) window.scrollTo(0, 0);
   }, [loading]);
 
   return (
-    <AdminProvider>
-      <div className="grain relative min-h-screen bg-noir-950 text-noir-100">
-        {loading && <Loader onDone={() => setLoading(false)} />}
+    <div className="grain relative min-h-screen bg-noir-950 text-noir-100">
+      {loading && <Loader onDone={() => setLoading(false)} />}
 
-        <ScrollProgress />
-        <Navbar onAdmin={() => setAdmin(true)} />
+      <ScrollProgress />
+      <Navbar onAdmin={() => setAdmin(true)} />
 
-        <main>
-          <Hero onEnter={() => scrollToId("works")} />
+      <main>
+        <Hero onEnter={() => scrollToId("works")} />
 
-          {/* divisor entre Hero e Bloco 01 */}
-          <StillMovementDivider />
+        {/* divisor entre Hero e Bloco 01 */}
+        <StillMovementDivider />
 
-          <Manifesto />
-          <SelectedWorks onOpen={setSlug} />
+        <Manifesto />
+        <SelectedWorks onOpen={setSlug} />
 
-          {/* 03 ONDE? + 04 Reconhecimento quase juntos */}
-          <Capabilities />
-          <Recognition />
+        {/* 03 ONDE? + 04 Reconhecimento quase juntos */}
+        <Capabilities />
+        <Recognition />
 
-          {/* divisor antes do Por quê? */}
-          <StillMovementDivider />
+        {/* divisor antes do Por quê? */}
+        <StillMovementDivider />
 
-          <Why />
+        <Why />
 
-          {/* parallax com enunciado + logo SIM após o Por quê? */}
-          <ParallaxMarquee text="A resposta continua sendo SIM" />
+        {/* parallax com enunciado + logo SIM após o Por quê? */}
+        <ParallaxMarquee text="A resposta continua sendo SIM" />
 
-          {/* divisor antes do Contato */}
-          <StillMovementDivider />
+        {/* divisor antes do Contato */}
+        <StillMovementDivider />
 
-          <Contact />
-        </main>
+        <Contact />
+      </main>
 
-        <CaseStudy project={active} onClose={() => setSlug(null)} />
-        <AIAgent />
-        <AdminAccessModal open={admin} onClose={() => setAdmin(false)} />
-        <LGPDNotice />
-      </div>
-    </AdminProvider>
+      <CaseStudy project={active} onClose={() => setSlug(null)} />
+      <AIAgent />
+      <AdminAccessModal open={admin} onClose={() => setAdmin(false)} />
+      <LGPDNotice />
+    </div>
   );
 }
 
