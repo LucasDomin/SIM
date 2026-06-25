@@ -12,7 +12,6 @@ import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import {
   fetchAllProjectsForAdmin,
   publishProject,
-  saveProjectAsDraft,
   type ProjectRow,
 } from "../lib/siteRepo";
 
@@ -137,7 +136,8 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     if (!draft) return { ok: true };
     const base = rows.find((r) => r.slug === slug) ?? defaultRowFromDraft(slug, draft);
     const merged: ProjectRow = { ...base, ...draft, slug, category: categoryOrFallback(draft.category, base.category) };
-    const res = await saveProjectAsDraft(merged);
+    // Publica diretamente (is_draft=false) para aparecer no frontend público
+    const res = await publishProject(merged);
     if (res.ok) {
       setDrafts((prev) => {
         const next = { ...prev };

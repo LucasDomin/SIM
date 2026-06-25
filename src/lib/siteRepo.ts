@@ -109,9 +109,53 @@ export async function saveProjectAsDraft(row: ProjectRow): Promise<{ ok: boolean
 
 export async function publishProject(row: ProjectRow): Promise<{ ok: boolean; error?: string }> {
   if (!isSupabaseConfigured) return { ok: false, error: "Supabase não configurado." };
-  // upsert como publicado, limpando o flag de draft
   const payload = projectToRow(row, /* isDraft */ false);
   const { error } = await supabase.from("projects").upsert(payload, { onConflict: "slug" });
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
+export async function fetchHeroConfig(): Promise<{
+  images: string[];
+  scenes: string[];
+  reels: string[];
+  backgroundVideo: { url: string; poster: string };
+}> {
+  if (!isSupabaseConfigured) throw new Error("Supabase não configurado");
+  const { data, error } = await supabase
+    .from("site_config")
+    .select("hero_images, hero_scenes, hero_reels, background_video")
+    .eq("id", "default")
+    .maybeSingle();
+  if (error || !data) throw new Error("Erro ao buscar config do hero");
+  return {
+    images: data.hero_images ?? [],
+    scenes: data.hero_scenes ?? [],
+    reels: data.hero_reels ?? [],
+    backgroundVideo: data.background_video ?? { url: "", poster: "" },
+  };
+}
+
+export async function saveHeroConfig(cfg: {
+  images: string[];
+  scenes: string[];
+  reels: string[];
+  backgroundVideo: { url: string; poster: string };
+}): Promise<{ ok: boolean; error?: string }> {
+  if (!isSupabaseConfigured) return { ok: false, error: "Supabase não configurado." };
+  const { error } = await supabase
+    .from("site_config")
+    .upsert(
+      {
+        id: "default",
+        hero_images: cfg.images,
+        hero_scenes: cfg.scenes,
+        hero_reels: cfg.reels,
+        background_video: cfg.backgroundVideo,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "id" }
+    );
   if (error) return { ok: false, error: error.message };
   return { ok: true };
 }
