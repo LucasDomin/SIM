@@ -16,7 +16,7 @@ import {
 } from "../lib/siteRepo";
 
 type Category = Project["category"];
-void (0 as unknown as Category); // type alias retained for future use
+void (0 as unknown as Category);
 
 type Draft = {
   cover: string;
@@ -39,7 +39,7 @@ type AdminState = {
   drafts: Record<string, Partial<Draft>>;
   rows: ProjectRow[];
   rowsLoading: boolean;
-  login: (code: string) => Promise<{ ok: boolean; error?: string }>;
+  login: (emailAndPassword: string) => Promise<{ ok: boolean; error?: string }>;
   logout: () => Promise<void>;
   setEditing: (v: boolean) => void;
   updateDraft: (slug: string, patch: Partial<Draft>) => void;
@@ -63,7 +63,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [rows, setRows] = useState<ProjectRow[]>([]);
   const [rowsLoading, setRowsLoading] = useState(false);
 
-  // Restaura o gate local do editor (como era antes)
+  // Restaura sessão persistida
   useEffect(() => {
     try {
       if (localStorage.getItem(ADMIN_LOCAL_KEY) === "1") setLocalAccess(true);
@@ -72,7 +72,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Observa mudanças de autenticação do Supabase (opcional para salvar com RLS)
+  // Observa mudanças de autenticação do Supabase
   useEffect(() => {
     if (!isSupabaseConfigured) return;
     let active = true;
@@ -103,17 +103,36 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     if (localAccess || session) refreshRows();
   }, [localAccess, session, refreshRows]);
 
-  const login = useCallback(async (code: string) => {
-    if (code.trim().length >= 4) {
-      setLocalAccess(true);
-      try {
-        localStorage.setItem(ADMIN_LOCAL_KEY, "1");
-      } catch {
-        /* ignore */
+  const login = useCallback(async (input: string) => {
+    // Se Supabase não está configurado, cai no fallback local
+    if (!isSupabaseConfigured) {
+      if (input.trim().length >= 4) {
+        setLocalAccess(true);
+        try { localStorage.setItem(ADMIN_LOCAL_KEY, "1"); } catch { /* ignore */ }
+        return { ok: true };
       }
-      return { ok: true };
+      return { ok: false, error: "Código inválido." };
     }
-    return { ok: false, error: "Código inválido." };
+
+    // Login real via Supabase Auth — formato: email|senha
+    const separatorIndex = input.indexOf("|");
+    if (separatorIndex === -1) {
+      return { ok: false, error: "Use o formato: email|senha" };
+    }
+
+    const email = input.slice(0, separatorIndex).trim();
+    const password = input.slice(separatorIndex + 1).trim();
+
+    if (!email || !password) {
+      return { ok: false, error: "Email ou senha não podem ser vazios." };
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { ok: false, error: error.message };
+
+    setLocalAccess(true);
+    try { localStorage.setItem(ADMIN_LOCAL_KEY, "1"); } catch { /* ignore */ }
+    return { ok: true };
   }, []);
 
   const logout = useCallback(async () => {
@@ -136,7 +155,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     if (!draft) return { ok: true };
     const base = rows.find((r) => r.slug === slug) ?? defaultRowFromDraft(slug, draft);
     const merged: ProjectRow = { ...base, ...draft, slug, category: categoryOrFallback(draft.category, base.category) };
-    // Publica diretamente (is_draft=false) para aparecer no frontend público
     const res = await publishProject(merged);
     if (res.ok) {
       setDrafts((prev) => {
@@ -230,7 +248,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       deleteRow,
       getProject,
     }),
-    [session, editing, drafts, rows, rowsLoading, login, logout, updateDraft, commitDraft, resetDraft, refreshRows, publishRow, deleteRow, getProject]
+    [session, localAccess, editing, drafts, rows, rowsLoading, login, logout, updateDraft, commitDraft, resetDraft, refreshRows, publishRow, deleteRow, getProject]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

@@ -14,14 +14,16 @@ export function AdminAccessModal({
 }) {
   const { t, lang } = useLang();
   const { authenticated, login, logout } = useAdmin();
-  const [code, setCode] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [dashboardOpen, setDashboardOpen] = useState(false);
 
   useEffect(() => {
     if (!open) {
-      setCode("");
+      setEmail("");
+      setPassword("");
       setError(null);
       setDashboardOpen(false);
     }
@@ -43,12 +45,13 @@ export function AdminAccessModal({
     e.preventDefault();
     setError(null);
     setLoading(true);
-    const res = await login(code);
+    // Passa no formato email|senha que o AdminContext espera
+    const res = await login(`${email}|${password}`);
     setLoading(false);
     if (res.ok) {
       setDashboardOpen(true);
     } else {
-      setError(res.error ?? (lang === "pt" ? "Código inválido." : "Invalid code."));
+      setError(res.error ?? (lang === "pt" ? "Credenciais inválidas." : "Invalid credentials."));
     }
   };
 
@@ -96,19 +99,34 @@ export function AdminAccessModal({
         </p>
 
         <input
-          type="password"
-          autoComplete="current-password"
-          value={code}
+          type="email"
+          autoComplete="email"
+          value={email}
           onChange={(e) => {
-            setCode(e.target.value);
+            setEmail(e.target.value);
             setError(null);
           }}
-          placeholder="••••••••"
+          placeholder={lang === "pt" ? "seu@email.com" : "your@email.com"}
           autoFocus
-          className={`mt-5 w-full rounded-sm border bg-noir-950 px-4 py-3 font-mono text-sm tracking-[0.3em] text-cream placeholder:tracking-[0.3em] focus:outline-none ${
+          className={`mt-5 w-full rounded-sm border bg-noir-950 px-4 py-3 font-mono text-sm text-cream placeholder:text-noir-600 focus:outline-none ${
             error ? "border-spec-2" : "border-noir-700 focus:border-accent"
           }`}
         />
+
+        <input
+          type="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            setError(null);
+          }}
+          placeholder="••••••••"
+          className={`mt-3 w-full rounded-sm border bg-noir-950 px-4 py-3 font-mono text-sm tracking-[0.3em] text-cream placeholder:tracking-[0.3em] focus:outline-none ${
+            error ? "border-spec-2" : "border-noir-700 focus:border-accent"
+          }`}
+        />
+
         {error && <p className="mt-2 text-xs text-spec-2">{error}</p>}
 
         <button
