@@ -1,3 +1,8 @@
+import React from "react";
+
+console.log("ENV TEST:", import.meta.env);
+console.log("SUPABASE URL:", import.meta.env.VITE_SUPABASE_URL);
+console.log("SUPABASE KEY:", import.meta.env.VITE_SUPABASE_ANON_KEY);
 import { useEffect, useState } from "react";
 import { Loader } from "./components/Loader";
 import { Navbar } from "./components/Navbar";
