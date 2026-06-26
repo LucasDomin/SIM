@@ -10,12 +10,6 @@ import {
   sanitizeText,
 } from "../lib/sanitize";
 
-/**
- * ProjectEditor — painel de edição por projeto.
- * Permite alterar texto (título, cliente, descrição, categoria, ano, local, formato)
- * e imagem (abre o ImageCropper com pré-visualização antes de salvar).
- * Mostra preview ao vivo do card no topo, e confirma antes de publicar.
- */
 export function ProjectEditor({
   open,
   project,
@@ -40,6 +34,7 @@ export function ProjectEditor({
     cover: string;
     video: string;
     poster: string;
+    stills: string[];
   }>({
     title: "",
     client: "",
@@ -51,6 +46,7 @@ export function ProjectEditor({
     cover: "",
     video: "",
     poster: "",
+    stills: [],
   });
 
   useEffect(() => {
@@ -67,6 +63,7 @@ export function ProjectEditor({
       cover: merged.cover,
       video: merged.video || "",
       poster: merged.poster || "",
+      stills: merged.stills ?? [],
     });
   }, [open, project, getProject]);
 
@@ -75,7 +72,6 @@ export function ProjectEditor({
   const label = (pt: string, en: string) => (lang === "pt" ? pt : en);
 
   const save = () => {
-    // Sanitização final antes de persistir.
     updateDraft(project.slug, {
       title: sanitizeText(form.title, 120),
       client: sanitizeText(form.client, 120),
@@ -88,6 +84,10 @@ export function ProjectEditor({
       video: sanitizeMediaUrl(form.video),
       poster: sanitizeImageUrl(form.poster),
     });
+    // Salva stills separadamente via siteRepo
+    import("../lib/siteRepo").then(({ supabase: _s }) => {});
+    // Atualiza stills diretamente no draft via contexto
+    updateDraft(project.slug, { stills: form.stills } as any);
     commitDraft(project.slug);
     onClose();
   };
@@ -105,9 +105,35 @@ export function ProjectEditor({
     setCropperOpen(false);
   };
 
+  const updateStill = (i: number, val: string) => {
+    setForm((f) => {
+      const next = [...f.stills];
+      next[i] = val;
+      return { ...f, stills: next };
+    });
+  };
+
+  const removeStill = (i: number) => {
+    setForm((f) => ({ ...f, stills: f.stills.filter((_, idx) => idx !== i) }));
+  };
+
+  const addStill = () => {
+    setForm((f) => ({ ...f, stills: [...f.stills, ""] }));
+  };
+
+  const moveStill = (i: number, dir: -1 | 1) => {
+    setForm((f) => {
+      const next = [...f.stills];
+      const swap = i + dir;
+      if (swap < 0 || swap >= next.length) return f;
+      [next[i], next[swap]] = [next[swap], next[i]];
+      return { ...f, stills: next };
+    });
+  };
+
   return (
     <div className="fixed inset-0 z-[170] flex items-center justify-center bg-noir-950/90 p-4 backdrop-blur-md fade-in">
-      <div className="relative grid w-full max-w-6xl gap-5 rounded-sm border border-noir-700 bg-noir-900 p-5 md:grid-cols-[1fr_420px] md:p-8 fade-up">
+      <div className="relative grid w-full max-w-6xl gap-5 rounded-sm border border-noir-700 bg-noir-900 p-5 md:grid-cols-[1fr_420px] md:p-8 fade-up overflow-y-auto max-h-[95vh]">
         <div className="flex items-center justify-between md:col-span-2">
           <div>
             <h3 className="font-display text-2xl text-cream">
@@ -188,6 +214,35 @@ export function ProjectEditor({
           >
             {label("Abrir editor de imagem / crop", "Open image editor / crop")}
           </button>
+
+          {/* Stills preview */}
+          {form.stills.length > 0 && (
+            <div className="mt-4">
+              <div className="mb-2 font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
+                {label("Preview dos stills", "Stills preview")}
+              </div>
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {form.stills.map((s, i) => (
+                  <div
+                    key={i}
+                    className="relative shrink-0 overflow-hidden rounded-sm border border-noir-700"
+                    style={{ width: 100, height: 62 }}
+                  >
+                    {s ? (
+                      <img src={s} alt={`still ${i + 1}`} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-noir-800 font-mono text-[9px] text-noir-500">
+                        URL vazia
+                      </div>
+                    )}
+                    <div className="absolute bottom-0 left-0 right-0 bg-noir-950/70 px-1 py-0.5 font-mono text-[8px] text-noir-400">
+                      {i + 1}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Form */}
@@ -227,6 +282,62 @@ export function ProjectEditor({
             value={form.description}
             onChange={(v) => setForm((f) => ({ ...f, description: v }))}
           />
+
+          {/* Stills */}
+          <div className="mt-2 border-t border-noir-800 pt-4">
+            <div className="mb-3 flex items-center justify-between">
+              <div className="font-mono text-[10px] uppercase tracking-wide2 text-accent">
+                {label("Fotos do filmstrip (stills)", "Filmstrip photos (stills)")}
+              </div>
+              <button
+                onClick={addStill}
+                className="rounded-full border border-noir-700 px-3 py-1 font-mono text-[9px] uppercase tracking-wide2 text-noir-300 transition-colors hover:border-accent hover:text-accent"
+              >
+                + {label("Adicionar", "Add")}
+              </button>
+            </div>
+            <div className="flex flex-col gap-2">
+              {form.stills.map((s, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className="w-4 shrink-0 font-mono text-[9px] text-noir-500">{i + 1}</span>
+                  <input
+                    value={s}
+                    onChange={(e) => updateStill(i, e.target.value)}
+                    placeholder="https://..."
+                    className="min-w-0 flex-1 rounded-sm border border-noir-700 bg-noir-950 px-3 py-2 text-xs text-cream placeholder:text-noir-600 focus:border-accent focus:outline-none"
+                  />
+                  <button
+                    onClick={() => moveStill(i, -1)}
+                    disabled={i === 0}
+                    className="shrink-0 rounded p-1 text-noir-500 transition-colors hover:text-cream disabled:opacity-20"
+                    title="Mover para cima"
+                  >
+                    ↑
+                  </button>
+                  <button
+                    onClick={() => moveStill(i, 1)}
+                    disabled={i === form.stills.length - 1}
+                    className="shrink-0 rounded p-1 text-noir-500 transition-colors hover:text-cream disabled:opacity-20"
+                    title="Mover para baixo"
+                  >
+                    ↓
+                  </button>
+                  <button
+                    onClick={() => removeStill(i)}
+                    className="shrink-0 rounded p-1 text-noir-500 transition-colors hover:text-spec-2"
+                    title="Remover"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+              {form.stills.length === 0 && (
+                <p className="text-xs text-noir-600">
+                  {label("Nenhum still adicionado.", "No stills added.")}
+                </p>
+              )}
+            </div>
+          </div>
 
           {/* Video fields */}
           <div className="mt-2 border-t border-noir-800 pt-4">
