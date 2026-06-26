@@ -1,9 +1,11 @@
-import { projects } from "../data/defaults";
+import { useSiteData } from "../hooks/useSiteData";
 import { SprocketStrip } from "./ui";
 
 const STILL_W = 320;
 
 function Reel({ reverse = false }: { reverse?: boolean }) {
+  const { projects } = useSiteData();
+
   const stills = projects.flatMap((p) =>
     p.stills.map((s) => ({ src: s, title: p.title, color: p.color }))
   );
