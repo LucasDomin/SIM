@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
 import { useAdmin } from "../contexts/AdminContext";
-import type { Project } from "../data/defaults";
+import type { Project, Still } from "../data/defaults";
 import { ProjectEditor } from "./ProjectEditor";
 import { HeroEditor } from "./HeroEditor";
 import { Logo } from "./Logo";
@@ -22,9 +22,9 @@ export function AdminDashboard({
   const [active, setActive] = useState<Project | null>(null);
   const [heroOpen, setHeroOpen] = useState(false);
 
-  // Stills editor state
+  // Stills editor
   const [stillsProject, setStillsProject] = useState<string | null>(null);
-  const [stillsForm, setStillsForm] = useState<Record<string, string[]>>({});
+  const [stillsForm, setStillsForm] = useState<Record<string, Still[]>>({});
   const [stillsSaving, setStillsSaving] = useState<string | null>(null);
   const [stillsMsg, setStillsMsg] = useState<string | null>(null);
 
@@ -32,29 +32,33 @@ export function AdminDashboard({
 
   const label = (pt: string, en: string) => (lang === "pt" ? pt : en);
 
-  const openStillsEditor = (slug: string, stills: string[]) => {
+  const parseStills = (raw: unknown[]): Still[] =>
+    raw.map((s) =>
+      typeof s === "string"
+        ? { url: s, title: "" }
+        : { url: (s as Still).url ?? "", title: (s as Still).title ?? "" }
+    );
+
+  const openStillsEditor = (slug: string, raw: unknown[]) => {
     setStillsProject(slug);
-    setStillsForm((f) => ({ ...f, [slug]: [...(f[slug] ?? stills)] }));
+    setStillsForm((f) => ({ ...f, [slug]: f[slug] ?? parseStills(raw) }));
     setStillsMsg(null);
   };
 
-  const updateStill = (slug: string, i: number, val: string) => {
+  const updateStill = (slug: string, i: number, field: keyof Still, val: string) => {
     setStillsForm((f) => {
       const next = [...(f[slug] ?? [])];
-      next[i] = val;
+      next[i] = { ...next[i], [field]: val };
       return { ...f, [slug]: next };
     });
   };
 
   const removeStill = (slug: string, i: number) => {
-    setStillsForm((f) => ({
-      ...f,
-      [slug]: (f[slug] ?? []).filter((_, idx) => idx !== i),
-    }));
+    setStillsForm((f) => ({ ...f, [slug]: (f[slug] ?? []).filter((_, idx) => idx !== i) }));
   };
 
   const addStill = (slug: string) => {
-    setStillsForm((f) => ({ ...f, [slug]: [...(f[slug] ?? []), ""] }));
+    setStillsForm((f) => ({ ...f, [slug]: [...(f[slug] ?? []), { url: "", title: "" }] }));
   };
 
   const moveStill = (slug: string, i: number, dir: -1 | 1) => {
@@ -70,7 +74,7 @@ export function AdminDashboard({
   const saveStills = async (slug: string) => {
     setStillsSaving(slug);
     setStillsMsg(null);
-    const stills = (stillsForm[slug] ?? []).filter((s) => s.trim() !== "");
+    const stills = (stillsForm[slug] ?? []).filter((s) => s.url.trim() !== "");
     const { error } = await supabase
       .from("projects")
       .update({ stills, updated_at: new Date().toISOString() })
@@ -79,7 +83,7 @@ export function AdminDashboard({
     if (error) {
       setStillsMsg("Erro: " + error.message);
     } else {
-      setStillsMsg("Stills salvos com sucesso!");
+      setStillsMsg("Fotos salvas com sucesso!");
       await refreshRows();
       setTimeout(() => setStillsMsg(null), 3000);
     }
@@ -104,48 +108,27 @@ export function AdminDashboard({
               )}
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <button
-                onClick={() => refreshRows()}
-                className="rounded-full border border-noir-700 px-3 py-2 font-mono text-[10px] uppercase tracking-wide2 text-noir-300 transition-colors hover:border-noir-500 hover:text-cream"
-              >
+              <button onClick={() => refreshRows()} className="rounded-full border border-noir-700 px-3 py-2 font-mono text-[10px] uppercase tracking-wide2 text-noir-300 transition-colors hover:border-noir-500 hover:text-cream">
                 {label("Atualizar", "Refresh")}
               </button>
-              <button
-                onClick={() => setHeroOpen(true)}
-                className="rounded-full border border-accent px-4 py-2 font-mono text-[10px] uppercase tracking-wide2 text-accent transition-colors hover:bg-accent hover:text-noir-950"
-              >
+              <button onClick={() => setHeroOpen(true)} className="rounded-full border border-accent px-4 py-2 font-mono text-[10px] uppercase tracking-wide2 text-accent transition-colors hover:bg-accent hover:text-noir-950">
                 {label("Editar Banner", "Edit Hero")}
               </button>
-              <button
-                onClick={() => setEditing(true)}
-                className="rounded-full bg-accent px-4 py-2 font-mono text-[10px] uppercase tracking-wide2 text-noir-950 transition-transform hover:scale-[1.02]"
-              >
+              <button onClick={() => setEditing(true)} className="rounded-full bg-accent px-4 py-2 font-mono text-[10px] uppercase tracking-wide2 text-noir-950 transition-transform hover:scale-[1.02]">
                 {label("Ativar modo edição", "Turn edit mode on")}
               </button>
-              <button
-                onClick={() => (onLogout ? onLogout() : logout())}
-                className="rounded-full border border-noir-700 px-4 py-2 font-mono text-[10px] uppercase tracking-wide2 text-noir-300 transition-colors hover:border-noir-500 hover:text-cream"
-              >
+              <button onClick={() => (onLogout ? onLogout() : logout())} className="rounded-full border border-noir-700 px-4 py-2 font-mono text-[10px] uppercase tracking-wide2 text-noir-300 transition-colors hover:border-noir-500 hover:text-cream">
                 {label("Sair", "Sign out")}
               </button>
-              <button
-                onClick={onClose}
-                className="rounded-full border border-noir-700 p-2 text-noir-400 transition-colors hover:border-noir-500 hover:text-cream"
-                aria-label="Close"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                  <path d="M6 6l12 12M18 6L6 18" />
-                </svg>
+              <button onClick={onClose} className="rounded-full border border-noir-700 p-2 text-noir-400 transition-colors hover:border-noir-500 hover:text-cream" aria-label="Close">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M6 6l12 12M18 6L6 18" /></svg>
               </button>
             </div>
           </div>
 
           {/* Projetos */}
           <p className="mt-6 max-w-2xl text-sm leading-relaxed text-noir-400">
-            {label(
-              "Clique em qualquer projeto para abrir o editor completo.",
-              "Click any project to open the full editor."
-            )}
+            {label("Clique em qualquer projeto para abrir o editor completo.", "Click any project to open the full editor.")}
           </p>
 
           <SpectrumBar className="mt-8" />
@@ -159,17 +142,9 @@ export function AdminDashboard({
             {rows.map((p) => {
               const hasDraft = Boolean(drafts[p.slug]);
               return (
-                <button
-                  key={p.id}
-                  onClick={() => setActive(p)}
-                  className="group relative overflow-hidden rounded-sm border border-noir-700 bg-noir-900 text-left transition-all hover:border-noir-500"
-                >
+                <button key={p.id} onClick={() => setActive(p)} className="group relative overflow-hidden rounded-sm border border-noir-700 bg-noir-900 text-left transition-all hover:border-noir-500">
                   <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16 / 10" }}>
-                    <img
-                      src={p.cover}
-                      alt={p.title}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                    />
+                    <img src={p.cover} alt={p.title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
                     <div className="absolute inset-0 bg-gradient-to-t from-noir-950/80 via-transparent to-transparent" />
                     {hasDraft && (
                       <span className="absolute left-3 top-3 rounded-full bg-accent px-3 py-1 font-mono text-[9px] uppercase tracking-wide2 text-noir-950">
@@ -178,18 +153,12 @@ export function AdminDashboard({
                     )}
                   </div>
                   <div className="p-4">
-                    <div className="font-mono text-[9px] uppercase tracking-wide2 text-accent">
-                      {p.category} · {p.client}
-                    </div>
+                    <div className="font-mono text-[9px] uppercase tracking-wide2 text-accent">{p.category} · {p.client}</div>
                     <div className="mt-1 font-display text-xl text-cream">{p.title}</div>
-                    <div className="mt-2 line-clamp-2 text-xs leading-relaxed text-noir-400">
-                      {p.description}
-                    </div>
+                    <div className="mt-2 line-clamp-2 text-xs leading-relaxed text-noir-400">{p.description}</div>
                     <div className="mt-3 flex items-center justify-between font-mono text-[9px] uppercase tracking-wide2 text-noir-500">
                       <span>{p.year}</span>
-                      <span className="transition-colors group-hover:text-cream">
-                        {label("Editar →", "Edit →")}
-                      </span>
+                      <span className="transition-colors group-hover:text-cream">{label("Editar →", "Edit →")}</span>
                     </div>
                   </div>
                 </button>
@@ -197,22 +166,20 @@ export function AdminDashboard({
             })}
           </div>
 
-          {/* Seção de Stills por Projeto */}
+          {/* Seção Filmstrip */}
           {!rowsLoading && rows.length > 0 && (
             <div className="mt-16">
               <SpectrumBar />
-              <div className="mt-8 flex items-center justify-between">
-                <div>
-                  <h2 className="font-display text-2xl text-cream">
-                    {label("Filmstrip — Fotos por Projeto", "Filmstrip — Photos by Project")}
-                  </h2>
-                  <p className="mt-1 text-sm text-noir-400">
-                    {label(
-                      "Edite as fotos que aparecem na faixa animada abaixo dos projetos.",
-                      "Edit the photos shown in the animated strip below the projects."
-                    )}
-                  </p>
-                </div>
+              <div className="mt-8">
+                <h2 className="font-display text-2xl text-cream">
+                  {label("Filmstrip — Fotos por Projeto", "Filmstrip — Photos by Project")}
+                </h2>
+                <p className="mt-1 text-sm text-noir-400">
+                  {label(
+                    "Edite as fotos e seus nomes. Ao clicar numa foto no site, o visitante vê a imagem em tela cheia com o nome na barra.",
+                    "Edit photos and their names. Clicking a photo on the site opens it fullscreen with the name in the bar."
+                  )}
+                </p>
               </div>
 
               {stillsMsg && (
@@ -221,30 +188,24 @@ export function AdminDashboard({
                 </div>
               )}
 
-              <div className="mt-6 flex flex-col gap-6">
+              <div className="mt-6 flex flex-col gap-4">
                 {rows.map((p) => {
                   const isOpen = stillsProject === p.slug;
-                  const currentStills = stillsForm[p.slug] ?? (p.stills as string[]) ?? [];
+                  const currentStills: Still[] = stillsForm[p.slug] ?? parseStills((p.stills as unknown[]) ?? []);
 
                   return (
                     <div key={p.slug} className="rounded-sm border border-noir-700 bg-noir-900">
-                      {/* Cabeçalho do projeto */}
+                      {/* Cabeçalho */}
                       <button
-                        onClick={() => isOpen ? setStillsProject(null) : openStillsEditor(p.slug, p.stills as string[])}
+                        onClick={() => isOpen ? setStillsProject(null) : openStillsEditor(p.slug, (p.stills as unknown[]) ?? [])}
                         className="flex w-full items-center gap-4 p-4 text-left transition-colors hover:bg-noir-800"
                       >
-                        <img
-                          src={p.cover}
-                          alt={p.title}
-                          className="h-12 w-20 shrink-0 rounded-sm object-cover"
-                        />
+                        <img src={p.cover} alt={p.title} className="h-12 w-20 shrink-0 rounded-sm object-cover" />
                         <div className="flex-1">
-                          <div className="font-mono text-[9px] uppercase tracking-wide2 text-accent">
-                            {p.category} · {p.client}
-                          </div>
+                          <div className="font-mono text-[9px] uppercase tracking-wide2 text-accent">{p.category} · {p.client}</div>
                           <div className="font-display text-lg text-cream">{p.title}</div>
                           <div className="font-mono text-[9px] text-noir-500">
-                            {(p.stills as string[])?.length ?? 0} {label("fotos", "photos")}
+                            {currentStills.length} {label("fotos", "photos")}
                           </div>
                         </div>
                         <span className="font-mono text-[10px] uppercase tracking-wide2 text-noir-400 transition-colors hover:text-cream">
@@ -252,64 +213,71 @@ export function AdminDashboard({
                         </span>
                       </button>
 
-                      {/* Editor de stills */}
+                      {/* Editor */}
                       {isOpen && (
                         <div className="border-t border-noir-800 p-4">
-                          {/* Preview das fotos */}
+
+                          {/* Preview miniaturas */}
                           {currentStills.length > 0 && (
-                            <div className="mb-4 flex gap-2 overflow-x-auto pb-2">
+                            <div className="mb-5 flex gap-2 overflow-x-auto pb-2">
                               {currentStills.map((s, i) => (
-                                <div
-                                  key={i}
-                                  className="relative shrink-0 overflow-hidden rounded-sm border border-noir-700"
-                                  style={{ width: 100, height: 62 }}
-                                >
-                                  {s ? (
-                                    <img src={s} alt={`still ${i + 1}`} className="h-full w-full object-cover" />
-                                  ) : (
-                                    <div className="flex h-full w-full items-center justify-center bg-noir-800 font-mono text-[9px] text-noir-500">
-                                      vazia
-                                    </div>
-                                  )}
-                                  <div className="absolute bottom-0 left-0 right-0 bg-noir-950/70 px-1 py-0.5 font-mono text-[8px] text-noir-400">
-                                    {i + 1}
+                                <div key={i} className="shrink-0 text-center" style={{ width: 100 }}>
+                                  <div className="relative overflow-hidden rounded-sm border border-noir-700" style={{ width: 100, height: 62 }}>
+                                    {s.url ? (
+                                      <img src={s.url} alt={s.title} className="h-full w-full object-cover" />
+                                    ) : (
+                                      <div className="flex h-full w-full items-center justify-center bg-noir-800 font-mono text-[9px] text-noir-500">vazia</div>
+                                    )}
                                   </div>
+                                  <div className="mt-1 truncate font-mono text-[8px] text-noir-400">{s.title || "—"}</div>
                                 </div>
                               ))}
                             </div>
                           )}
 
-                          {/* Campos de URL */}
-                          <div className="flex flex-col gap-2">
+                          {/* Campos por foto */}
+                          <div className="flex flex-col gap-4">
                             {currentStills.map((s, i) => (
-                              <div key={i} className="flex items-center gap-2">
-                                <span className="w-4 shrink-0 font-mono text-[9px] text-noir-500">{i + 1}</span>
-                                <input
-                                  value={s}
-                                  onChange={(e) => updateStill(p.slug, i, e.target.value)}
-                                  placeholder="https://..."
-                                  className="min-w-0 flex-1 rounded-sm border border-noir-700 bg-noir-950 px-3 py-2 text-xs text-cream placeholder:text-noir-600 focus:border-accent focus:outline-none"
-                                />
-                                <button
-                                  onClick={() => moveStill(p.slug, i, -1)}
-                                  disabled={i === 0}
-                                  className="shrink-0 rounded p-1 text-noir-500 transition-colors hover:text-cream disabled:opacity-20"
-                                >↑</button>
-                                <button
-                                  onClick={() => moveStill(p.slug, i, 1)}
-                                  disabled={i === currentStills.length - 1}
-                                  className="shrink-0 rounded p-1 text-noir-500 transition-colors hover:text-cream disabled:opacity-20"
-                                >↓</button>
-                                <button
-                                  onClick={() => removeStill(p.slug, i)}
-                                  className="shrink-0 rounded p-1 text-noir-500 transition-colors hover:text-red-400"
-                                >✕</button>
+                              <div key={i} className="rounded-sm border border-noir-800 bg-noir-950 p-3">
+                                <div className="mb-2 flex items-center justify-between">
+                                  <span className="font-mono text-[9px] uppercase tracking-wide2 text-accent">
+                                    {label("Foto", "Photo")} {i + 1}
+                                  </span>
+                                  <div className="flex gap-1">
+                                    <button onClick={() => moveStill(p.slug, i, -1)} disabled={i === 0} className="rounded p-1 text-noir-500 transition-colors hover:text-cream disabled:opacity-20">↑</button>
+                                    <button onClick={() => moveStill(p.slug, i, 1)} disabled={i === currentStills.length - 1} className="rounded p-1 text-noir-500 transition-colors hover:text-cream disabled:opacity-20">↓</button>
+                                    <button onClick={() => removeStill(p.slug, i)} className="rounded p-1 text-noir-500 transition-colors hover:text-red-400">✕</button>
+                                  </div>
+                                </div>
+                                <div className="flex gap-3">
+                                  {s.url && (
+                                    <img src={s.url} alt={s.title} className="h-16 w-24 shrink-0 rounded-sm object-cover border border-noir-700" />
+                                  )}
+                                  <div className="flex flex-1 flex-col gap-2">
+                                    <label className="block">
+                                      <span className="font-mono text-[9px] uppercase tracking-wide2 text-noir-500">{label("URL da foto", "Photo URL")}</span>
+                                      <input
+                                        value={s.url}
+                                        onChange={(e) => updateStill(p.slug, i, "url", e.target.value)}
+                                        placeholder="https://..."
+                                        className="mt-1 w-full rounded-sm border border-noir-700 bg-noir-900 px-3 py-2 text-xs text-cream placeholder:text-noir-600 focus:border-accent focus:outline-none"
+                                      />
+                                    </label>
+                                    <label className="block">
+                                      <span className="font-mono text-[9px] uppercase tracking-wide2 text-noir-500">{label("Nome (aparece no lightbox)", "Name (shown in lightbox)")}</span>
+                                      <input
+                                        value={s.title}
+                                        onChange={(e) => updateStill(p.slug, i, "title", e.target.value)}
+                                        placeholder={`${p.title} · ${String(i + 1).padStart(2, "0")}`}
+                                        className="mt-1 w-full rounded-sm border border-noir-700 bg-noir-900 px-3 py-2 text-xs text-cream placeholder:text-noir-600 focus:border-accent focus:outline-none"
+                                      />
+                                    </label>
+                                  </div>
+                                </div>
                               </div>
                             ))}
                             {currentStills.length === 0 && (
-                              <p className="text-xs text-noir-600">
-                                {label("Nenhuma foto adicionada.", "No photos added.")}
-                              </p>
+                              <p className="text-xs text-noir-600">{label("Nenhuma foto adicionada.", "No photos added.")}</p>
                             )}
                           </div>
 
@@ -326,9 +294,7 @@ export function AdminDashboard({
                               disabled={stillsSaving === p.slug}
                               className="rounded-full bg-cream px-6 py-2 font-mono text-[10px] uppercase tracking-wide2 text-noir-950 transition-transform hover:scale-[1.02] disabled:opacity-60"
                             >
-                              {stillsSaving === p.slug
-                                ? label("Salvando…", "Saving…")
-                                : label("Salvar fotos", "Save photos")}
+                              {stillsSaving === p.slug ? label("Salvando…", "Saving…") : label("Salvar fotos", "Save photos")}
                             </button>
                           </div>
                         </div>
