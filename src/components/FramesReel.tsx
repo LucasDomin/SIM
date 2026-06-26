@@ -1,21 +1,34 @@
-import { useState } from "react";
-import { useSiteData } from "../hooks/useSiteData";
+import { useEffect, useState } from "react";
+import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import { SprocketStrip } from "./ui";
-import type { Still } from "../data/defaults";
 
-const STILL_W = 320;
+type FilmstripItem = {
+  id: string;
+  url: string;
+  title: string;
+  position: number;
+};
 
 // Lightbox
-function Lightbox({ still, onClose }: { still: Still; onClose: () => void }) {
+function Lightbox({ item, onClose }: { item: FilmstripItem; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   return (
     <div
-      className="fixed inset-0 z-[200] flex flex-col bg-noir-950/95 backdrop-blur-md fade-in"
+      className="fixed inset-0 z-[200] flex flex-col bg-noir-950/98 backdrop-blur-md fade-in"
       onClick={onClose}
     >
-      {/* Barra superior com nome */}
-      <div className="flex items-center justify-between border-b border-noir-800 px-6 py-4" onClick={(e) => e.stopPropagation()}>
+      {/* Barra superior */}
+      <div
+        className="flex shrink-0 items-center justify-between border-b border-noir-800 px-6 py-4"
+        onClick={(e) => e.stopPropagation()}
+      >
         <span className="font-mono text-[11px] uppercase tracking-wide2 text-cream">
-          {still.title || "—"}
+          {item.title || "—"}
         </span>
         <button
           onClick={onClose}
@@ -28,11 +41,14 @@ function Lightbox({ still, onClose }: { still: Still; onClose: () => void }) {
         </button>
       </div>
 
-      {/* Imagem em tela cheia */}
-      <div className="flex flex-1 items-center justify-center p-6">
+      {/* Imagem — ocupa o espaço restante sem cortar */}
+      <div
+        className="flex flex-1 items-center justify-center p-6"
+        onClick={onClose}
+      >
         <img
-          src={still.url}
-          alt={still.title}
+          src={item.url}
+          alt={item.title}
           className="max-h-full max-w-full object-contain"
           onClick={(e) => e.stopPropagation()}
         />
@@ -41,18 +57,19 @@ function Lightbox({ still, onClose }: { still: Still; onClose: () => void }) {
   );
 }
 
-function Reel({ reverse = false, onClickStill }: { reverse?: boolean; onClickStill: (s: Still) => void }) {
-  const { projects } = useSiteData();
+const STILL_W = 320;
 
-  const stills: (Still & { color: string })[] = projects.flatMap((p) =>
-    (p.stills ?? []).map((s) => ({
-      url: typeof s === "string" ? s : s.url,
-      title: typeof s === "string" ? p.title : (s.title || p.title),
-      color: p.color,
-    }))
-  );
-
-  const loop = [...stills, ...stills];
+function Reel({
+  items,
+  reverse = false,
+  onClickItem,
+}: {
+  items: FilmstripItem[];
+  reverse?: boolean;
+  onClickItem: (item: FilmstripItem) => void;
+}) {
+  if (items.length === 0) return null;
+  const loop = [...items, ...items];
 
   return (
     <div className="group relative overflow-hidden">
@@ -67,27 +84,25 @@ function Reel({ reverse = false, onClickStill }: { reverse?: boolean; onClickSti
         }}
       >
         <div className="flex gap-4">
-          {loop.map((s, i) => (
+          {loop.map((item, i) => (
             <figure
               key={i}
               className="relative shrink-0 cursor-pointer overflow-hidden rounded-sm border border-noir-800 transition-transform duration-300 hover:scale-[1.02]"
               style={{ width: STILL_W, height: STILL_W * 0.62 }}
-              onClick={() => onClickStill(s)}
+              onClick={() => onClickItem(item)}
             >
               <img
-                src={s.url}
-                alt={s.title}
+                src={item.url}
+                alt={item.title}
                 loading="lazy"
                 className="h-full w-full object-cover grayscale-[0.35] transition-all duration-700 hover:grayscale-0 hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-noir-950/70 to-transparent opacity-70" />
-              <figcaption className="absolute bottom-2 left-3 font-mono text-[9px] uppercase tracking-wide2 text-cream/80">
-                {s.title}
-              </figcaption>
-              <span
-                className="absolute right-2 top-2 h-2 w-2 rounded-full"
-                style={{ backgroundColor: s.color }}
-              />
+              {item.title && (
+                <figcaption className="absolute bottom-2 left-3 font-mono text-[9px] uppercase tracking-wide2 text-cream/80">
+                  {item.title}
+                </figcaption>
+              )}
             </figure>
           ))}
         </div>
@@ -97,21 +112,38 @@ function Reel({ reverse = false, onClickStill }: { reverse?: boolean; onClickSti
 }
 
 export function FramesStrip() {
-  const [lightbox, setLightbox] = useState<Still | null>(null);
+  const [items, setItems] = useState<FilmstripItem[]>([]);
+  const [lightbox, setLightbox] = useState<FilmstripItem | null>(null);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+    supabase
+      .from("filmstrip")
+      .select("*")
+      .order("position", { ascending: true })
+      .then(({ data }) => {
+        if (data) setItems(data as FilmstripItem[]);
+      });
+  }, []);
+
+  // Divide em duas fileiras
+  const half = Math.ceil(items.length / 2);
+  const row1 = items.slice(0, half);
+  const row2 = items.slice(half);
 
   return (
     <>
       <div className="relative overflow-hidden">
         <SprocketStrip className="mb-4" />
         <div className="mask-fade-x space-y-4">
-          <Reel onClickStill={setLightbox} />
-          <Reel reverse onClickStill={setLightbox} />
+          <Reel items={row1.length > 0 ? row1 : items} onClickItem={setLightbox} />
+          <Reel items={row2.length > 0 ? row2 : items} reverse onClickItem={setLightbox} />
         </div>
         <SprocketStrip className="mt-4" />
       </div>
 
       {lightbox && (
-        <Lightbox still={lightbox} onClose={() => setLightbox(null)} />
+        <Lightbox item={lightbox} onClose={() => setLightbox(null)} />
       )}
     </>
   );
