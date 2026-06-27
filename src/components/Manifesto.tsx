@@ -17,24 +17,22 @@ export function Manifesto() {
   return (
     <section
       id="manifesto"
-      className="relative overflow-hidden bg-noir-950 pt-20 pb-16 md:pt-28 md:pb-20"
+      className="relative bg-noir-950 pt-20 pb-16 md:pt-28 md:pb-20"
     >
       <div className="pointer-events-none absolute left-1/2 top-0 hidden h-full w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-noir-700 to-transparent lg:block" />
-
       <div className="mx-auto max-w-[1500px] px-5 md:px-10">
         <Reveal>
           <SectionLabel index="01">{t.manifesto.label}</SectionLabel>
         </Reveal>
-
         <div className="mt-12 grid gap-14 lg:grid-cols-12">
           <div className="lg:col-span-7">
-            <h2 className="font-display text-[12vw] font-light leading-[0.92] tracking-[-0.02em] text-cream sm:text-[10vw] md:text-[6.4vw]">
+            <h2 className="font-display font-light tracking-[-0.02em] text-cream"
+                style={{ fontSize: "clamp(3rem, 10vw, 6.4vw)", lineHeight: 1.0 }}>
               <span className="block">{t.manifesto.lead.split(" ")[0]}</span>
               <span className="block italic text-accent">
                 {t.manifesto.lead.split(" ").slice(1).join(" ")}.
               </span>
             </h2>
-
             <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-noir-700 p-1 font-mono text-[10px] uppercase tracking-wide2">
               <span
                 className={`rounded-full px-4 py-2 transition-all duration-500 ${
@@ -52,7 +50,6 @@ export function Manifesto() {
               </span>
             </div>
           </div>
-
           <div className="flex flex-col justify-end gap-7 lg:col-span-5">
             <Reveal>
               <p className="max-w-xl text-pretty text-left text-base leading-relaxed text-noir-200 md:text-lg">
@@ -64,7 +61,6 @@ export function Manifesto() {
                 {t.manifesto.body2}
               </p>
             </Reveal>
-
             <Reveal delay={300}>
               <SpectrumBar glow animate height="h-[4px]" className="mt-4 max-w-xs" />
             </Reveal>
