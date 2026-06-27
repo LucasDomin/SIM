@@ -26,8 +26,7 @@ export function Manifesto() {
         </Reveal>
         <div className="mt-12 grid gap-14 lg:grid-cols-12">
           <div className="lg:col-span-7">
-            <h2 className="font-display font-light tracking-[-0.02em] text-cream"
-                style={{ fontSize: "clamp(3rem, 10vw, 6.4vw)", lineHeight: 1.0 }}>
+            <h2 className="font-display font-light leading-tight tracking-[-0.02em] text-cream text-[11vw] sm:text-[8vw] md:text-[6.5vw] lg:text-[5.5vw]">
               <span className="block">{t.manifesto.lead.split(" ")[0]}</span>
               <span className="block italic text-accent">
                 {t.manifesto.lead.split(" ").slice(1).join(" ")}.
