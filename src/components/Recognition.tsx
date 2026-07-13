@@ -1,13 +1,6 @@
 import { useLang } from "../contexts/LanguageContext";
 import { Reveal, SectionLabel } from "./ui";
 
-const AWARDS = [
-  { year: "2025", name: "Cannes Lions", detail: "Shortlist · Atlas" },
-  { year: "2025", name: "D&AD", detail: "Wood Pencil · Obsidian" },
-  { year: "2025", name: "Ciclope Festival", detail: "Bronze · Atlas" },
-  { year: "2024", name: "IDFA", detail: "Official Selection · Kintsugi" },
-];
-
 export function Recognition() {
   const { t } = useLang();
   return (
@@ -36,23 +29,24 @@ export function Recognition() {
           </div>
         </Reveal>
 
-        <ul className="divide-y divide-noir-800">
-          {AWARDS.map((a, i) => (
-            <Reveal as="li" key={i}>
-              <div className="group flex items-center gap-6 py-6">
-                <span className="font-mono text-[11px] uppercase tracking-wide2 text-noir-500">
-                  {a.year}
+        {/* Países onde já atuamos */}
+        <Reveal className="mt-14 border-t border-noir-800 pt-10">
+          <div className="font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
+            {t.recognition.countriesLabel}
+          </div>
+          <ul className="mt-6 flex flex-wrap gap-x-3 gap-y-4">
+            {t.recognition.countries.map((country, i) => (
+              <li key={country} className="flex items-center">
+                <span className="font-display text-2xl font-light text-noir-100 transition-colors hover:text-cream md:text-3xl">
+                  {country}
                 </span>
-                <span className="font-display text-2xl font-light text-noir-100 transition-colors group-hover:text-cream md:text-3xl">
-                  {a.name}
-                </span>
-                <span className="ml-auto hidden text-sm text-noir-400 sm:block md:text-base">
-                  {a.detail}
-                </span>
-              </div>
-            </Reveal>
-          ))}
-        </ul>
+                {i < t.recognition.countries.length - 1 && (
+                  <span className="ml-3 inline-block h-1.5 w-1.5 rotate-45 bg-accent/70" />
+                )}
+              </li>
+            ))}
+          </ul>
+        </Reveal>
       </div>
     </section>
   );

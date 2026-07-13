@@ -6,9 +6,8 @@ import { getEmail, getEmailHref, getTel, getTelHref } from "../lib/contact";
 
 const SOCIALS = [
   { label: "Instagram", href: "#" },
-  { label: "Vimeo", href: "#" },
   { label: "LinkedIn", href: "#" },
-  { label: "Behance", href: "#" },
+  { label: "Wfolio", href: "#" },
 ];
 
 const NAV_LINKS = [
@@ -111,7 +110,7 @@ export function Contact() {
             <div className="font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
               Social
             </div>
-            <ul className="mt-4 grid grid-cols-2 gap-y-3 text-sm">
+            <ul className="mt-4 space-y-3 text-sm">
               {SOCIALS.map((s) => (
                 <li key={s.label}>
                   <a

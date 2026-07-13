@@ -4,10 +4,10 @@
  * de forma que crawlers que só leem HTML estático não o capturem direto.
  */
 
-const EMAIL_USER = "hello";
-const EMAIL_DOMAIN = "sim.studio";
+const EMAIL_USER = "jarbasaarcanjo";
+const EMAIL_DOMAIN = "gmail.com";
 
-const TEL_PARTS = ["+55", "11", "9", "9999-9999"];
+const TEL_PARTS = ["+55", "31", "9", "9318-8052"];
 
 export function getEmail(): string {
   return `${EMAIL_USER}@${EMAIL_DOMAIN}`;
