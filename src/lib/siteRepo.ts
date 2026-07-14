@@ -27,6 +27,7 @@ export type SiteConfigRow = {
   hero_images: string[];
   hero_scenes: string[];
   hero_reels: string[];
+  hero_videos: string[];
   background_video: { url: string; poster: string };
   updated_at?: string;
 };
@@ -119,12 +120,13 @@ export async function fetchHeroConfig(): Promise<{
   images: string[];
   scenes: string[];
   reels: string[];
+  videos: string[];
   backgroundVideo: { url: string; poster: string };
 }> {
   if (!isSupabaseConfigured) throw new Error("Supabase não configurado");
   const { data, error } = await supabase
     .from("site_config")
-    .select("hero_images, hero_scenes, hero_reels, background_video")
+    .select("hero_images, hero_scenes, hero_reels, hero_videos, background_video")
     .eq("id", "default")
     .maybeSingle();
   if (error || !data) throw new Error("Erro ao buscar config do hero");
@@ -132,6 +134,7 @@ export async function fetchHeroConfig(): Promise<{
     images: data.hero_images ?? [],
     scenes: data.hero_scenes ?? [],
     reels: data.hero_reels ?? [],
+    videos: data.hero_videos ?? [],
     backgroundVideo: data.background_video ?? { url: "", poster: "" },
   };
 }
@@ -140,6 +143,7 @@ export async function saveHeroConfig(cfg: {
   images: string[];
   scenes: string[];
   reels: string[];
+  videos: string[];
   backgroundVideo: { url: string; poster: string };
 }): Promise<{ ok: boolean; error?: string }> {
   if (!isSupabaseConfigured) return { ok: false, error: "Supabase não configurado." };
@@ -151,6 +155,7 @@ export async function saveHeroConfig(cfg: {
         hero_images: cfg.images,
         hero_scenes: cfg.scenes,
         hero_reels: cfg.reels,
+        hero_videos: cfg.videos,
         background_video: cfg.backgroundVideo,
         updated_at: new Date().toISOString(),
       },
@@ -190,6 +195,7 @@ export async function publishSiteConfig(
     hero_images: cfg.hero.images,
     hero_scenes: cfg.hero.scenes,
     hero_reels: cfg.hero.reels,
+    hero_videos: cfg.hero.videos,
     background_video: cfg.hero.backgroundVideo,
     updated_at: new Date().toISOString(),
   };
@@ -253,6 +259,7 @@ function rowToSiteConfig(r: SiteConfigRow): SiteConfig {
       images: r.hero_images ?? DEFAULT_SITE_CONFIG.hero.images,
       scenes: r.hero_scenes ?? DEFAULT_SITE_CONFIG.hero.scenes,
       reels: r.hero_reels ?? DEFAULT_SITE_CONFIG.hero.reels,
+      videos: r.hero_videos ?? DEFAULT_SITE_CONFIG.hero.videos,
       backgroundVideo: r.background_video ?? DEFAULT_SITE_CONFIG.hero.backgroundVideo,
     },
   };

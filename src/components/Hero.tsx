@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
 import { SITE_CONFIG } from "../data/defaults";
-import { useHeroImages, useHeroReels, useHeroScenes, useHeroVideo } from "./HeroEditor";
+import { useHeroBannerVideos, useHeroImages, useHeroReels, useHeroScenes, useHeroVideo } from "./HeroEditor";
 import { Logo } from "./Logo";
 
 /* Film timecode formatter: 00:00:00:00 (HH:MM:SS:FF @ 24fps) */
@@ -25,31 +25,75 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
   const heroScenes = useHeroScenes(SITE_CONFIG.hero.scenes.length ? SITE_CONFIG.hero.scenes : t.hero.scenes);
   const heroReels = useHeroReels(SITE_CONFIG.hero.reels);
   const heroVideo = useHeroVideo();
+  const heroBannerVideos = useHeroBannerVideos(SITE_CONFIG.hero.videos);
   const heroImages = savedImages.length > 0 ? savedImages : defaultImages;
   const [reelOpen, setReelOpen] = useState(false);
 
   const [active, setActive] = useState(0);
   const [prog, setProg] = useState(0); // 0..1 within current slide
   const [timecode, setTimecode] = useState("00:00:00:00");
-  const startRef = useRef(performance.now());
+  const recStartRef = useRef(performance.now());
+  const slideStartRef = useRef(performance.now());
+  const videoElRef = useRef<HTMLVideoElement | null>(null);
 
   const SCENE_MS = 4200;
 
-  // slide + scrubber cycling
+  // URL do vídeo desta cena (se houver) — quando preenchido, substitui a
+  // imagem estática e toca automaticamente aqui na frente do site.
+  const activeVideoUrl = heroBannerVideos[active] || "";
+
+  const goNext = useCallback(() => {
+    setActive((a) => (heroImages.length ? (a + 1) % heroImages.length : 0));
+    setProg(0);
+    slideStartRef.current = performance.now();
+  }, [heroImages.length]);
+
+  // Timecode "Rec" — roda continuamente, independente da troca de cenas.
   useEffect(() => {
     let raf = 0;
     const tick = (now: number) => {
-      const elapsed = now - startRef.current;
-      const idx = Math.floor(elapsed / SCENE_MS) % heroImages.length;
-      const within = (elapsed % SCENE_MS) / SCENE_MS;
-      setActive(idx);
-      setProg(within);
-      setTimecode(tc(elapsed));
+      setTimecode(tc(now - recStartRef.current));
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [heroImages.length]);
+  }, []);
+
+  // Avanço automático entre cenas:
+  // - cenas com imagem avançam por tempo fixo (SCENE_MS)
+  // - cenas com vídeo avançam sozinhas quando o vídeo termina (onEnded)
+  // Em ambos os casos, ao chegar na última cena volta para a primeira —
+  // o ciclo nunca para.
+  useEffect(() => {
+    if (activeVideoUrl) return; // vídeo cuida do próprio avanço via onEnded
+    slideStartRef.current = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const elapsed = now - slideStartRef.current;
+      const within = Math.min(elapsed / SCENE_MS, 1);
+      setProg(within);
+      if (elapsed >= SCENE_MS) {
+        goNext();
+        return;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [active, activeVideoUrl, goNext]);
+
+  // Garante que o vídeo da cena ativa sempre comece do zero e toque —
+  // inclusive quando volta para o mesmo índice (ex.: só existe 1 cena de vídeo).
+  useEffect(() => {
+    const v = videoElRef.current;
+    if (v && activeVideoUrl) {
+      v.currentTime = 0;
+      v.play().catch(() => {
+        /* navegadores podem bloquear play() fora de gesto do usuário; como
+           está mudo (muted) isso normalmente não ocorre. */
+      });
+    }
+  }, [active, activeVideoUrl]);
 
   // Parallax on scroll — image sinks, title floats: cinematic depth.
   const [sy, setSy] = useState(0);
@@ -86,6 +130,21 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
             loop
             playsInline
             preload="auto"
+            className="h-full w-full object-cover"
+          />
+        ) : activeVideoUrl ? (
+          <video
+            ref={videoElRef}
+            src={activeVideoUrl}
+            autoPlay
+            muted
+            playsInline
+            preload="auto"
+            onTimeUpdate={(e) => {
+              const v = e.currentTarget;
+              if (v.duration) setProg(v.currentTime / v.duration);
+            }}
+            onEnded={goNext}
             className="h-full w-full object-cover"
           />
         ) : (

@@ -47,10 +47,14 @@ create table if not exists public.site_config (
   hero_images        jsonb default '[]'::jsonb,
   hero_scenes        jsonb default '[]'::jsonb,
   hero_reels         jsonb default '[]'::jsonb,
+  hero_videos        jsonb default '[]'::jsonb,
   background_video   jsonb default '{"url":"","poster":""}'::jsonb,
   _draft              jsonb,
   updated_at         timestamptz default now()
 );
+
+-- Garante a coluna também em bancos que já existiam antes desta alteração
+alter table public.site_config add column if not exists hero_videos jsonb default '[]'::jsonb;
 
 -- -----------------------------------------------------------------------------
 -- Tabela: pricing_table

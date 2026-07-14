@@ -242,6 +242,7 @@ export type SiteConfig = {
     images: string[];
     scenes: string[];
     reels: string[];
+    videos: string[];
     backgroundVideo: { url: string; poster: string };
   };
 };
@@ -251,6 +252,7 @@ export const SITE_CONFIG: SiteConfig = {
     images: [projects[0].cover, projects[5].cover, projects[3].cover],
     scenes: ["Atlas · 2025", "Noctilucent · 2024", "Kintsugi · 2024"],
     reels: ["", "", ""],
+    videos: ["", "", ""],
     backgroundVideo: { url: "", poster: "" },
   },
 };

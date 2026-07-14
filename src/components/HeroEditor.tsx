@@ -31,6 +31,7 @@ export function HeroEditor({
   const [images, setImages] = useState<string[]>(SITE_CONFIG.hero.images);
   const [scenes, setScenes] = useState<string[]>(SITE_CONFIG.hero.scenes);
   const [reels, setReels] = useState<string[]>(SITE_CONFIG.hero.reels);
+  const [videos, setVideos] = useState<string[]>(SITE_CONFIG.hero.videos);
   const [videoUrl, setVideoUrl] = useState(SITE_CONFIG.hero.backgroundVideo.url);
   const [videoPoster, setVideoPoster] = useState(SITE_CONFIG.hero.backgroundVideo.poster);
   const [error, setError] = useState<string | null>(null);
@@ -51,6 +52,7 @@ export function HeroEditor({
         setImages(cfg.images.slice(0, MAX_HERO_ITEMS));
         setScenes(cfg.scenes.slice(0, MAX_HERO_ITEMS));
         setReels(cfg.reels.slice(0, MAX_HERO_ITEMS));
+        setVideos(cfg.videos.slice(0, MAX_HERO_ITEMS));
         setVideoUrl(cfg.backgroundVideo.url);
         setVideoPoster(cfg.backgroundVideo.poster);
       })
@@ -59,6 +61,7 @@ export function HeroEditor({
         setImages(SITE_CONFIG.hero.images);
         setScenes(SITE_CONFIG.hero.scenes);
         setReels(SITE_CONFIG.hero.reels);
+        setVideos(SITE_CONFIG.hero.videos);
         setVideoUrl(SITE_CONFIG.hero.backgroundVideo.url);
         setVideoPoster(SITE_CONFIG.hero.backgroundVideo.poster);
       })
@@ -75,6 +78,7 @@ export function HeroEditor({
       images: images.map(sanitizeImageUrl).filter(Boolean),
       scenes: scenes.map((s) => sanitizeText(s, 80)),
       reels: reels.map(sanitizeMediaUrl),
+      videos: videos.map(sanitizeMediaUrl),
       backgroundVideo: { url: sanitizeMediaUrl(videoUrl), poster: sanitizeImageUrl(videoPoster) },
     });
     setLoading(false);
@@ -110,6 +114,7 @@ export function HeroEditor({
       setImages([...images, url]);
       setScenes([...scenes, `Cena ${String(images.length + 1).padStart(2, "0")}`]);
       setReels([...reels, ""]);
+      setVideos([...videos, ""]);
     } catch {
       setError(
         lang === "pt"
@@ -137,6 +142,7 @@ export function HeroEditor({
     setImages([...images, ""]);
     setScenes([...scenes, `Cena ${String(images.length + 1).padStart(2, "0")}`]);
     setReels([...reels, ""]);
+    setVideos([...videos, ""]);
   };
 
   const exportConfig = async () => {
@@ -145,6 +151,7 @@ export function HeroEditor({
         images,
         scenes,
         reels,
+        videos,
         backgroundVideo: { url: videoUrl, poster: videoPoster },
       },
     };
@@ -170,8 +177,8 @@ export function HeroEditor({
             </h3>
             <p className="mt-1 text-sm text-noir-400">
               {label(
-                "Troque até 3 imagens do banner e edite o texto que aparece na linha inferior. As alterações são salvas no Supabase e aparecem para todos.",
-                "Replace up to 3 banner images and edit the text shown in the bottom line. Changes are saved to Supabase and appear for everyone."
+                "Troque até 3 imagens do banner (ou vídeos curtos de ~20s com reprodução automática) e edite o texto que aparece na linha inferior. As alterações são salvas no Supabase e aparecem para todos.",
+                "Replace up to 3 banner images (or short ~20s autoplay videos) and edit the text shown in the bottom line. Changes are saved to Supabase and appear for everyone."
               )}
             </p>
           </div>
@@ -227,6 +234,7 @@ export function HeroEditor({
                         setImages(images.filter((_, j) => j !== i));
                         setScenes(scenes.filter((_, j) => j !== i));
                         setReels(reels.filter((_, j) => j !== i));
+                        setVideos(videos.filter((_, j) => j !== i));
                       }}
                       className="rounded-full border border-spec-2 px-3 py-1.5 font-mono text-[9px] uppercase tracking-wide2 text-spec-2 disabled:cursor-not-allowed disabled:opacity-40"
                     >
@@ -253,6 +261,27 @@ export function HeroEditor({
                       placeholder="https://.../imagem.jpg"
                       className="mt-1 w-full rounded-sm border border-noir-700 bg-noir-950 px-2 py-2 text-[11px] text-cream placeholder:text-noir-600 focus:border-accent focus:outline-none"
                     />
+                  </label>
+                  <label className="block">
+                    <span className="font-mono text-[8px] uppercase tracking-wide2 text-accent">
+                      {label("Vídeo do banner (autoplay, ~20s)", "Banner video (autoplay, ~20s)")}
+                    </span>
+                    <input
+                      value={videos[i] ?? ""}
+                      onChange={(e) => {
+                        const next = [...videos];
+                        next[i] = e.target.value;
+                        setVideos(next);
+                      }}
+                      placeholder="https://.../cena-20s.mp4"
+                      className="mt-1 w-full rounded-sm border border-accent/30 bg-noir-950 px-2 py-2 text-[11px] text-cream placeholder:text-noir-600 focus:border-accent focus:outline-none"
+                    />
+                    <span className="mt-1 block text-[10px] leading-snug text-noir-500">
+                      {label(
+                        "Se preenchido, este vídeo toca automaticamente aqui na frente do site no lugar da imagem, e avança sozinho para a próxima cena assim que terminar.",
+                        "If filled, this video autoplays right here on the site's front page instead of the image, and automatically advances to the next scene once it ends."
+                      )}
+                    </span>
                   </label>
                   <label className="block">
                     <span className="font-mono text-[8px] uppercase tracking-wide2 text-noir-500">
@@ -460,6 +489,28 @@ export function useHeroReels(defaultReels: readonly string[] = []): string[] {
   }, [defaultReels]);
 
   return reels;
+}
+
+export function useHeroBannerVideos(defaultVideos: readonly string[] = []): string[] {
+  const [videos, setVideos] = useState<string[]>([...defaultVideos]);
+
+  useEffect(() => {
+    const hydrate = async () => {
+      try {
+        const cfg = await fetchHeroConfig();
+        // Mantém o mesmo tamanho de heroImages: entradas vazias ("") indicam
+        // que aquela cena usa a imagem estática, não um vídeo.
+        setVideos(cfg.videos.slice(0, MAX_HERO_ITEMS));
+      } catch {
+        /* ignore, mantém defaults */
+      }
+    };
+    hydrate();
+    window.addEventListener("sim-hero-updated", hydrate);
+    return () => window.removeEventListener("sim-hero-updated", hydrate);
+  }, [defaultVideos]);
+
+  return videos;
 }
 
 export function useHeroVideo(): { url: string; poster: string } | null {
