@@ -14,7 +14,7 @@ export const translations = {
     },
     hero: {
       reel: "REEL 2025",
-      title1: "Pensou em audiovisual",
+      title1: "Pensou em criar",
       title2: "e bateu a dúvida?",
       titleEm: "A resposta é SIM.",
       kicker: "Still In Movement",
@@ -28,7 +28,7 @@ export const translations = {
       body: "Acreditamos numa contradição bonita: a imagem parada que contém o movimento. Entre o instante congelado da fotografia e o tempo contínuo do cinema, existe um espaço onde vivem as marcas que respeitam o silêncio.",
       body2:
         "Filmamos a luz como matéria. Construímos ritmo no corte. Deixamos a respiração entrar em cada quadro.",
-      closing: "Pensou em audiovisual e bateu a dúvida?",
+      closing: "Pensou em criar e bateu a dúvida?",
       answer: "A resposta é SIM.",
       toggleStill: "Still",
       toggleMove: "Movement",
@@ -110,7 +110,7 @@ export const translations = {
       currency: "R$",
     },
     footer: {
-      tagline: "Pensou em audiovisual? A resposta é SIM.",
+      tagline: "Pensou em criar? A resposta é SIM.",
       contact: "COMO?",
       studio: "Estúdio",
       locations: "São Paulo - Brasil",
@@ -142,7 +142,7 @@ export const translations = {
     },
     hero: {
       reel: "REEL 2025",
-      title1: "Thought about audiovisual",
+      title1: "Thought about creating",
       title2: "and started wondering?",
       titleEm: "The answer is SIM.",
       kicker: "Still In Movement",
@@ -156,7 +156,7 @@ export const translations = {
       body: "We believe in a beautiful contradiction: the still image that holds movement within. Between the frozen instant of a photograph and the continuous time of cinema, there is a space where brands that respect silence live.",
       body2:
         "We film light as matter. We build rhythm in the cut. We let breath enter every frame.",
-      closing: "Thought about audiovisual and started wondering?",
+      closing: "Thought about creating and started wondering?",
       answer: "The answer is SIM.",
       toggleStill: "Still",
       toggleMove: "Movement",
@@ -238,7 +238,7 @@ export const translations = {
       currency: "R$",
     },
     footer: {
-      tagline: "Thought about audiovisual? The answer is SIM.",
+      tagline: "Thought about creating? The answer is SIM.",
       contact: "HOW?",
       studio: "Studio",
       locations: "São Paulo - Brasil",
