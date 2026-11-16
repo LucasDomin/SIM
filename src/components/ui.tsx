@@ -9,14 +9,15 @@ import { useReveal } from "../hooks/useReveal";
 import { cn } from "../lib/cn";
 
 const SPECTRUM = [
-  "#996ea7",
-  "#e45a58",
-  "#ea8d11",
-  "#fac421",
-  "#33ae74",
-  "#2894d1",
-  "#b1b7b1",
-  "#f4c78d",
+  "#946eb0",
+  "#f1625e",
+  "#eb8e28",
+  "#ffc230",
+  "#34b880",
+  "#1996d4",
+  "#8ba18c",
+  "#fdc586",
+  "#915023",
 ];
 
 /* Reveal wrapper — element enters frame resolving blur into clarity */
@@ -86,7 +87,7 @@ export function SpectrumBar({
           className="pointer-events-none absolute -inset-x-2 -inset-y-3 rounded-full opacity-60 blur-xl"
           style={{
             background:
-              "linear-gradient(90deg, rgba(153,110,167,.5), rgba(228,90,88,.5), rgba(234,141,17,.5), rgba(250,196,33,.5), rgba(51,174,116,.5), rgba(40,148,209,.5))",
+              "linear-gradient(90deg, rgba(148,110,176,.5), rgba(241,98,94,.5), rgba(235,142,40,.5), rgba(255,194,48,.5), rgba(52,184,128,.5), rgba(25,150,212,.5))",
           }}
           aria-hidden
         />
