@@ -16,7 +16,7 @@ function tc(ms: number) {
 }
 
 export function Hero({ onEnter }: { onEnter: () => void }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const defaultImages = useMemo(
     () => [...SITE_CONFIG.hero.images],
     []
@@ -211,7 +211,7 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
               <path d="M8 5v14l11-7z" />
             </svg>
-            View Reel
+            {lang === "en" ? "View Reel" : "Ver reel"}
           </button>
         </div>
       </div>
