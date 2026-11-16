@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import type { Project } from "../data/defaults";
 import { SpectrumBar } from "./ui";
+import { getYouTubeId, youTubeEmbedUrl } from "../lib/youtube";
 
 export function CaseStudy({
   project,
@@ -21,6 +22,8 @@ export function CaseStudy({
   }, [project, onClose]);
 
   if (!project) return null;
+
+  const ytId = getYouTubeId(project.video);
 
   return (
     <div className="fixed inset-0 z-[150] flex justify-center overflow-y-auto bg-noir-950/80 backdrop-blur-md fade-in">
@@ -82,12 +85,40 @@ export function CaseStudy({
             ))}
           </div>
 
+          {/* Filme completo */}
+          {project.video && (
+            <div className="mt-10 overflow-hidden rounded-sm border border-noir-800 bg-noir-950">
+              <div className="relative w-full" style={{ aspectRatio: "16 / 9" }}>
+                {ytId ? (
+                  <iframe
+                    src={youTubeEmbedUrl(ytId, "player")}
+                    title={project.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                    allowFullScreen
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full border-0"
+                  />
+                ) : (
+                  <video
+                    src={project.video}
+                    poster={project.poster || project.cover}
+                    controls
+                    playsInline
+                    preload="metadata"
+                    className="absolute inset-0 h-full w-full bg-black object-contain"
+                  />
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Description */}
           <p className="mt-10 max-w-2xl text-pretty text-lg leading-relaxed text-noir-200 md:text-xl">
             {project.description}
           </p>
 
           {/* Stills */}
+          {project.stills.length > 0 && (
           <div className="mt-12 grid gap-4 sm:grid-cols-3">
             {project.stills.map((s, i) => (
               <div
@@ -96,7 +127,7 @@ export function CaseStudy({
                 style={{ aspectRatio: "3 / 4" }}
               >
                 <img
-                  src={s}
+                  src={typeof s === "string" ? s : s.url}
                   alt={`${project.title} still ${i + 1}`}
                   loading="lazy"
                   className="h-full w-full object-cover transition-transform duration-[1400ms] group-hover:scale-110"
@@ -104,6 +135,7 @@ export function CaseStudy({
               </div>
             ))}
           </div>
+          )}
 
           {/* Credits + Awards */}
           <div className="mt-12 grid gap-10 md:grid-cols-2">
@@ -124,7 +156,7 @@ export function CaseStudy({
               <h3 className="font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
                 Awards
               </h3>
-              {project.awards ? (
+              {project.awards && project.awards.length > 0 ? (
                 <ul className="mt-4 space-y-3">
                   {project.awards.map((a) => (
                     <li
