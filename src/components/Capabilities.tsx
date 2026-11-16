@@ -24,9 +24,6 @@ export function Capabilities() {
           {list.map((item) => (
             <Reveal as="li" key={item.k}>
               <div className="group grid items-center gap-4 py-7 transition-colors md:grid-cols-12 md:gap-8">
-                <span className="font-mono text-[11px] uppercase tracking-wide2 text-noir-500 transition-colors group-hover:text-accent md:col-span-1">
-                  {item.k}
-                </span>
                 <h3 className="font-display text-3xl font-light tracking-[-0.01em] text-noir-200 transition-colors group-hover:text-cream md:col-span-4 md:text-4xl">
                   {item.t}
                 </h3>
