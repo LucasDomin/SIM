@@ -7,6 +7,8 @@ import { Reveal, SectionLabel } from "./ui";
 import { FramesStrip } from "./FramesReel";
 import { Clients } from "./Clients";
 import { HoverVideoPlayer } from "./HoverVideoPlayer";
+import { PhotoGallery } from "./PhotoGallery";
+import { photoSets } from "../data/photos";
 import { isYouTube } from "../lib/youtube";
 import { cn } from "../lib/cn";
 import { categoryLabel } from "../lib/labels";
@@ -161,8 +163,10 @@ export function SelectedWorks({ onOpen }: { onOpen: (slug: string) => void }) {
   const { projects: all } = useSiteData();
   const projects = all.filter((p) => p.category !== "Social");
   const social = all.filter((p) => p.category === "Social");
-  const [tab, setTab] = useState<"films" | "social">("films");
+  const photoCount = photoSets.reduce((n, s) => n + s.photos.length, 0);
+  const [tab, setTab] = useState<"films" | "social" | "photos">("films");
   const showSocial = tab === "social" && social.length > 0;
+  const showPhotos = tab === "photos" && photoCount > 0;
   return (
     <section id="works" className="relative bg-noir-950 pt-16 pb-20 md:pt-20 md:pb-28">
       <div className="mx-auto max-w-[1500px] px-5 md:px-10">
@@ -178,12 +182,13 @@ export function SelectedWorks({ onOpen }: { onOpen: (slug: string) => void }) {
           </p>
         </Reveal>
 
-        {social.length > 0 && (
-          <div className="mt-10 flex gap-2" role="tablist">
+        {(social.length > 0 || photoCount > 0) && (
+          <div className="mt-10 flex flex-wrap gap-2" role="tablist">
             {([
               ["films", lang === "en" ? "Films" : "Filmes", projects.length],
               ["social", "Social", social.length],
-            ] as const).map(([key, label, n]) => (
+              ["photos", lang === "en" ? "Photography" : "Fotografia", photoCount],
+            ] as const).filter(([, , n]) => n > 0).map(([key, label, n]) => (
               <button
                 key={key}
                 role="tab"
@@ -202,7 +207,9 @@ export function SelectedWorks({ onOpen }: { onOpen: (slug: string) => void }) {
           </div>
         )}
 
-        {showSocial ? (
+        {showPhotos ? (
+          <PhotoGallery />
+        ) : showSocial ? (
           <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-5 lg:grid-cols-4">
             {social.map((p) => (
               <SocialCard key={p.slug} project={p} onOpen={onOpen} />
