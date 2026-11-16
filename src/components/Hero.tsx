@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
 import { SITE_CONFIG } from "../data/defaults";
-import { useHeroBannerVideos, useHeroImages, useHeroReels, useHeroScenes, useHeroVideo } from "./HeroEditor";
+import { useHeroBannerVideos, useHeroReels, useHeroVideo } from "./HeroEditor";
 import { Logo } from "./Logo";
 
 /* Film timecode formatter: 00:00:00:00 (HH:MM:SS:FF @ 24fps) */
@@ -24,12 +24,12 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
     () => [...SITE_CONFIG.hero.images],
     []
   );
-  const savedImages = useHeroImages(defaultImages);
-  const heroScenes = useHeroScenes(SITE_CONFIG.hero.scenes.length ? SITE_CONFIG.hero.scenes : t.hero.scenes);
+  // Fotos e legendas do banner vêm do código (src/data/defaults.ts).
+  const heroScenes = SITE_CONFIG.hero.scenes.length ? SITE_CONFIG.hero.scenes : t.hero.scenes;
   const heroReels = useHeroReels(SITE_CONFIG.hero.reels);
   const heroVideo = useHeroVideo();
   const heroBannerVideos = useHeroBannerVideos(SITE_CONFIG.hero.videos);
-  const heroImages = savedImages.length > 0 ? savedImages : defaultImages;
+  const heroImages = defaultImages;
   const [reelOpen, setReelOpen] = useState(false);
 
   const [active, setActive] = useState(0);
