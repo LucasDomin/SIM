@@ -58,9 +58,6 @@ export function Contact() {
                   key={i}
                   className="group flex items-baseline gap-4 text-left"
                 >
-                  <span className="font-mono text-[10px] tracking-wide2 text-noir-600">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
                   <span className="font-display text-2xl font-light leading-snug tracking-[-0.01em] text-noir-200 transition-colors duration-500 group-hover:text-cream md:text-[2.1rem]">
                     {q}
                   </span>
