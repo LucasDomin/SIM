@@ -15,7 +15,7 @@ export type Project = {
   slug: string;
   title: string;
   subtitle: string;
-  category: "Film" | "Editorial" | "Brand" | "Documentary" | "Fashion";
+  category: "Film" | "Editorial" | "Brand" | "Documentary" | "Fashion" | "Social";
   client: string;
   year: string;
   location: string;
