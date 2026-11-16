@@ -78,7 +78,7 @@ export const translations = {
       title: "Porque vídeos são vistos. Histórias são lembradas.",
       body: "Não criamos apenas conteúdo. Criamos presença. Criamos memória. Criamos movimento.",
     },
-    clients: { label: "Confiam no SIM", title: "Clientes" },
+    clients: { label: "Confiam na SIM", title: "Clientes" },
     recognition: {
       label: "Estúdio",
       title: "Em números",
