@@ -15,6 +15,9 @@ function tc(ms: number) {
   return `${p2(h)}:${p2(m)}:${p2(s)}:${p2(f)}`;
 }
 
+// Botão "Ver reel": mude para true quando o demo reel novo estiver pronto.
+const SHOW_REEL_BUTTON = false;
+
 export function Hero({ onEnter }: { onEnter: () => void }) {
   const { t, lang } = useLang();
   const defaultImages = useMemo(
@@ -199,7 +202,8 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
         </h1>
 
         <div className="mt-7 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-            {/* Enter reel */}
+            {/* Enter reel — escondido até o demo reel novo ficar pronto */}
+          {SHOW_REEL_BUTTON && (
           <button
             onClick={() => {
               if (heroReels[active]) setReelOpen(true);
@@ -212,6 +216,7 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
             </svg>
             {lang === "en" ? "View Reel" : "Ver reel"}
           </button>
+          )}
         </div>
       </div>
 
