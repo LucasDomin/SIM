@@ -8,6 +8,7 @@ import { Clients } from "./Clients";
 import { HoverVideoPlayer } from "./HoverVideoPlayer";
 import { isYouTube } from "../lib/youtube";
 import { cn } from "../lib/cn";
+import { categoryLabel } from "../lib/labels";
 
 function MetaCell({ label, value }: { label: string; value: string }) {
   return (
@@ -29,7 +30,7 @@ function ProjectRow({
   index: number;
   onOpen: (slug: string) => void;
 }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const { getProject } = useAdmin();
   const merged = getProject(project);
   const flip = index % 2 === 1;
@@ -80,7 +81,7 @@ function ProjectRow({
         <div className="absolute inset-x-0 bottom-0 flex items-end justify-start gap-4 p-5 md:p-7">
           <div className="text-left">
             <div className="font-mono text-[10px] uppercase tracking-wide2 text-accent">
-              {merged.category} · {merged.client}
+              {categoryLabel(merged.category, lang)} · {merged.client}
             </div>
             <div className="mt-1 font-display text-3xl text-cream md:text-5xl">
               {merged.title}
@@ -99,10 +100,10 @@ function ProjectRow({
         </p>
 
         <div className="mt-7 grid grid-cols-2 gap-y-5 sm:grid-cols-2">
-          <MetaCell label="Client" value={merged.client} />
-          <MetaCell label="Year" value={merged.year} />
-          <MetaCell label="Location" value={merged.location} />
-          <MetaCell label="Format" value={merged.format} />
+          <MetaCell label={lang === "en" ? "Client" : "Cliente"} value={merged.client} />
+          <MetaCell label={lang === "en" ? "Year" : "Ano"} value={merged.year} />
+          <MetaCell label={lang === "en" ? "Location" : "Local"} value={merged.location} />
+          <MetaCell label={lang === "en" ? "Format" : "Formato"} value={merged.format} />
         </div>
 
         {merged.awards && (
