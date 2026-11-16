@@ -27,7 +27,7 @@ export const translations = {
       lead: "Still In Movement",
       body: "Acreditamos numa contradição bonita: a imagem parada que contém o movimento. Entre o instante congelado da fotografia e o tempo contínuo do cinema, existe um espaço onde vivem as marcas que respeitam o silêncio.",
       body2:
-        "Filmamos a luz como matéria. Construímos ritmo no corte. Deixamos a respiração entrar em cada quadro.",
+        "Cada frame é uma fotografia. Cada fotografia contém movimento. Cada movimento conta uma história.",
       closing: "Pensou em criar e bateu a dúvida?",
       answer: "A resposta é SIM.",
       toggleStill: "Still",
@@ -155,7 +155,7 @@ export const translations = {
       lead: "Still In Movement",
       body: "We believe in a beautiful contradiction: the still image that holds movement within. Between the frozen instant of a photograph and the continuous time of cinema, there is a space where brands that respect silence live.",
       body2:
-        "We film light as matter. We build rhythm in the cut. We let breath enter every frame.",
+        "Every frame is a photograph. Every photograph holds movement. Every movement tells a story.",
       closing: "Thought about creating and started wondering?",
       answer: "The answer is SIM.",
       toggleStill: "Still",
