@@ -249,14 +249,15 @@ export type SiteConfig = {
 
 export const SITE_CONFIG: SiteConfig = {
   hero: {
-    // Reserva caso o banco fique sem imagens (evita voltar às fotos de exemplo).
+    // Banner principal (fotos + vídeos). Definido aqui no código — o painel
+    // admin não altera mais o banner (evita apagar as imagens sem querer).
     images: [
       "/fotos/motorspirit/motorspirit-10.jpg",
       "/capas/a-origem.jpg",
       "/fotos/motorspirit/motorspirit-14.jpg",
       "/capas/glb.jpg",
       "/fotos/motorspirit/motorspirit-12.jpg",
-      "/fotos/motorspirit/motorspirit-07.jpg",
+      "/fotos/motorspirit/motorspirit-09.jpg",
       "/fotos/bastidores/bastidores-17.jpg",
       "/capas/imersao-palestra-uau.jpg",
       "/fotos/bastidores/bastidores-06.jpg",
@@ -268,7 +269,7 @@ export const SITE_CONFIG: SiteConfig = {
       "MOTOR SPIRIT · PORSCHE CUP · 2026",
       "GLB · BAMAQ",
       "MOTOR SPIRIT · INTERLAGOS · 2026",
-      "MOTOR SPIRIT · INTERLAGOS · 2026",
+      "MOTOR SPIRIT · F4 · 2026",
       "BASTIDORES · BRUNO REIS",
       "IMERSÃO PALESTRA UAU",
       "BASTIDORES · CASA NO CUSTO",
