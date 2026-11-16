@@ -133,7 +133,7 @@ export function Contact() {
           {/* Navegação */}
           <Reveal className="md:col-span-3" delay={160}>
             <div className="font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
-              {t.footer.contact === "COMO?" ? "Navegação" : "Navigation"}
+              {lang === "en" ? "Navigation" : "Navegação"}
             </div>
             <ul className="mt-4 space-y-3 text-sm">
               {NAV_LINKS.map((l) => (
