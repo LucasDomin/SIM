@@ -74,7 +74,7 @@ export const translations = {
       ],
     },
     why: {
-      label: "POR QUÊ?",
+      label: "Porque SIM",
       title: "Porque vídeos são vistos. Histórias são lembradas.",
       body: "Não criamos apenas conteúdo. Criamos presença. Criamos memória. Criamos movimento.",
     },
@@ -202,7 +202,7 @@ export const translations = {
       ],
     },
     why: {
-      label: "WHY?",
+      label: "Because SIM",
       title: "Because videos are watched. Stories are remembered.",
       body: "We don't just create content. We create presence. We create memory. We create motion.",
     },
