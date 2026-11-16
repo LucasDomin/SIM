@@ -6,10 +6,10 @@ export type Lang = "pt" | "en";
 export const translations = {
   pt: {
     nav: {
-      works: "O QUÊ?",
-      studio: "ONDE?",
-      manifesto: "QUEM?",
-      contact: "COMO?",
+      works: "O que fazemos",
+      studio: "Onde atuamos",
+      manifesto: "Quem somos",
+      contact: "Vamos conversar",
       admin: "Acesso",
     },
     hero: {
@@ -23,7 +23,7 @@ export const translations = {
       scenes: ["Atlas · 2025", "Noctilucent · 2024", "Kintsugi · 2024"],
     },
     manifesto: {
-      label: "QUEM?",
+      label: "Quem somos",
       lead: "Still In Movement",
       body: "Acreditamos numa contradição bonita: a imagem parada que contém o movimento. Entre o instante congelado da fotografia e o tempo contínuo do cinema, existe um espaço onde vivem as marcas que respeitam o silêncio.",
       body2:
@@ -34,7 +34,7 @@ export const translations = {
       toggleMove: "Movement",
     },
     works: {
-      label: "O QUÊ?",
+      label: "O que fazemos",
       title: "Algumas respostas em forma de imagem.",
       desc: "Projetos que respondem por nós.",
       view: "Ver case",
@@ -46,7 +46,7 @@ export const translations = {
       desc: "Stills extraídos das produções — a sequência que se torna filme.",
     },
     capabilities: {
-      label: "ONDE?",
+      label: "Onde atuamos",
       title: "Entre a ideia e a tela.",
       intro:
         "É aí que estamos. Produzimos onde a história acontece. No estúdio. Na rua. No palco. Na indústria. No silêncio. O espaço muda. O olhar permanece.",
@@ -111,7 +111,7 @@ export const translations = {
     },
     footer: {
       tagline: "Pensou em criar? A resposta é SIM.",
-      contact: "COMO?",
+      contact: "Vamos conversar",
       studio: "Estúdio",
       locations: "São Paulo - Brasil",
       rights: "Todos os direitos reservados.",
@@ -134,10 +134,10 @@ export const translations = {
   },
   en: {
     nav: {
-      works: "WHAT?",
-      studio: "WHERE?",
-      manifesto: "WHO?",
-      contact: "HOW?",
+      works: "What we do",
+      studio: "Where we work",
+      manifesto: "Who we are",
+      contact: "Let's talk",
       admin: "Access",
     },
     hero: {
@@ -151,7 +151,7 @@ export const translations = {
       scenes: ["Atlas · 2025", "Noctilucent · 2024", "Kintsugi · 2024"],
     },
     manifesto: {
-      label: "WHO?",
+      label: "Who we are",
       lead: "Still In Movement",
       body: "We believe in a beautiful contradiction: the still image that holds movement within. Between the frozen instant of a photograph and the continuous time of cinema, there is a space where brands that respect silence live.",
       body2:
@@ -162,7 +162,7 @@ export const translations = {
       toggleMove: "Movement",
     },
     works: {
-      label: "WHAT?",
+      label: "What we do",
       title: "Some answers made of images.",
       desc: "Projects that answer for us.",
       view: "View case",
@@ -174,7 +174,7 @@ export const translations = {
       desc: "Stills pulled from our productions — the sequence that becomes film.",
     },
     capabilities: {
-      label: "WHERE?",
+      label: "Where we work",
       title: "Between the idea and the screen.",
       intro:
         "That's where we are. We produce wherever the story happens. In the studio. On the street. On stage. In the industry. In silence. The space changes. The eye remains.",
@@ -239,7 +239,7 @@ export const translations = {
     },
     footer: {
       tagline: "Thought about creating? The answer is SIM.",
-      contact: "HOW?",
+      contact: "Let's talk",
       studio: "Studio",
       locations: "São Paulo - Brasil",
       rights: "All rights reserved.",
