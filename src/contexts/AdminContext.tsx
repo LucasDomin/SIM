@@ -255,7 +255,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 }
 
 function categoryOrFallback(input: string | undefined, fallback: Project["category"] | undefined): Project["category"] {
-  const allowed: Project["category"][] = ["Film", "Editorial", "Brand", "Documentary", "Fashion"];
+  const allowed: Project["category"][] = ["Film", "Editorial", "Brand", "Documentary", "Fashion", "Social"];
   if (input && (allowed as string[]).includes(input)) {
     return input as Project["category"];
   }
