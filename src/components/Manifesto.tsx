@@ -42,12 +42,28 @@ export function Manifesto() {
               </span>
               <span
                 className={`rounded-full px-4 py-2 transition-all duration-500 ${
-                  phase === "move" ? "bg-cream text-noir-950" : "text-noir-400"
+                  phase === "move" ? "sim-spectrum-flow text-noir-950" : "text-noir-400"
                 }`}
               >
                 {t.manifesto.toggleMove}
               </span>
             </div>
+            {/* MOVEMENT: degradê com as cores da marca correndo em loop */}
+            <style>{`
+              .sim-spectrum-flow {
+                background-image: linear-gradient(90deg, #996ea7, #e45a58, #ea8d11, #fac421, #33ae74, #2894d1, #b1b7b1, #f4c78d, #996ea7);
+                background-size: 200% 100%;
+                animation: sim-spectrum-flow 3.2s linear infinite;
+                box-shadow: 0 0 18px rgba(250, 196, 33, 0.25);
+              }
+              @keyframes sim-spectrum-flow {
+                from { background-position: 0% 50%; }
+                to { background-position: 200% 50%; }
+              }
+              @media (prefers-reduced-motion: reduce) {
+                .sim-spectrum-flow { animation: none; }
+              }
+            `}</style>
           </div>
           <div className="flex flex-col justify-end gap-7 lg:col-span-5">
             <Reveal>
