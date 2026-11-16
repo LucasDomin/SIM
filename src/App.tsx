@@ -13,6 +13,7 @@ import { Manifesto } from "./components/Manifesto";
 import { SelectedWorks } from "./components/SelectedWorks";
 import { Capabilities } from "./components/Capabilities";
 import { Recognition } from "./components/Recognition";
+import { Backstage } from "./components/Backstage";
 import { Why } from "./components/Why";
 import { Contact } from "./components/Contact";
 import { CaseStudy } from "./components/CaseStudy";
@@ -86,6 +87,7 @@ function AppShell() {
         {/* 03 ONDE? + 04 Reconhecimento quase juntos */}
         <Capabilities />
         <Recognition />
+        <Backstage />
 
         {/* divisor antes do Por quê? */}
         <StillMovementDivider />
