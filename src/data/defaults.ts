@@ -249,12 +249,31 @@ export type SiteConfig = {
 
 export const SITE_CONFIG: SiteConfig = {
   hero: {
-    images: [projects[0].cover, projects[5].cover, projects[3].cover],
-    scenes: ["Atlas · 2025", "Noctilucent · 2024", "Kintsugi · 2024"],
+    // Reserva caso o banco fique sem imagens (evita voltar às fotos de exemplo).
+    images: [
+      "/fotos/motorspirit/motorspirit-10.jpg",
+      "/capas/a-origem.jpg",
+      "/fotos/motorspirit/motorspirit-14.jpg",
+      "/capas/glb.jpg",
+      "/fotos/motorspirit/motorspirit-12.jpg",
+      "/fotos/bastidores/bastidores-17.jpg",
+      "/capas/faex.jpg",
+      "/fotos/bastidores/bastidores-06.jpg",
+    ],
+    scenes: [
+      "MOTOR SPIRIT · PORSCHE CUP · 2026",
+      "A ORIGEM · LUIZ GUSTAVO",
+      "MOTOR SPIRIT · PORSCHE CUP · 2026",
+      "GLB · BAMAQ",
+      "MOTOR SPIRIT · INTERLAGOS · 2026",
+      "BASTIDORES · BRUNO REIS",
+      "FAEX · FACE ACADEMY",
+      "BASTIDORES · CASA NO CUSTO",
+    ],
     reels: ["", "", ""],
     // Vídeos do banner, na mesma ordem das imagens salvas no painel.
     // "" = cena com foto; caminho = cena com vídeo (a foto vira reserva).
-    videos: ["", "/hero/a-origem.mp4", "", "/hero/glb.mp4", "", "", "/hero/faex.mp4", "", ""],
+    videos: ["", "/hero/a-origem.mp4", "", "/hero/glb.mp4", "", "", "", ""],
     backgroundVideo: { url: "", poster: "" },
   },
 };
