@@ -256,9 +256,11 @@ export const SITE_CONFIG: SiteConfig = {
       "/fotos/motorspirit/motorspirit-14.jpg",
       "/capas/glb.jpg",
       "/fotos/motorspirit/motorspirit-12.jpg",
+      "/capas/bacia-do-ferrugem.jpg",
       "/fotos/bastidores/bastidores-17.jpg",
-      "/capas/faex.jpg",
+      "/capas/imersao-palestra-uau.jpg",
       "/fotos/bastidores/bastidores-06.jpg",
+      "/capas/seguranca-alimentar.jpg",
     ],
     scenes: [
       "MOTOR SPIRIT · PORSCHE CUP · 2026",
@@ -266,14 +268,16 @@ export const SITE_CONFIG: SiteConfig = {
       "MOTOR SPIRIT · PORSCHE CUP · 2026",
       "GLB · BAMAQ",
       "MOTOR SPIRIT · INTERLAGOS · 2026",
+      "BACIA DO FERRUGEM",
       "BASTIDORES · BRUNO REIS",
-      "FAEX · FACE ACADEMY",
+      "IMERSÃO PALESTRA UAU",
       "BASTIDORES · CASA NO CUSTO",
+      "SEGURANÇA ALIMENTAR · VILMA",
     ],
     reels: ["", "", ""],
     // Vídeos do banner, na mesma ordem das imagens salvas no painel.
     // "" = cena com foto; caminho = cena com vídeo (a foto vira reserva).
-    videos: ["", "/hero/a-origem.mp4", "", "/hero/glb.mp4", "", "", "", ""],
+    videos: ["", "/hero/a-origem.mp4", "", "/hero/glb.mp4", "", "/hero/bacia.mp4", "", "/hero/uau.mp4", "", "/hero/vilma.mp4"],
     backgroundVideo: { url: "", poster: "" },
   },
 };
