@@ -61,7 +61,6 @@ export function SectionLabel({
       )}
     >
       <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
-      {index && <span className="text-noir-400">{index}</span>}
       <span>{children}</span>
     </div>
   );
