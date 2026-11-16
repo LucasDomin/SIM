@@ -252,7 +252,9 @@ export const SITE_CONFIG: SiteConfig = {
     images: [projects[0].cover, projects[5].cover, projects[3].cover],
     scenes: ["Atlas · 2025", "Noctilucent · 2024", "Kintsugi · 2024"],
     reels: ["", "", ""],
-    videos: ["", "", ""],
+    // Vídeos do banner, na mesma ordem das imagens salvas no painel.
+    // "" = cena com foto; caminho = cena com vídeo (a foto vira reserva).
+    videos: ["", "/hero/a-origem.mp4", "", "/hero/glb.mp4", "", "", "/hero/faex.mp4", "", ""],
     backgroundVideo: { url: "", poster: "" },
   },
 };
