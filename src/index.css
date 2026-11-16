@@ -6,36 +6,37 @@
    ============================================================ */
 
 @theme {
-  /* Noir — the shadows where cinema lives */
-  --color-noir-950: #060606;
-  --color-noir-900: #0a0a0a;
-  --color-noir-850: #0f0f10;
-  --color-noir-800: #131315;
-  --color-noir-700: #1c1c1f;
-  --color-noir-600: #26262a;
-  --color-noir-500: #3a3a40;
-  --color-noir-400: #6b6b72;
-  --color-noir-300: #9a9aa1;
-  --color-noir-200: #c8c8cc;
-  --color-noir-100: #e8e8ea;
-  --color-noir-50: #f5f5f6;
+  /* Noir — preto da marca (#231f20) e escala de cinzas do manual */
+  --color-noir-950: #231f20;
+  --color-noir-900: #1d1a1b;
+  --color-noir-850: #2a2627;
+  --color-noir-800: #312d2e;
+  --color-noir-700: #3d393a;
+  --color-noir-600: #4b4748;
+  --color-noir-500: #605c5d;
+  --color-noir-400: #8a8687;
+  --color-noir-300: #aeaaab;
+  --color-noir-200: #d2cfd0;
+  --color-noir-100: #ebe9e9;
+  --color-noir-50: #f6f5f5;
 
-  /* Cream + warm accent — the light catching the frame */
+  /* Cream + acento — o pêssego da barra cromática */
   --color-cream: #f4f1ec;
-  --color-accent: #d4c5a9;
-  --color-accent-warm: #c9a875;
+  --color-accent: #fdc586;
+  --color-accent-warm: #eb8e28;
 
-  /* Spectrum — the logo bar, used sparingly as energy */
-  --color-spec-1: #996ea7;
-  --color-spec-2: #e45a58;
-  --color-spec-3: #ea8d11;
-  --color-spec-4: #fac421;
-  --color-spec-5: #33ae74;
-  --color-spec-6: #2894d1;
-  --color-spec-7: #b1b7b1;
-  --color-spec-8: #f4c78d;
+  /* Barra cromática — paleta oficial do manual da marca */
+  --color-spec-1: #946eb0;
+  --color-spec-2: #f1625e;
+  --color-spec-3: #eb8e28;
+  --color-spec-4: #ffc230;
+  --color-spec-5: #34b880;
+  --color-spec-6: #1996d4;
+  --color-spec-7: #8ba18c;
+  --color-spec-8: #fdc586;
+  --color-spec-9: #915023;
 
-  --font-display: "Inter", system-ui, sans-serif;
+  --font-display: "IBM Plex Mono", ui-monospace, monospace;
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
@@ -51,8 +52,8 @@
 html,
 body,
 #root {
-  background: #060606;
-  color: #e8e8ea;
+  background: #231f20;
+  color: #ebe9e9;
   font-family: "Inter", system-ui, sans-serif;
   min-height: 100%;
   margin: 0;
@@ -68,7 +69,7 @@ body {
   height: 9px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: #1d1a1b;
 }
 ::-webkit-scrollbar-thumb {
   background: #1c1c1f;
@@ -80,8 +81,8 @@ body {
 
 /* ---- Selection ---- */
 ::selection {
-  background: #d4c5a9;
-  color: #0a0a0a;
+  background: #fdc586;
+  color: #231f20;
 }
 
 /* ============================================================
@@ -308,7 +309,7 @@ body {
 .sprockets {
   background-image: radial-gradient(
     circle,
-    #060606 38%,
+    #231f20 38%,
     transparent 40%
   );
   background-size: 26px 26px;
@@ -374,4 +375,13 @@ select:focus-visible {
     transform: none;
     filter: none;
   }
+}
+
+/* ============================================================
+   Mural — padrão STILL ▬ MOVEMENT do manual (baixa opacidade)
+   ============================================================ */
+.sim-mural {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='620' height='72'><g font-family='IBM Plex Mono, monospace' font-size='15' letter-spacing='3' fill='%23ffffff'><text x='0' y='24'>STILL</text><rect x='76' y='17' width='120' height='3' fill='url(%23g)'/><text x='206' y='24'>MOVEMENT</text><text x='310' y='60'>STILL</text><rect x='386' y='53' width='120' height='3' fill='url(%23g)'/><text x='516' y='60'>MOVEMENT</text></g><defs><linearGradient id='g'><stop offset='0' stop-color='%23946eb0'/><stop offset='.125' stop-color='%23f1625e'/><stop offset='.25' stop-color='%23eb8e28'/><stop offset='.375' stop-color='%23ffc230'/><stop offset='.5' stop-color='%2334b880'/><stop offset='.625' stop-color='%231996d4'/><stop offset='.75' stop-color='%238ba18c'/><stop offset='.875' stop-color='%23fdc586'/><stop offset='1' stop-color='%23915023'/></linearGradient></defs></svg>");
+  background-size: 620px 72px;
+  background-repeat: repeat;
 }
