@@ -181,7 +181,6 @@ export function Hero({ onEnter }: { onEnter: () => void }) {
         </div>
         <div className="flex items-center gap-3">
           <span className="hidden sm:inline text-noir-500">2.39 : 1</span>
-          <span className="text-cream">{t.hero.reel}</span>
         </div>
       </div>
 
