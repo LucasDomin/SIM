@@ -1,11 +1,12 @@
 import { useLang } from "../contexts/LanguageContext";
 import { useAdmin } from "../contexts/AdminContext";
-import { projects } from "../data/defaults";
+import { useSiteData } from "../hooks/useSiteData";
 import type { Project } from "../data/defaults";
 import { Reveal, SectionLabel } from "./ui";
 import { FramesStrip } from "./FramesReel";
 import { Clients } from "./Clients";
 import { HoverVideoPlayer } from "./HoverVideoPlayer";
+import { isYouTube } from "../lib/youtube";
 import { cn } from "../lib/cn";
 
 function MetaCell({ label, value }: { label: string; value: string }) {
@@ -45,10 +46,10 @@ function ProjectRow({
         style={{ aspectRatio: "16 / 10" }}
         aria-label={`${merged.title} — ${t.works.view}`}
       >
-        {merged.video && merged.poster ? (
+        {merged.video && (merged.poster || isYouTube(merged.video)) ? (
           <HoverVideoPlayer
             videoUrl={merged.video}
-            posterUrl={merged.poster}
+            posterUrl={merged.poster || undefined}
             className="absolute inset-0 h-full w-full"
           />
         ) : (
@@ -63,7 +64,7 @@ function ProjectRow({
 
         {/* big index — aligned left to match text layout */}
         <span className="pointer-events-none absolute left-4 top-3 font-display text-[5rem] leading-none text-cream/15 md:text-[7rem]">
-          {project.id}
+          {String(index + 1).padStart(2, "0")}
         </span>
 
         {/* play affordance */}
@@ -123,6 +124,7 @@ function ProjectRow({
 
 export function SelectedWorks({ onOpen }: { onOpen: (slug: string) => void }) {
   const { t } = useLang();
+  const { projects } = useSiteData();
   return (
     <section id="works" className="relative bg-noir-950 pt-16 pb-20 md:pt-20 md:pb-28">
       <div className="mx-auto max-w-[1500px] px-5 md:px-10">
@@ -140,7 +142,7 @@ export function SelectedWorks({ onOpen }: { onOpen: (slug: string) => void }) {
 
         <div className="mt-16 flex flex-col gap-10 md:gap-14">
           {projects.map((p, i) => (
-            <ProjectRow key={p.id} project={p} index={i} onOpen={onOpen} />
+            <ProjectRow key={p.slug} project={p} index={i} onOpen={onOpen} />
           ))}
         </div>
       </div>
