@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import type { Project } from "../data/defaults";
 import { SpectrumBar } from "./ui";
 import { getYouTubeId, youTubeEmbedUrl } from "../lib/youtube";
+import { useLang } from "../contexts/LanguageContext";
+import { categoryLabel } from "../lib/labels";
 
 export function CaseStudy({
   project,
@@ -10,6 +12,8 @@ export function CaseStudy({
   project: Project | null;
   onClose: () => void;
 }) {
+  const { lang } = useLang();
+  const pt = lang !== "en";
   useEffect(() => {
     if (!project) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -37,7 +41,7 @@ export function CaseStudy({
         <button
           onClick={onClose}
           className="fixed right-5 top-5 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-noir-600 bg-noir-950/70 text-cream backdrop-blur transition-colors hover:border-accent hover:text-accent md:right-8 md:top-8"
-          aria-label="Close"
+          aria-label={pt ? "Fechar" : "Close"}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
             <path d="M6 6l12 12M18 6L6 18" />
@@ -54,7 +58,7 @@ export function CaseStudy({
           <div className="absolute inset-0 bg-gradient-to-t from-noir-900 via-noir-900/20 to-transparent" />
           <div className="absolute bottom-0 left-0 p-6 md:p-10">
             <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-wide2 text-accent">
-              <span>{project.category}</span>
+              <span>{categoryLabel(project.category, lang)}</span>
               <span className="text-noir-500">·</span>
               <span className="text-noir-300">{project.client}</span>
             </div>
@@ -71,10 +75,10 @@ export function CaseStudy({
           {/* Meta strip */}
           <div className="grid grid-cols-2 gap-5 border-y border-noir-800 py-6 sm:grid-cols-4">
             {[
-              ["Year", project.year],
-              ["Location", project.location],
-              ["Duration", project.duration ?? "—"],
-              ["Format", project.format],
+              [pt ? "Ano" : "Year", project.year],
+              [pt ? "Local" : "Location", project.location || "—"],
+              [pt ? "Duração" : "Duration", project.duration || "—"],
+              [pt ? "Formato" : "Format", project.format],
             ].map(([k, v]) => (
               <div key={k}>
                 <div className="font-mono text-[9px] uppercase tracking-wide2 text-noir-500">
@@ -141,7 +145,7 @@ export function CaseStudy({
           <div className="mt-12 grid gap-10 md:grid-cols-2">
             <div>
               <h3 className="font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
-                Credits
+                {pt ? "Créditos" : "Credits"}
               </h3>
               <ul className="mt-4 divide-y divide-noir-800">
                 {project.credits.map((c) => (
@@ -154,7 +158,7 @@ export function CaseStudy({
             </div>
             <div>
               <h3 className="font-mono text-[10px] uppercase tracking-wide2 text-noir-500">
-                Awards
+                {pt ? "Prêmios" : "Awards"}
               </h3>
               {project.awards && project.awards.length > 0 ? (
                 <ul className="mt-4 space-y-3">
