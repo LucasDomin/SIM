@@ -57,10 +57,10 @@ export function Manifesto() {
             {/* MOVEMENT: degradê com as cores da marca correndo em loop */}
             <style>{`
               .sim-spectrum-flow {
-                background-image: linear-gradient(90deg, #996ea7, #e45a58, #ea8d11, #fac421, #33ae74, #2894d1, #b1b7b1, #f4c78d, #996ea7);
+                background-image: linear-gradient(90deg, #946eb0, #f1625e, #eb8e28, #ffc230, #34b880, #1996d4, #8ba18c, #fdc586, #915023, #946eb0);
                 background-size: 200% 100%;
                 animation: sim-spectrum-flow 3.2s linear infinite;
-                box-shadow: 0 0 18px rgba(250, 196, 33, 0.25);
+                box-shadow: 0 0 18px rgba(255, 194, 48, 0.25);
               }
               @keyframes sim-spectrum-flow {
                 from { background-position: 0% 50%; }
