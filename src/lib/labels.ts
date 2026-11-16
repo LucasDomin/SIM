@@ -5,6 +5,7 @@ const CATEGORY_PT: Record<string, string> = {
   Documentary: "Documentário",
   Editorial: "Editorial",
   Fashion: "Moda",
+  Social: "Social",
 };
 
 export function categoryLabel(category: string, lang: "pt" | "en"): string {
