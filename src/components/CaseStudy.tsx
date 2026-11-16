@@ -91,8 +91,16 @@ export function CaseStudy({
 
           {/* Filme completo */}
           {project.video && (
-            <div className="mt-10 overflow-hidden rounded-sm border border-noir-800 bg-noir-950">
-              <div className="relative w-full" style={{ aspectRatio: "16 / 9" }}>
+            <div
+              className={
+                "mt-10 overflow-hidden rounded-sm border border-noir-800 bg-noir-950" +
+                (project.category === "Social" ? " mx-auto max-w-[380px]" : "")
+              }
+            >
+              <div
+                className="relative w-full"
+                style={{ aspectRatio: project.category === "Social" ? "9 / 16" : "16 / 9" }}
+              >
                 {ytId ? (
                   <iframe
                     src={youTubeEmbedUrl(ytId, "player")}
