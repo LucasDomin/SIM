@@ -20,6 +20,18 @@ const SHOTS: Shot[] = [
   { n: 9, span: "col-span-1 md:col-span-4" },
   { n: 11, span: "col-span-1 md:col-span-4", pt: "Equipe completa", en: "Full crew" },
   { n: 12, span: "col-span-2 md:col-span-4" },
+  { n: 13, span: "col-span-1 md:col-span-4", pt: "Câmera e monitor em cada plano", en: "Camera and monitor on every shot" },
+  { n: 14, span: "col-span-2 md:col-span-8 row-span-2", pt: "Video village: tudo conferido ao vivo", en: "Video village: everything checked live" },
+  { n: 15, span: "col-span-1 md:col-span-4", pt: "Estúdio montado do zero", en: "Studio built from scratch" },
+  { n: 16, span: "col-span-1 md:col-span-4" },
+  { n: 18, span: "col-span-1 md:col-span-4 row-span-2", pt: "Luz ajustada plano a plano", en: "Light tuned shot by shot" },
+  { n: 17, span: "col-span-1 md:col-span-4" },
+  { n: 20, span: "col-span-2 md:col-span-8 row-span-2", pt: "Equipamento de cinema", en: "Cinema gear" },
+  { n: 19, span: "col-span-1 md:col-span-4 row-span-2" },
+  { n: 21, span: "col-span-1 md:col-span-4 row-span-2", pt: "Corte e monitoramento ao vivo", en: "Live switching and monitoring" },
+  { n: 22, span: "col-span-1 md:col-span-4" },
+  { n: 23, span: "col-span-1 md:col-span-4 row-span-2" },
+  { n: 24, span: "col-span-2 md:col-span-8", pt: "Gravação em consultório", en: "Shooting inside the clinic" },
 ];
 
 const STACK_PT = ["Multicâmera", "Câmeras de cinema", "Luz de cinema", "Som direto", "Monitoramento ao vivo", "Direção de cena"];
