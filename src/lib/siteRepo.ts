@@ -126,7 +126,9 @@ export async function fetchHeroConfig(): Promise<{
   if (!isSupabaseConfigured) throw new Error("Supabase não configurado");
   const { data, error } = await supabase
     .from("site_config")
-    .select("hero_images, hero_scenes, hero_reels, hero_videos, background_video")
+    // "*" em vez de listar colunas: se alguma coluna opcional (ex.: hero_videos)
+    // não existir no banco, a consulta não quebra e o banner continua carregando.
+    .select("*")
     .eq("id", "default")
     .maybeSingle();
   if (error || !data) throw new Error("Erro ao buscar config do hero");
@@ -147,20 +149,21 @@ export async function saveHeroConfig(cfg: {
   backgroundVideo: { url: string; poster: string };
 }): Promise<{ ok: boolean; error?: string }> {
   if (!isSupabaseConfigured) return { ok: false, error: "Supabase não configurado." };
-  const { error } = await supabase
-    .from("site_config")
-    .upsert(
-      {
-        id: "default",
-        hero_images: cfg.images,
-        hero_scenes: cfg.scenes,
-        hero_reels: cfg.reels,
-        hero_videos: cfg.videos,
-        background_video: cfg.backgroundVideo,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "id" }
-    );
+  const row: Record<string, unknown> = {
+    id: "default",
+    hero_images: cfg.images,
+    hero_scenes: cfg.scenes,
+    hero_reels: cfg.reels,
+    hero_videos: cfg.videos,
+    background_video: cfg.backgroundVideo,
+    updated_at: new Date().toISOString(),
+  };
+  let { error } = await supabase.from("site_config").upsert(row, { onConflict: "id" });
+  // Banco sem a coluna hero_videos: salva o resto mesmo assim.
+  if (error && /hero_videos/.test(error.message)) {
+    delete row.hero_videos;
+    ({ error } = await supabase.from("site_config").upsert(row, { onConflict: "id" }));
+  }
   if (error) return { ok: false, error: error.message };
   return { ok: true };
 }
