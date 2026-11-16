@@ -14,7 +14,7 @@ import { compressImageFile } from "../lib/imageProcessing";
 import { fetchHeroConfig, saveHeroConfig } from "../lib/siteRepo";
 import { isSupabaseConfigured } from "../lib/supabase";
 
-const MAX_HERO_ITEMS = 3;
+const MAX_HERO_ITEMS = 10;
 
 function emitHeroUpdate() {
   window.dispatchEvent(new Event("sim-hero-updated"));
@@ -500,7 +500,8 @@ export function useHeroBannerVideos(defaultVideos: readonly string[] = []): stri
         const cfg = await fetchHeroConfig();
         // Mantém o mesmo tamanho de heroImages: entradas vazias ("") indicam
         // que aquela cena usa a imagem estática, não um vídeo.
-        setVideos(cfg.videos.slice(0, MAX_HERO_ITEMS));
+        // Banco sem vídeos salvos: mantém os vídeos padrão do SITE_CONFIG.
+        if (cfg.videos.length > 0) setVideos(cfg.videos.slice(0, MAX_HERO_ITEMS));
       } catch {
         /* ignore, mantém defaults */
       }
