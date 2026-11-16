@@ -27,6 +27,8 @@ export function Contact() {
       id="contact"
       className="relative overflow-hidden bg-noir-950 pt-24 md:pt-32"
     >
+      {/* mural STILL ▬ MOVEMENT (manual da marca) em baixa opacidade */}
+      <div aria-hidden className="sim-mural pointer-events-none absolute inset-0 opacity-[0.06]" />
       {/* glow superior sutil */}
       <div className="pointer-events-none absolute -top-32 left-1/2 h-[420px] w-[80%] -translate-x-1/2 rounded-full bg-accent/[0.035] blur-[160px]" />
 
