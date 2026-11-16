@@ -66,11 +66,6 @@ function ProjectRow({
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-noir-950/85 via-noir-950/10 to-transparent opacity-90" />
 
-        {/* big index — aligned left to match text layout */}
-        <span className="pointer-events-none absolute left-4 top-3 font-display text-[5rem] leading-none text-cream/15 md:text-[7rem]">
-          {String(index + 1).padStart(2, "0")}
-        </span>
-
         {/* play affordance */}
         <span className="absolute inset-0 flex items-center justify-center">
           <span className="flex h-16 w-16 translate-y-3 items-center justify-center rounded-full border border-cream/40 bg-noir-950/30 opacity-0 backdrop-blur-sm transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100 md:h-20 md:w-20">
