@@ -32,17 +32,23 @@ export function Manifesto() {
                 {t.manifesto.lead.split(" ").slice(1).join(" ")}.
               </span>
             </h2>
-            <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-noir-700 p-1 font-mono text-[10px] uppercase tracking-wide2">
+            <div className="relative mt-8 inline-grid grid-cols-2 rounded-full border border-noir-700 p-1 font-mono text-[10px] uppercase tracking-wide2">
+              {/* pílula com as cores da marca — desliza entre STILL e MOVEMENT */}
               <span
-                className={`rounded-full px-4 py-2 transition-all duration-500 ${
-                  phase === "still" ? "bg-accent text-noir-950" : "text-noir-400"
+                aria-hidden
+                className="sim-spectrum-flow absolute bottom-1 left-1 top-1 w-[calc(50%-4px)] rounded-full transition-transform duration-[1100ms] ease-[cubic-bezier(0.65,0,0.35,1)]"
+                style={{ transform: phase === "move" ? "translateX(100%)" : "translateX(0)" }}
+              />
+              <span
+                className={`relative z-10 px-5 py-2 text-center transition-colors duration-700 ${
+                  phase === "still" ? "text-noir-950" : "text-noir-400"
                 }`}
               >
                 {t.manifesto.toggleStill}
               </span>
               <span
-                className={`rounded-full px-4 py-2 transition-all duration-500 ${
-                  phase === "move" ? "sim-spectrum-flow text-noir-950" : "text-noir-400"
+                className={`relative z-10 px-5 py-2 text-center transition-colors duration-700 ${
+                  phase === "move" ? "text-noir-950" : "text-noir-400"
                 }`}
               >
                 {t.manifesto.toggleMove}
