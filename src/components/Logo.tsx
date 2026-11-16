@@ -4,20 +4,21 @@ import { cn } from "../lib/cn";
 /**
  * Logo SIM — reproduzida EXATAMENTE do repositório LucasDomin/SIM.
  * - Texto "Sim" como path único preenchido em branco (desenho autoral).
- * - Barra de 8 cores posicionada sob o "im" (x=346, y=310, w=846, h=24).
+ * - Barra de 9 cores (paleta do manual da marca) posicionada sob o "im" (x=346, y=310, w=846, h=24).
  * - A barra preenche da esquerda → direita: a marca "Still In Movement".
  * viewBox 0 0 1192 380 (proporção ~3.14:1) — posicionada à esquerda.
  */
 
 const SEGMENTS = [
-  "rgb(153,110,167)",
-  "rgb(228,90,88)",
-  "rgb(234,141,17)",
-  "rgb(250,196,33)",
-  "rgb(51,174,116)",
-  "rgb(40,148,209)",
-  "rgb(177,183,177)",
-  "rgb(244,199,141)",
+  "#946eb0",
+  "#f1625e",
+  "#eb8e28",
+  "#ffc230",
+  "#34b880",
+  "#1996d4",
+  "#8ba18c",
+  "#fdc586",
+  "#915023",
 ];
 
 const WORD_PATH =
