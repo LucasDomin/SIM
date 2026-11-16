@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useLang } from "../contexts/LanguageContext";
 import { useAdmin } from "../contexts/AdminContext";
 import { useSiteData } from "../hooks/useSiteData";
@@ -123,9 +124,45 @@ function ProjectRow({
   );
 }
 
+/** Card vertical (9:16) da aba Social: prévia no hover, abre o vídeo ao clicar. */
+function SocialCard({ project, onOpen }: { project: Project; onOpen: (slug: string) => void }) {
+  const { getProject } = useAdmin();
+  const p = getProject(project);
+  return (
+    <Reveal>
+      <button
+        onClick={() => onOpen(project.slug)}
+        className="group relative block w-full overflow-hidden rounded-sm text-left"
+        style={{ aspectRatio: "9 / 16" }}
+        aria-label={p.title}
+      >
+        {p.video ? (
+          <HoverVideoPlayer
+            videoUrl={p.video}
+            posterUrl={p.poster || p.cover || undefined}
+            aspectRatio="9 / 16"
+            className="absolute inset-0 h-full w-full"
+          />
+        ) : (
+          <img src={p.cover} alt={p.title} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+        )}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-noir-950/90 via-transparent to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4">
+          <div className="font-mono text-[9px] uppercase tracking-wide2 text-accent">{p.client}</div>
+          <div className="mt-1 font-display text-xl font-light leading-tight text-cream md:text-2xl">{p.title}</div>
+        </div>
+      </button>
+    </Reveal>
+  );
+}
+
 export function SelectedWorks({ onOpen }: { onOpen: (slug: string) => void }) {
-  const { t } = useLang();
-  const { projects } = useSiteData();
+  const { t, lang } = useLang();
+  const { projects: all } = useSiteData();
+  const projects = all.filter((p) => p.category !== "Social");
+  const social = all.filter((p) => p.category === "Social");
+  const [tab, setTab] = useState<"films" | "social">("films");
+  const showSocial = tab === "social" && social.length > 0;
   return (
     <section id="works" className="relative bg-noir-950 pt-16 pb-20 md:pt-20 md:pb-28">
       <div className="mx-auto max-w-[1500px] px-5 md:px-10">
@@ -141,11 +178,43 @@ export function SelectedWorks({ onOpen }: { onOpen: (slug: string) => void }) {
           </p>
         </Reveal>
 
-        <div className="mt-16 flex flex-col gap-10 md:gap-14">
-          {projects.map((p, i) => (
-            <ProjectRow key={p.slug} project={p} index={i} onOpen={onOpen} />
-          ))}
-        </div>
+        {social.length > 0 && (
+          <div className="mt-10 flex gap-2" role="tablist">
+            {([
+              ["films", lang === "en" ? "Films" : "Filmes", projects.length],
+              ["social", "Social", social.length],
+            ] as const).map(([key, label, n]) => (
+              <button
+                key={key}
+                role="tab"
+                aria-selected={tab === key}
+                onClick={() => setTab(key)}
+                className={cn(
+                  "rounded-full border px-5 py-2 font-mono text-[11px] uppercase tracking-wide2 transition-colors",
+                  tab === key
+                    ? "border-accent bg-accent/10 text-cream"
+                    : "border-noir-700 text-noir-400 hover:border-noir-500 hover:text-cream"
+                )}
+              >
+                {label} <span className="ml-1 text-noir-500">{n}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {showSocial ? (
+          <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-5 lg:grid-cols-4">
+            {social.map((p) => (
+              <SocialCard key={p.slug} project={p} onOpen={onOpen} />
+            ))}
+          </div>
+        ) : (
+          <div className="mt-16 flex flex-col gap-10 md:gap-14">
+            {projects.map((p, i) => (
+              <ProjectRow key={p.slug} project={p} index={i} onOpen={onOpen} />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Filmstrip embutido (antes seção 03 Galeria) — agora parte do bloco 02 */}
