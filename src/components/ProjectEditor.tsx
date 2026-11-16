@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { HoverVideoPlayer } from "./HoverVideoPlayer";
+import { isYouTube } from "../lib/youtube";
 import type { Project } from "../data/defaults";
 import { useLang } from "../contexts/LanguageContext";
 import { useAdmin } from "../contexts/AdminContext";
@@ -356,22 +358,15 @@ export function ProjectEditor({
                 onChange={(v) => setForm((f) => ({ ...f, poster: v }))}
               />
             </div>
-            {form.video && form.poster && (
+            <p className="mt-1 text-[11px] leading-snug text-noir-500">
+              {label(
+                "Pode colar o link do YouTube (inclusive não listado) ou um link direto de .mp4. Com YouTube, a capa é opcional: se ficar vazia, usamos a thumbnail do vídeo.",
+                "Paste a YouTube link (unlisted works) or a direct .mp4 URL. With YouTube the poster is optional: if empty, the video thumbnail is used."
+              )}
+            </p>
+            {form.video && (form.poster || isYouTube(form.video)) && (
               <div className="mt-3 overflow-hidden rounded-sm border border-noir-700">
-                <video
-                  src={form.video}
-                  poster={form.poster}
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  className="aspect-[16/10] w-full object-cover"
-                  onMouseEnter={(e) => e.currentTarget.play()}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.pause();
-                    e.currentTarget.currentTime = 0;
-                  }}
-                />
+                <HoverVideoPlayer videoUrl={form.video} posterUrl={form.poster || undefined} />
               </div>
             )}
           </div>
