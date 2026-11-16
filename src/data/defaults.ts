@@ -233,8 +233,8 @@ export const projects: Project[] = [
 ];
 
 export const clients: string[] = [
-  "Hermès", "Vogue", "Porsche", "Aesop", "Apple", "Leica",
-  "Bottega Veneta", "Loewe", "Saint Laurent", "Maison Margiela", "Acne Studios", "COS",
+  "Hotmart", "Leroy Merlin", "Festo", "SENAI", "Direcional", "L'Officiel",
+  "Itaminas", "Vilma Alimentos", "BAMAQ", "Fortline",
 ];
 
 export type SiteConfig = {
